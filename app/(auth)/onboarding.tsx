@@ -51,7 +51,15 @@ const Onboarding = () => {
               <Text className="text-onboardingsubtext font-UrbanistMedium text-center text-secondary leading-8 -mt-10">
                 {item.description}
               </Text>
-              <View className="flex-row w-full items-center gap-4 mt-5">
+              <View
+                className="flex-row gap-4 items-center"
+                style={{
+                  position: "absolute",
+                  right: 20,
+                  left: 20,
+                  bottom: -112,
+                }}
+              >
                 {isLastSlide ? (
                   <TouchableOpacity
                     className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
