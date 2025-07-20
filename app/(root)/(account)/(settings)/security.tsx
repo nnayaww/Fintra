@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router } from "expo-router";
@@ -11,24 +12,31 @@ const Security = () => {
   const [isFaceIDEnabled, setIsFaceIDEnabled] = useState(false);
   const [isSMSEnabled, setIsSMSEnabled] = useState(false);
   const [isGoogleEnabled, setIsGoogleEnabled] = useState(false);
+  const { theme } = useTheme();
 
   return (
-    <View className="flex-1 bg-white p-5">
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View className="flex-row items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(root)/(tabs)/account");
+            router.back();
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22 }}
           />
         </TouchableOpacity>
         <Text
-          className="font-UrbanistBold text-3xl text-primary mt-5"
+          className={`font-UrbanistBold text-3xl mt-5 ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ marginHorizontal: 80 }}
         >
           Security
@@ -37,7 +45,9 @@ const Security = () => {
       <View className="flex p-2 mt-5" style={{ gap: 30 }}>
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19, width: "70%" }}
           >
             Remember Me
@@ -64,7 +74,9 @@ const Security = () => {
         </View>
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19, width: "70%" }}
           >
             Biometric ID
@@ -91,7 +103,9 @@ const Security = () => {
         </View>
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19, width: "70%" }}
           >
             Face ID
@@ -118,7 +132,9 @@ const Security = () => {
         </View>
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19, width: "70%" }}
           >
             SMS Authenticator
@@ -145,7 +161,9 @@ const Security = () => {
         </View>
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19, width: "70%" }}
           >
             Google Authenticator
@@ -176,7 +194,9 @@ const Security = () => {
             onPress={() => {}}
           >
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Device Management
@@ -184,12 +204,14 @@ const Security = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          className="bg-white flex items-center justify-center p-5 border rounded-full"
+          className={`flex items-center justify-center p-5 border rounded-full ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
           style={{
             borderStyle: "solid",
             borderWidth: 1.5,
@@ -197,7 +219,11 @@ const Security = () => {
           }}
           onPress={() => {}}
         >
-          <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-buttontext ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Change Password
           </Text>
         </TouchableOpacity>
@@ -207,3 +233,4 @@ const Security = () => {
 };
 
 export default Security;
+

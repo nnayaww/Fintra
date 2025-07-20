@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 type CryptoItem = {
   id: string;
@@ -27,6 +28,7 @@ export default function SelectCrypto() {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [cryptoData, setCryptoData] = useState<CryptoItem[]>([]);
+  const { theme } = useTheme();
 
   const fetchCrypto = async () => {
     try {
@@ -75,7 +77,9 @@ export default function SelectCrypto() {
         }}
         className="flex-row py-4 items-center"
       >
-        <View className="rounded-full flex items-center justify-center bg-[#F6F8FA]">
+        <View
+          className={`rounded-full flex items-center justify-center`}
+        >
           <Image
             source={{ uri: item.image }}
             style={{ width: 55, height: 55 }}
@@ -84,13 +88,17 @@ export default function SelectCrypto() {
         <View className="flex-1 flex-col ml-5 gap-3">
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19 }}
             >
               {item.name}
             </Text>
             <Text
-              className="text-primary font-UrbanistSemiBold"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 18 }}
             >
               ${formatBalance(item.current_price)}
@@ -98,7 +106,9 @@ export default function SelectCrypto() {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="text-secondary font-UrbanistMedium"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 15 }}
             >
               {item.symbol.toUpperCase()}
@@ -136,26 +146,36 @@ export default function SelectCrypto() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white">
+      <View
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View
           className="flex-row items-center pt-5 pl-5 pr-5"
           style={{ marginTop: 32 }}
         >
           <TouchableOpacity
             onPress={() => {
-              router.push("/(root)/(tabs)/crypto");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6 }}
             />
           </TouchableOpacity>
           <View className="flex-1 items-center" style={{ marginLeft: -40 }}>
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 24 }}
             >
               Select Crypto To Buy
@@ -166,7 +186,7 @@ export default function SelectCrypto() {
           <AntDesign
             name="search1"
             size={24}
-            color={searchFocused ? "#0D0D0D" : "#9CA3AF"}
+            color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
             style={{ position: "absolute", left: 36, top: 138, zIndex: 1 }}
           />
         )}
@@ -175,7 +195,11 @@ export default function SelectCrypto() {
           onChangeText={setSearch}
           placeholder="        Search crypto"
           placeholderTextColor="#9CA3AF"
-          className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary opacity-4 self-center"
+          className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 opacity-4 self-center ${
+            theme === "dark"
+              ? "bg-dark-secondary text-dark-primary"
+              : "bg-[#F6F8FA] text-primary"
+          }`}
           style={{ width: "90%", marginTop: 28 }}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
@@ -191,7 +215,10 @@ export default function SelectCrypto() {
               <View className="flex items-end">
                 <View
                   className="h-[1px]"
-                  style={{ width: "80%", backgroundColor: "#e6e6e6" }}
+                  style={{
+                    width: "80%",
+                    backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                  }}
                 />
               </View>
             )}
@@ -201,3 +228,4 @@ export default function SelectCrypto() {
     </TouchableWithoutFeedback>
   );
 }
+

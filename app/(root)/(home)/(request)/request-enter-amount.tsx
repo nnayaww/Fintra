@@ -1,18 +1,20 @@
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const RequestEnterAmount = () => {
   const { type } = useLocalSearchParams();
+  const { theme } = useTheme();
 
   const { name, email, avatar } = useLocalSearchParams();
   const [amount, setAmount] = useState("");
@@ -57,7 +59,11 @@ const RequestEnterAmount = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white">
+      <View
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View
           style={{ height: "55%", paddingTop: 40 }}
           className="bg-general w-full p-5"
@@ -65,21 +71,25 @@ const RequestEnterAmount = () => {
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                router.replace(
-                  "/(root)/(home)/(request)/request-select-contact"
-                );
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/(root)/(tabs)/home");
+                }
               }}
             >
               <Ionicons
                 name="arrow-back"
                 size={28}
-                color="#0D0D0D"
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
                 style={{ padding: 6 }}
               />
             </TouchableOpacity>
             <View className="flex-1 items-center" style={{ marginLeft: -40 }}>
               <Text
-                className="font-UrbanistBold text-primary"
+                className={`font-UrbanistBold ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
                 style={{ fontSize: 24 }}
               >
                 Amount to Request
@@ -90,8 +100,10 @@ const RequestEnterAmount = () => {
             <View className="flex items-center" style={{ marginTop: 120 }}>
               <View className="flex-row">
                 <TextInput
-                  className="text-primary font-UrbanistBold"
-                  placeholder="---"
+                  className={`font-UrbanistBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  placeholder="---.--"
                   keyboardType="numeric"
                   value={request}
                   onChangeText={(text) => {
@@ -101,22 +113,30 @@ const RequestEnterAmount = () => {
                   style={{
                     fontSize: 40,
                   }}
+                  placeholderTextColor={theme === 'dark' ? '#A0A0A0' : '#9CA3AF'}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
                 />
                 <FontAwesome6
                   name="cedi-sign"
                   size={20}
-                  color="#0D0D0D"
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
                   style={{ marginTop: 20 }}
                 />
               </View>
               <View className="flex-row gap-1">
-                <Text className="font-UrbanistMedium" style={{ fontSize: 18 }}>
+                <Text
+                  className={`font-UrbanistMedium ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  style={{ fontSize: 18 }}
+                >
                   Available Balance:
                 </Text>
                 <Text
-                  className="font-UrbanistMedium"
+                  className={`font-UrbanistMedium ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
                   style={{ fontSize: 18 }}
                 >{`₵${formatBalance(9645.5 /* or user.balance */)}`}</Text>
               </View>
@@ -147,7 +167,9 @@ const RequestEnterAmount = () => {
             }}
           >
             <Text
-              className="text-primary font-UrbanistSemiBold"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 20 }}
             >
               Continue

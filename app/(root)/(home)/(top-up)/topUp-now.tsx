@@ -10,11 +10,13 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 const TopUpNow = () => {
   const [notes, setNotes] = useState("");
   const { amount, methodName, methodImage, methodNumber } =
     useLocalSearchParams();
+  const { theme } = useTheme();
 
   function formatBalance(amount: number): string {
     if (amount >= 1_000_000_000) {
@@ -32,23 +34,34 @@ const TopUpNow = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5" style={{ paddingTop: 40 }}>
+      <View
+        className={`flex-1 p-5 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+        style={{ paddingTop: 40 }}
+      >
         <View className="flex-row items-center">
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(root)/(home)/(top-up)/select-topUp-method");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6 }}
             />
           </TouchableOpacity>
           <View className="flex-1 items-center" style={{ marginLeft: -40 }}>
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 24 }}
             >
               Top Up Now
@@ -57,17 +70,23 @@ const TopUpNow = () => {
         </View>
         <View className="mt-10">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 20 }}
           >
             Amount to Top Up
           </Text>
           <View
-            className="py-2 px-4 bg-[#F6F8FA] rounded-lg mt-4 flex justify-center"
+            className={`py-2 px-4 rounded-lg mt-4 flex justify-center ${
+              theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+            }`}
             style={{ height: 70 }}
           >
             <Text
-              className="font-UrbanistBold"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 28 }}
             >{`₵ ${formatBalance(
               Number(Array.isArray(amount) ? amount[0] : amount)
@@ -77,7 +96,9 @@ const TopUpNow = () => {
 
         <View className="mt-10">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 20 }}
           >
             Top Up Method
@@ -85,11 +106,13 @@ const TopUpNow = () => {
           <View
             style={{
               borderWidth: 2,
-              borderColor: "#ebedf0",
+              borderColor: theme === "dark" ? "#444" : "#ebedf0",
               gap: 14,
               height: 80,
             }}
-            className="flex-row justify-between items-center bg-[#F6F8FA] w-full p-5 mt-4 border rounded-lg"
+            className={`flex-row justify-between items-center w-full p-5 mt-4 border rounded-lg ${
+              theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+            }`}
           >
             <View className="flex-row items-center">
               {methodImage && (
@@ -121,11 +144,21 @@ const TopUpNow = () => {
                 />
               )}
               {methodName === "Mastercard" || methodName === "Visa" ? (
-                <Text className="font-UrbanistBold" style={{ fontSize: 20 }}>
+                <Text
+                  className={`font-UrbanistBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  style={{ fontSize: 20 }}
+                >
                   {methodNumber || "Select Method"}
                 </Text>
               ) : (
-                <Text className="font-UrbanistBold" style={{ fontSize: 20 }}>
+                <Text
+                  className={`font-UrbanistBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  style={{ fontSize: 20 }}
+                >
                   {methodName || "Select Method"}
                 </Text>
               )}
@@ -147,19 +180,30 @@ const TopUpNow = () => {
           </View>
         </View>
         <Text
-          className="font-UrbanistSemiBold text-primary mt-10"
+          className={`font-UrbanistSemiBold mt-10 ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ fontSize: 20 }}
         >
           Add Notes
         </Text>
-        <View className="bg-[#F6F8FA] rounded-lg mt-2" style={{ height: 180 }}>
+        <View
+          className={`rounded-lg mt-2 ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
+          style={{ height: 180 }}
+        >
           <TextInput
-            className="rounded-lg p-5 font-UrbanistSemiBold"
+            className={`rounded-lg p-5 font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19 }}
             value={notes}
             onChangeText={setNotes}
             multiline
             numberOfLines={4}
+            placeholder="Add notes..."
+            placeholderTextColor={"#9CA3AF"}
           />
         </View>
         <View
@@ -170,9 +214,15 @@ const TopUpNow = () => {
             onPress={() => {
               router.replace("/(root)/(home)/(top-up)/topUp-enter-amount");
             }}
-            className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+            className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+              theme === "dark" ? "bg-dark-background" : "bg-white"
+            }`}
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Cancel
             </Text>
           </TouchableOpacity>
@@ -190,7 +240,11 @@ const TopUpNow = () => {
             }
             className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Confirm
             </Text>
           </TouchableOpacity>
@@ -201,3 +255,4 @@ const TopUpNow = () => {
 };
 
 export default TopUpNow;
+

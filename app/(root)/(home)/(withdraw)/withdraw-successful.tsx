@@ -6,6 +6,7 @@ import React from "react";
 import { Share, Text, TouchableOpacity, View } from "react-native";
 import { captureScreen } from "react-native-view-shot";
 import { formatDate } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 
 const WithdrawSuccessful = () => {
   const { amount, methodName, methodNumber, notes } = useLocalSearchParams();
@@ -17,6 +18,7 @@ const WithdrawSuccessful = () => {
   const displayMethodNumber = Array.isArray(methodNumber)
     ? methodNumber[0]
     : methodNumber;
+  const { theme } = useTheme();
 
   const handleShare = async () => {
     try {
@@ -68,7 +70,12 @@ const WithdrawSuccessful = () => {
   }
 
   return (
-    <View className="flex-1 bg-white p-2" style={{ paddingTop: 30 }}>
+    <View
+      className={`flex-1 p-2 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+      style={{ paddingTop: 30 }}
+    >
       <View
         className="flex-row justify-between items-center"
         style={{ marginTop: 20 }}
@@ -81,7 +88,7 @@ const WithdrawSuccessful = () => {
           <AntDesign
             name="close"
             size={30}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ paddingHorizontal: 14 }}
           />
         </TouchableOpacity>
@@ -94,15 +101,21 @@ const WithdrawSuccessful = () => {
             backgroundColor: "#82E394",
             borderStyle: "solid",
             borderWidth: 2,
-            borderColor: "#0D0D0D",
+            borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
           }}
           className="rounded-full border flex items-center justify-center"
         >
-          <FontAwesome6 name="check" size={34} color="#0D0D0D" />
+          <FontAwesome6
+            name="check"
+            size={34}
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
+          />
         </View>
         <View className="flex-row gap-2 justify-center">
           <Text
-            className="font-UrbanistBold text-primary"
+            className={`font-UrbanistBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 40 }}
           >
             {`₵ ${formatBalance(
@@ -112,7 +125,9 @@ const WithdrawSuccessful = () => {
         </View>
         <View className="flex gap-3 items-center">
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17 }}
           >
             You withdrew to{" "}
@@ -121,7 +136,9 @@ const WithdrawSuccessful = () => {
               : displayMethodName}
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17 }}
           >
             {methodName === "Visa"
@@ -132,12 +149,18 @@ const WithdrawSuccessful = () => {
       </View>
       <View className="p-4 mt-2">
         <View
-          className="flex bg-[#F6F8FA] rounded-lg"
-          style={{ borderWidth: 2, borderColor: "#ebedf0" }}
+          className={`flex rounded-lg ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
+          style={{
+            borderWidth: 2,
+            borderColor: theme === "dark" ? "#444" : "#ebedf0",
+          }}
         >
           <Row
             label="You withdrew"
             value={`₵ ${formatBalance(Number(displayAmount))}`}
+            theme={theme}
           />
           <Row
             label="To"
@@ -146,6 +169,7 @@ const WithdrawSuccessful = () => {
                 ? displayMethodNumber
                 : displayMethodName
             }
+            theme={theme}
           />
           <Row
             label="Account"
@@ -154,19 +178,31 @@ const WithdrawSuccessful = () => {
                 ? displayMethodName.toUpperCase()
                 : displayMethodName
             }
+            theme={theme}
           />
-          <Row label="Date" value={formatDate(new Date())} />
-          <Row label="Transaction ID" value={""} />
-          <Row label="Reference ID" value={""} />
+          <Row label="Date" value={formatDate(new Date())} theme={theme} />
+          <Row label="Transaction ID" value={""} theme={theme} />
+          <Row label="Reference ID" value={""} theme={theme} />
           <View
             className="h-[1px] self-center mt-2"
-            style={{ width: "90%", backgroundColor: "#e6e6e6" }}
+            style={{
+              width: "90%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+            }}
           />
           <View className="flex-col px-6 my-4">
-            <Text className="font-UrbanistMedium text-secondary text-xl">
+            <Text
+              className={`font-UrbanistMedium text-xl ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
+            >
               Notes
             </Text>
-            <Text className="font-UrbanistBold text-xl text-primary mt-3">
+            <Text
+              className={`font-UrbanistBold text-xl mt-3 ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               {displayNotes}
             </Text>
           </View>
@@ -178,9 +214,15 @@ const WithdrawSuccessful = () => {
       >
         <TouchableOpacity
           onPress={handleDownload}
-          className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Download
           </Text>
         </TouchableOpacity>
@@ -188,7 +230,11 @@ const WithdrawSuccessful = () => {
           onPress={handleShare}
           className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Share
           </Text>
         </TouchableOpacity>
@@ -202,18 +248,28 @@ export default WithdrawSuccessful;
 function Row({
   label,
   value,
+  theme,
 }: {
   label: string;
   value: string | number | undefined;
+  theme: string;
 }) {
   return (
     <View className="flex-row justify-between items-center px-6 my-3">
-      <Text className="font-UrbanistMedium text-secondary text-xl">
+      <Text
+        className={`font-UrbanistMedium text-xl ${
+          theme === "dark" ? "text-dark-secondary" : "text-secondary"
+        }`}
+      >
         {label}
       </Text>
       {label === "Status" && value === "Paid" ? (
         <View className="p-3 bg-general rounded-md">
-          <Text className="font-UrbanistBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             {value}
           </Text>
         </View>
@@ -222,7 +278,13 @@ function Row({
           <Text className="font-UrbanistBold text-xl text-white">{value}</Text>
         </View>
       ) : (
-        <Text className="font-UrbanistBold text-xl text-primary">{value}</Text>
+        <Text
+          className={`font-UrbanistBold text-xl ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
+        >
+          {value}
+        </Text>
       )}
     </View>
   );

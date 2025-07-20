@@ -1,4 +1,6 @@
+import ThemeToggleButton from "@/components/ThemeToggleButton";
 import { icons, images } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -26,6 +28,7 @@ const data = [
 ];
 
 const Account = () => {
+  const { theme } = useTheme();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showQRCodeModal, setshowQRCodeModal] = useState(false);
   const [showLogoutModal, setshowLogoutModal] = useState(false);
@@ -63,14 +66,17 @@ const Account = () => {
   };
 
   return (
-    <View className="flex-1 p-2 bg-white" style={{ paddingTop: 30 }}>
+    <View
+      className={`flex-1 p-2 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`}
+      style={{ paddingTop: 60 }}
+    >
       <View className="flex-row px-5">
         <Image
-          source={images.BlackLogo}
+          source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
           style={{ width: 50, height: 40, marginTop: 15, marginLeft: -14 }}
         />
         <Text
-          className="font-UrbanistBold text-3xl mt-5"
+          className={`font-UrbanistBold text-3xl mt-5 ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
           style={{ marginHorizontal: 80 }}
         >
           Account
@@ -81,7 +87,7 @@ const Account = () => {
           style={{
             width: 78,
             height: 78,
-            backgroundColor: "#F6F8FA",
+            backgroundColor: theme === "dark" ? "#333" : "#F6F8FA",
           }}
           className="rounded-full flex items-center justify-center"
         >
@@ -97,7 +103,7 @@ const Account = () => {
                   position: "absolute",
                   top: -8,
                   right: -6,
-                  backgroundColor: "#fff",
+                  backgroundColor: theme === "dark" ? "#000" : "#fff",
                   borderRadius: 12,
                   padding: 2,
                   elevation: 2,
@@ -111,19 +117,23 @@ const Account = () => {
               </TouchableOpacity>
             </>
           ) : (
-            <FontAwesome5 name="user-alt" size={24} color="#9CA3AF" />
+            <FontAwesome5
+              name="user-alt"
+              size={24}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+            />
           )}
         </View>
         <View className="flex-row items-center" style={{ paddingLeft: 20 }}>
           <View style={{ width: "80%" }}>
             <Text
-              className="font-UrbanistBold text-primary text-xl"
+              className={`font-UrbanistBold text-xl ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 19 }}
             >
               {data[0].fullname}
             </Text>
             <Text
-              className="font-UrbanistMedium text-secondary text-lg"
+              className={`font-UrbanistMedium text-lg ${theme === "dark" ? "text-dark-secondary" : "text-secondary"}`}
               style={{ marginTop: 6, lineHeight: 26, width: "80%" }}
             >
               {data[0].email}
@@ -133,7 +143,11 @@ const Account = () => {
             onPress={() => setshowQRCodeModal(true)}
             style={{ marginLeft: -10 }}
           >
-            <MaterialCommunityIcons name="qrcode" size={32} color="black" />
+            <MaterialCommunityIcons
+              name="qrcode"
+              size={32}
+              color={theme === "dark" ? "#fff" : "black"}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -149,21 +163,23 @@ const Account = () => {
           style={{ marginTop: 14 }}
         >
           <Text
-            className="font-UrbanistSemiBold text-xl"
-            style={{ color: "#8f949b" }}
+            className={`font-UrbanistSemiBold text-xl ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
           >
             General
           </Text>
           <View
             className="h-[1px]"
-            style={{ width: "80%", backgroundColor: "#e6e6e6" }}
+            style={{
+              width: "80%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+            }}
           ></View>
         </View>
         <View className="flex gap-4" style={{ marginTop: 16 }}>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace(
+              router.push(
                 "/(root)/(account)/(payment-methods)/payment-methods"
               )
             }
@@ -171,11 +187,11 @@ const Account = () => {
             <FontAwesome
               name="credit-card"
               size={24}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 10 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -94 }}
             >
               Payment Methods
@@ -183,23 +199,23 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/personal-info")
+              router.push("/(root)/(account)/(settings)/personal-info")
             }
           >
             <FontAwesome5
               name="user"
               size={24}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 11 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -132 }}
             >
               Personal Info
@@ -207,7 +223,7 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{}}
             />
           </TouchableOpacity>
@@ -222,7 +238,7 @@ const Account = () => {
               style={{ width: 28, height: 31, marginLeft: 7 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -146 }}
             >
               Notification
@@ -230,24 +246,24 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{}}
             />
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/security")
+              router.push("/(root)/(account)/(settings)/security")
             }
           >
             <Octicons
               name="shield-check"
               size={25}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 11 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -172 }}
             >
               Security
@@ -255,30 +271,30 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{}}
             />
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/language")
+              router.push("/(root)/(account)/(settings)/language")
             }
           >
             <MaterialCommunityIcons
               name="text-box-outline"
               size={28}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 8 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -48 }}
             >
               Language
             </Text>
             <Text
-              className="font-UrbanistBold text-[#8f949b]"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
               style={{ fontSize: 18, marginRight: -60 }}
             >
               English (US)
@@ -286,41 +302,44 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{}}
             />
           </TouchableOpacity>
+          <ThemeToggleButton />
         </View>
         <View
           className="flex-row px-5 items-center gap-4"
           style={{ marginTop: 14 }}
         >
           <Text
-            className="font-UrbanistSemiBold text-xl"
-            style={{ color: "#8f949b" }}
+            className={`font-UrbanistSemiBold text-xl ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
           >
             About
           </Text>
           <View
             className="h-[1px]"
-            style={{ width: "84%", backgroundColor: "#e6e6e6" }}
+            style={{
+              width: "84%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+            }}
           ></View>
         </View>
         <View className="flex gap-4" style={{ marginTop: 16 }}>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/help-center")
+              router.push("/(root)/(account)/(settings)/help-center")
             }
           >
             <Feather
               name="file-text"
               size={26}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 11 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -140 }}
             >
               Help Center
@@ -328,23 +347,23 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/privacy-policy")
+              router.push("/(root)/(account)/(settings)/privacy-policy")
             }
           >
             <MaterialCommunityIcons
               name="lock-outline"
               size={26}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 11 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -130 }}
             >
               Privacy Policy
@@ -352,23 +371,23 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-row justify-between items-center p-3 w-full"
             onPress={() =>
-              router.replace("/(root)/(account)/(settings)/about-FinTra")
+              router.push("/(root)/(account)/(settings)/about-FinTra")
             }
           >
             <Entypo
               name="info"
               size={24}
-              color="#616161"
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
               style={{ marginTop: 2, marginLeft: 11 }}
             />
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 18, marginLeft: -138 }}
             >
               About FinTra
@@ -376,7 +395,31 @@ const Account = () => {
             <MaterialCommunityIcons
               name="greater-than"
               size={25}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-row justify-between items-center p-3 w-full"
+            onPress={() =>
+              router.push("/(root)/analytics")
+            }
+          >
+            <Feather
+              name="bar-chart-2"
+              size={26}
+              color={theme === "dark" ? "#A0A0A0" : "#616161"}
+              style={{ marginTop: 2, marginLeft: 10 }}
+            />
+            <Text
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
+              style={{ fontSize: 18, marginLeft: -160 }}
+            >
+              Analytics
+            </Text>
+            <MaterialCommunityIcons
+              name="greater-than"
+              size={25}
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -411,7 +454,7 @@ const Account = () => {
           style={{
             height: "64%",
             width: "100%",
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingVertical: 10,
@@ -425,7 +468,7 @@ const Account = () => {
             style={{
               width: 40,
               height: 3,
-              backgroundColor: "#ccc",
+              backgroundColor: theme === "dark" ? "#666" : "#ccc",
               borderRadius: 3,
               alignSelf: "center",
             }}
@@ -434,21 +477,25 @@ const Account = () => {
           <View style={{ marginTop: 10 }}>
             <Text
               style={{ fontSize: 24 }}
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
             >
               My QR Code
             </Text>
           </View>
           <View
             className="h-[1px]"
-            style={{ width: "100%", backgroundColor: "#e6e6e6", marginTop: 14 }}
+            style={{
+              width: "100%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginTop: 14,
+            }}
           ></View>
           <View
             style={{
               width: "100%",
               height: "60%",
               borderStyle: "solid",
-              borderColor: "#e6e6e6",
+              borderColor: theme === "dark" ? "#444" : "#e6e6e6",
               borderWidth: 1,
               marginTop: 10,
             }}
@@ -459,9 +506,13 @@ const Account = () => {
           <View className="flex-row w-full items-center gap-4 mt-4">
             <TouchableOpacity
               onPress={() => setshowQRCodeModal(false)}
-              className="bg-white flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full"
+              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${
+                theme === "dark" ? "bg-dark-background" : "bg-white"
+              }`}
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
+              >
                 Save
               </Text>
             </TouchableOpacity>
@@ -469,7 +520,9 @@ const Account = () => {
               onPress={handleShare}
               className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
+              >
                 Share
               </Text>
             </TouchableOpacity>
@@ -489,7 +542,7 @@ const Account = () => {
           style={{
             height: "35%",
             width: "100%",
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingVertical: 10,
@@ -503,7 +556,7 @@ const Account = () => {
             style={{
               width: 40,
               height: 3,
-              backgroundColor: "#ccc",
+              backgroundColor: theme === "dark" ? "#666" : "#ccc",
               borderRadius: 3,
               alignSelf: "center",
             }}
@@ -519,11 +572,15 @@ const Account = () => {
           </View>
           <View
             className="h-[1px]"
-            style={{ width: "100%", backgroundColor: "#e6e6e6", marginTop: 14 }}
+            style={{
+              width: "100%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginTop: 14,
+            }}
           />
           <View style={{ marginTop: 26 }}>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
               style={{ fontSize: 20 }}
             >
               Are you sure you want to log out?
@@ -535,19 +592,25 @@ const Account = () => {
           >
             <TouchableOpacity
               onPress={() => setshowLogoutModal(false)}
-              className="bg-white flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full"
+              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${
+                theme === "dark" ? "bg-dark-background" : "bg-white"
+              }`}
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
+              >
                 Cancel
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/(auth)/sign-in");
+                router.push("/(auth)/sign-in");
               }}
               className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
+              >
                 Yes, Logout
               </Text>
             </TouchableOpacity>
@@ -559,3 +622,4 @@ const Account = () => {
 };
 
 export default Account;
+

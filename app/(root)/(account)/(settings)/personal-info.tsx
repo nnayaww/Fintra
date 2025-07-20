@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -56,6 +57,7 @@ const PersonalInfo = () => {
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [phoneError, setPhoneError] = useState("");
   const phoneInput = useRef<PhoneInput>(null);
+  const { theme } = useTheme();
 
   // Helper to format date as mm/dd/yyyy
   const formatDate = (date: Date) => {
@@ -143,13 +145,17 @@ const PersonalInfo = () => {
       }
     }
     if (valid) {
-      router.replace("/(root)/(tabs)/account");
+      router.push("/(root)/(tabs)/account");
     }
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -165,18 +171,20 @@ const PersonalInfo = () => {
             <View className="flex-row items-center mt-3">
               <TouchableOpacity
                 onPress={() => {
-                  router.replace("/(root)/(tabs)/account");
+                  router.back();
                 }}
               >
                 <Ionicons
                   name="arrow-back"
                   size={28}
-                  color="#0D0D0D"
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
                   style={{ padding: 6, marginTop: 22 }}
                 />
               </TouchableOpacity>
               <Text
-                className="font-UrbanistBold text-3xl text-primary mt-5"
+                className={`font-UrbanistBold text-3xl mt-5 ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
                 style={{ marginHorizontal: 55 }}
               >
                 Personal Info
@@ -238,7 +246,11 @@ const PersonalInfo = () => {
                 </TouchableOpacity>
               </View>
               <View className="mt-5">
-                <Text className="text-2xl font-UrbanistSemiBold">
+                <Text
+                  className={`text-2xl font-UrbanistSemiBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                >
                   Full Name
                 </Text>
                 <TextInput
@@ -249,7 +261,11 @@ const PersonalInfo = () => {
                   }}
                   placeholder="Full Name"
                   placeholderTextColor="#9CA3AF"
-                  className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                    theme === "dark"
+                      ? "bg-dark-secondary text-dark-primary"
+                      : "bg-[#F6F8FA] text-primary"
+                  }`}
                   onFocus={() => setFullNameFocused(true)}
                   onBlur={() => setFullNameFocused(false)}
                 />
@@ -281,29 +297,38 @@ const PersonalInfo = () => {
                     }}
                   />
                 )}
-                <Text className="text-2xl font-UrbanistSemiBold">Email</Text>
+                <Text
+                  className={`text-2xl font-UrbanistSemiBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                >
+                  Email
+                </Text>
                 <TextInput
                   /* value={user.email} user's email from signup */
                   placeholder="         user@example.com"
                   placeholderTextColor="#9CA3AF"
                   selectTextOnFocus={false}
-                  className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                    theme === "dark"
+                      ? "bg-dark-secondary text-dark-primary"
+                      : "bg-[#F6F8FA] text-primary"
+                  }`}
                   editable={false}
                 />
               </View>
               <View>
-                <Text className="text-2xl font-UrbanistSemiBold">
+                <Text
+                  className={`text-2xl font-UrbanistSemiBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                >
                   Phone Number
                 </Text>
                 <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: "#F6F8FA",
-                    borderRadius: 12,
-                    height: 56,
-                    marginTop: 12,
-                  }}
+                  className={`flex-row items-center rounded-lg h-14 mt-3 ${
+                    theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+                  }`}
                 >
                   <TouchableOpacity
                     onPress={() => setShowCountryPicker(true)}
@@ -328,30 +353,21 @@ const PersonalInfo = () => {
                     <Feather
                       name="chevron-down"
                       size={24}
-                      color="#0D0D0D"
+                      color={theme === "dark" ? "#fff" : "#0D0D0D"}
                       style={{ marginLeft: 2 }}
                     />
                     <Text
-                      style={{
-                        marginLeft: 12,
-                        fontSize: 18,
-                        fontFamily: "Urbanist-SemiBold",
-                      }}
+                      className={`ml-3 text-lg font-UrbanistSemiBold ${
+                        theme === "dark" ? "text-dark-primary" : "text-primary"
+                      }`}
                     >
                       +{country.callingCode[0]}
                     </Text>
                   </TouchableOpacity>
                   <TextInput
-                    style={{
-                      flex: 1,
-                      fontSize: 18,
-                      fontFamily: "Urbanist-SemiBold",
-                      color: "#0D0D0D",
-                      paddingVertical: 10,
-                      paddingHorizontal: 10,
-                      backgroundColor: "transparent",
-                      marginLeft: -14,
-                    }}
+                    className={`flex-1 text-lg font-UrbanistSemiBold py-2.5 px-2.5 bg-transparent ml-[-14] ${
+                      theme === "dark" ? "text-dark-primary" : "text-primary"
+                    }`}
                     keyboardType="phone-pad"
                     placeholder="  Phone Number"
                     placeholderTextColor="#9CA3AF"
@@ -388,9 +404,17 @@ const PersonalInfo = () => {
                   }}
                   activeOpacity={0.7}
                 >
-                  <FontAwesome5 name="calendar-alt" size={24} color="#0D0D0D" />
+                  <FontAwesome5
+                    name="calendar-alt"
+                    size={24}
+                    color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  />
                 </TouchableOpacity>
-                <Text className="text-2xl font-UrbanistSemiBold">
+                <Text
+                  className={`text-2xl font-UrbanistSemiBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                >
                   Date of Birth
                 </Text>
                 <TextInput
@@ -398,7 +422,11 @@ const PersonalInfo = () => {
                   keyboardType="numeric"
                   placeholder="mm/dd/yyyy"
                   placeholderTextColor="#9CA3AF"
-                  className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                    theme === "dark"
+                      ? "bg-dark-secondary text-dark-primary"
+                      : "bg-[#F6F8FA] text-primary"
+                  }`}
                   editable={false}
                 />
               </View>
@@ -428,3 +456,4 @@ const PersonalInfo = () => {
 };
 
 export default PersonalInfo;
+

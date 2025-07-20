@@ -5,11 +5,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 const SelectTopUpMethod = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [topUpError, setTopUpError] = useState("");
   const { amount } = useLocalSearchParams();
+  const { theme } = useTheme();
 
   const renderItem = ({ item }: { item: any }) => (
     <PaymentMethodCard
@@ -41,12 +43,7 @@ const SelectTopUpMethod = () => {
       number: "**** **** **** 4679",
       image: images.mastercard,
     },
-    {
-      id: "5",
-      name: "Visa",
-      number: "**** **** **** 5567",
-      image: images.visa,
-    },
+    { id: "5", name: "Visa", number: "**** **** **** 5567", image: images.visa },
   ];
 
   const selectedMethod = methods.find((method) => method.id === selectedId);
@@ -61,32 +58,42 @@ const SelectTopUpMethod = () => {
       router.replace({
         pathname: "/(root)/(home)/(top-up)/topUp-now",
         params: {
-          amount, // already passing this
+          amount,
           methodName: selectedMethod.name,
           methodNumber: selectedMethod.number,
-          methodImage: selectedMethod.image, // This should be a URI or require path
+          methodImage: selectedMethod.image,
         },
       });
     }
   };
 
   return (
-    <View className="flex-1 bg-white p-5">
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View className="flex-row justify-between items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(root)/(home)/(top-up)/topUp-enter-amount");
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace("/(root)/(tabs)/home");
+            }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22 }}
           />
         </TouchableOpacity>
         <Text
-          className="font-UrbanistBold text-primary mt-5"
+          className={`font-UrbanistBold mt-5 ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ fontSize: 22 }}
         >
           Select Top Up Method
@@ -99,7 +106,7 @@ const SelectTopUpMethod = () => {
           <Feather
             name="plus"
             size={30}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ marginTop: 20 }}
           />
         </TouchableOpacity>
@@ -138,7 +145,9 @@ const SelectTopUpMethod = () => {
           onPress={handleContinue}
         >
           <Text
-            className="text-primary font-UrbanistSemiBold"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 20 }}
           >
             Continue

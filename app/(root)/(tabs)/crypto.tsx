@@ -1,6 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { images } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import axios from "axios";
+import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
@@ -16,6 +19,7 @@ type CryptoItem = {
 
 const crypto = () => {
   const [cryptoData, setCryptoData] = useState<CryptoItem[]>([]);
+  const { theme } = useTheme();
 
   const CryptoBalance = formatBalance(0);
 
@@ -45,7 +49,11 @@ const crypto = () => {
   const renderItem = ({ item }: any) => (
     <View>
       <TouchableOpacity className="flex-row py-4 items-center">
-        <View className="rounded-full flex items-center justify-center bg-[#F6F8FA]">
+        <View
+          className={`rounded-full flex items-center justify-center ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
+        >
           <Image
             source={{ uri: item.image }}
             style={{ width: 55, height: 55 }}
@@ -54,13 +62,15 @@ const crypto = () => {
         <View className="flex-1 flex-col ml-5 gap-3">
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19 }}
             >
               {item.name}
             </Text>
             <Text
-              className="text-primary font-UrbanistSemiBold"
+              className={`${theme === "dark" ? "text-dark-primary" : "text-primary"} font-UrbanistSemiBold`}
               style={{ fontSize: 18 }}
             >
               ${formatBalance(item.current_price)}
@@ -68,7 +78,9 @@ const crypto = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="text-secondary font-UrbanistMedium"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 15 }}
             >
               {item.symbol.toUpperCase()}
@@ -105,16 +117,34 @@ const crypto = () => {
   }
 
   return (
-    <View className="flex-1 bg-white p-5">
-      <View className="flex" style={{ marginTop: 28 }}>
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
+      <View
+        style={{
+          height: Constants.statusBarHeight,
+          backgroundColor: "#00000",
+          width: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: 10,
+        }}
+      />
+      {/* <StatusBar backgroundColor="#82E394" style="dark" /> */}
+      <View className="flex" style={{ marginTop: 60 }}>
         <View className="flex-row px-5">
           <Image
-            source={images.BlackLogo}
-            style={{ width: 50, height: 40, marginLeft: -14 }}
+            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+            style={{ width: 50, height: 60, marginLeft: -14 }}
           />
           <Text
-            className="font-UrbanistBold text-3xl"
-            style={{ marginHorizontal: 80 }}
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+            style={{ marginHorizontal: 80, marginTop: 30 }}
           >
             Crypto
           </Text>
@@ -125,7 +155,9 @@ const crypto = () => {
         >
           <View className="flex-row gap-2 justify-center">
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 50 }}
             >
               {CryptoBalance}
@@ -135,11 +167,15 @@ const crypto = () => {
             <FontAwesome6
               name="cedi-sign"
               size={20}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ marginTop: 16 }}
             />
           </View>
-          <Text className="font-UrbanistMedium text-primary text-xl mt-2">
+          <Text
+            className={`font-UrbanistMedium text-xl mt-2 ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Your crypto balance
           </Text>
         </View>
@@ -152,7 +188,9 @@ const crypto = () => {
         style={{ marginTop: 54 }}
       >
         <Text
-          className="font-UrbanistSemiBold text-primary"
+          className={`font-UrbanistSemiBold ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ fontSize: 20 }}
         >
           Buy Crypto
@@ -160,8 +198,9 @@ const crypto = () => {
       </TouchableOpacity>
       <View className="mt-10">
         <Text
-          className="font-UrbanistMedium text-secondary"
-          style={{ fontSize: 18, paddingBottom: 10 }}
+          className={`font-UrbanistMedium text-lg pb-2.5 ${
+            theme === "dark" ? "text-dark-secondary" : "text-secondary"
+          }`}
         >
           Explore more crypto
         </Text>
@@ -175,7 +214,10 @@ const crypto = () => {
             <View className="flex items-end">
               <View
                 className="h-[1px]"
-                style={{ width: "80%", backgroundColor: "#e6e6e6" }}
+                style={{
+                  width: "80%",
+                  backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                }}
               />
             </View>
           )}

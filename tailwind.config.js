@@ -1,8 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./constants/**/*.{js,jsx,ts,tsx}",
+    "./lib/**/*.{js,jsx,ts,tsx}",
+  ],
   presets: [require("nativewind/preset")],
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
@@ -18,6 +24,19 @@ module.exports = {
         general: "#82E394",
         primary: "#0D0D0D",
         secondary: "#616161",
+        border: "#e5eaf0",
+        dark: {
+          primary: "#FFFFFF",
+          secondary: "#A0A0A0",
+          background: "#121212",
+          border: "#444",
+        },
+        light: {
+          primary: "#0D0D0D",
+          secondary: "#616161",
+          background: "#FFFFFF",
+          border: "#e5eaf0",
+        },
       },
       fontSize: {
         heading: 36,

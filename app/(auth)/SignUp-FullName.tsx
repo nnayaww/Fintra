@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -9,53 +10,92 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useSignUp } from "./context/SignUpContext";
 
 const SignUpFullName = () => {
-  const [FullName, setFullName] = useState("");
-  const [FullNameFocused, setFullNameFocused] = useState(false);
-  const [FullNameError, setFullNameError] = useState("");
+  const { theme } = useTheme();
+  const { updateForm } = useSignUp();
 
-  const handleFullName = () => {
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+  });
+
+  const validateName = (name: string) => /^[A-Za-z\s]+$/.test(name.trim());
+
+  const handleContinue = () => {
     let valid = true;
-    if (!FullName.trim()) {
-      setFullNameError("This field is required");
+    const newErrors = { firstName: "", lastName: "" };
+
+    if (!firstName.trim()) {
+      newErrors.firstName = "First name is required";
       valid = false;
-    } else if (!/^[A-Za-z\s]+$/.test(FullName.trim())) {
-      setFullNameError("Name can only contain letters and spaces");
+    } else if (!validateName(firstName)) {
+      newErrors.firstName = "Only letters and spaces allowed";
       valid = false;
-    } else {
-      setFullNameError("");
     }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+      valid = false;
+    } else if (!validateName(lastName)) {
+      newErrors.lastName = "Only letters and spaces allowed";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+
     if (valid) {
-      router.push({pathname:"/(auth)/SignUp-SelectCountry", params:{name: FullName}});
+      updateForm({
+        first_name: firstName.trim(),
+        middle_name: middleName.trim(),
+        last_name: lastName.trim(),
+      });
+
+      router.push("/(auth)/SignUp-SelectCountry");
     }
   };
 
+  const inputStyle = `text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 ${
+    theme === "dark"
+      ? "bg-dark-secondary text-dark-primary"
+      : "bg-[#F6F8FA] text-primary"
+  }`;
+
+  const labelStyle = `text-2xl font-UrbanistSemiBold ${
+    theme === "dark" ? "text-dark-primary" : "text-primary"
+  }`;
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5 gap-10">
+      <View
+        className={`flex-1 p-5 gap-10 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
+        {/* Progress Header */}
         <View className="flex-row items-center gap-10">
-          <TouchableOpacity
-            onPress={() => {
-              router.push("/(auth)/SignUp-SelectAccountType");
-            }}
-          >
+          <TouchableOpacity onPress={() => router.back()}>
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6, marginTop: 22 }}
             />
           </TouchableOpacity>
           <View
             style={{
-              backgroundColor: "#e5eaf0",
+              backgroundColor: theme === "dark" ? "#444" : "#e5eaf0",
               width: "60%",
               height: 12,
               borderRadius: 9999,
               marginTop: 22,
             }}
-          ></View>
+          />
           <View
             style={{
               backgroundColor: "#82E394",
@@ -66,60 +106,79 @@ const SignUpFullName = () => {
               position: "absolute",
               left: 75,
             }}
-          ></View>
+          />
         </View>
-        <View className="flex gap-10">
-          <Text
-            style={{ lineHeight: 40 }}
-            className="font-UrbanistBold text-primary text-3xl"
-          >
+
+        {/* Title */}
+        <View className="gap-10">
+          <Text className={`font-UrbanistBold text-3xl ${theme === "dark" ? "text-dark-primary" : "text-primary"}`} style={{ lineHeight: 40 }}>
             What is your name? 👤
           </Text>
-          <Text className="font-UrbanistMedium text-secondary text-lg -mt-2">
-            Enter your full legal name according to the identity card.
+          <Text className={`font-UrbanistMedium text-lg -mt-2 ${theme === "dark" ? "text-dark-secondary" : "text-secondary"}`}>
+            Enter your full legal name according to your ID.
           </Text>
         </View>
-        <View>
-          <Text className="text-2xl font-UrbanistSemiBold">Full Name</Text>
-          <TextInput
-            value={FullName}
-            onChangeText={(text) => {
-              setFullName(text);
-              if (FullNameError) setFullNameError("");
-            }}
-            placeholder="Full Name"
-            placeholderTextColor="#9CA3AF"
-            className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
-            onFocus={() => setFullNameFocused(true)}
-            onBlur={() => setFullNameFocused(false)}
-          />
-          {FullNameError ? (
-            <Text
-              style={{
-                color: "#E53E3E",
-                marginLeft: 8,
-                marginTop: 4,
-                fontSize: 16,
-                fontFamily: "Urbanist-Medium",
-              }}
-            >
-              {FullNameError}
-            </Text>
-          ) : null}
+
+        {/* Input Fields */}
+        <View className="gap-6">
+          {/* First Name */}
+          <View>
+            <Text className={labelStyle}>First Name</Text>
+            <TextInput
+              value={firstName}
+              onChangeText={(text) => setFirstName(text)}
+              placeholder="First Name"
+              placeholderTextColor="#9CA3AF"
+              className={inputStyle}
+            />
+            {errors.firstName ? (
+              <Text style={{ color: "#E53E3E", marginLeft: 8, marginTop: 4, fontSize: 16, fontFamily: "Urbanist-Medium" }}>
+                {errors.firstName}
+              </Text>
+            ) : null}
+          </View>
+
+          {/* Middle Name (Optional) */}
+          <View>
+            <Text className={labelStyle}>Middle Name (optional)</Text>
+            <TextInput
+              value={middleName}
+              onChangeText={(text) => setMiddleName(text)}
+              placeholder="Middle Name"
+              placeholderTextColor="#9CA3AF"
+              className={inputStyle}
+            />
+          </View>
+
+          {/* Last Name */}
+          <View>
+            <Text className={labelStyle}>Last Name</Text>
+            <TextInput
+              value={lastName}
+              onChangeText={(text) => setLastName(text)}
+              placeholder="Last Name"
+              placeholderTextColor="#9CA3AF"
+              className={inputStyle}
+            />
+            {errors.lastName ? (
+              <Text style={{ color: "#E53E3E", marginLeft: 8, marginTop: 4, fontSize: 16, fontFamily: "Urbanist-Medium" }}>
+                {errors.lastName}
+              </Text>
+            ) : null}
+          </View>
         </View>
-        <View
-          style={{
-            position: "absolute",
-            left: 20,
-            right: 20,
-            bottom: 48,
-          }}
-        >
+
+        {/* Continue Button */}
+        <View style={{ position: "absolute", left: 20, right: 20, bottom: 48 }}>
           <TouchableOpacity
             className="bg-general flex items-center justify-center p-5 border-none rounded-full"
-            onPress={handleFullName}
+            onPress={handleContinue}
           >
-            <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-buttontext ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Continue
             </Text>
           </TouchableOpacity>

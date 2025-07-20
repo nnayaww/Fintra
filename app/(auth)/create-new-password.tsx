@@ -1,16 +1,17 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    Modal,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const createNewPassword = () => {
@@ -23,6 +24,7 @@ const createNewPassword = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -37,24 +39,40 @@ const createNewPassword = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5 gap-10">
+      <View
+        className={`flex-1 p-5 gap-10 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(auth)/code-verification");
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace("/(root)/(tabs)/home");
+            }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22 }}
           />
         </TouchableOpacity>
         <View>
-          <Text className="font-UrbanistBold text-primary text-3xl">
+          <Text
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Create new password 🔒
           </Text>
-          <Text className="font-UrbanistMedium text-secondary text-lg mt-7">
+          <Text
+            className={`font-UrbanistMedium text-lg mt-7 ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
+          >
             Create your new password. If you forget it, then you have to do
             forgot password.
           </Text>
@@ -64,11 +82,17 @@ const createNewPassword = () => {
             <Fontisto
               name="locked"
               size={20}
-              color={passwordFocused ? "#0D0D0D" : "#9CA3AF"}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
               style={{ position: "absolute", left: 24, top: 57, zIndex: 1 }}
             />
           )}
-          <Text className="text-2xl font-UrbanistSemiBold">New Password</Text>
+          <Text
+            className={`text-2xl font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
+            New Password
+          </Text>
           <TextInput
             value={password}
             onChangeText={(text) => {
@@ -78,7 +102,11 @@ const createNewPassword = () => {
             placeholder="         Password"
             placeholderTextColor="#9CA3AF"
             secureTextEntry={showPassword}
-            className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+              theme === "dark"
+                ? "bg-dark-secondary text-dark-primary"
+                : "bg-[#F6F8FA] text-primary"
+            }`}
             onFocus={() => setPasswordFocused(true)}
             onBlur={() => setPasswordFocused(false)}
           />
@@ -86,7 +114,7 @@ const createNewPassword = () => {
             <Ionicons
               name={showPassword ? "eye-off" : "eye"}
               size={26}
-              color={passwordFocused ? "#0D0D0D" : "#9CA3AF"}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
               style={{ position: "absolute", right: 20, bottom: 14, zIndex: 1 }}
             />
           </TouchableOpacity>
@@ -109,11 +137,15 @@ const createNewPassword = () => {
             <Fontisto
               name="locked"
               size={20}
-              color={confirmPasswordFocused ? "#0D0D0D" : "#9CA3AF"}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
               style={{ position: "absolute", left: 24, top: 57, zIndex: 1 }}
             />
           )}
-          <Text className="text-2xl font-UrbanistSemiBold">
+          <Text
+            className={`text-2xl font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Confirm New Password
           </Text>
           <TextInput
@@ -125,7 +157,11 @@ const createNewPassword = () => {
             placeholder="         Confirm Password"
             placeholderTextColor="#9CA3AF"
             secureTextEntry={showConfirmPassword}
-            className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+              theme === "dark"
+                ? "bg-dark-secondary text-dark-primary"
+                : "bg-[#F6F8FA] text-primary"
+            }`}
             onFocus={() => setConfirmPasswordFocused(true)}
             onBlur={() => setConfirmPasswordFocused(false)}
           />
@@ -135,7 +171,7 @@ const createNewPassword = () => {
             <Ionicons
               name={showConfirmPassword ? "eye-off" : "eye"}
               size={26}
-              color={confirmPasswordFocused ? "#0D0D0D" : "#9CA3AF"}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
               style={{ position: "absolute", right: 20, bottom: 14, zIndex: 1 }}
             />
           </TouchableOpacity>
@@ -202,7 +238,11 @@ const createNewPassword = () => {
               }
             }}
           >
-            <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-buttontext ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Continue
             </Text>
           </TouchableOpacity>
@@ -220,7 +260,7 @@ const createNewPassword = () => {
               style={{
                 height: "60%",
                 width: "80%",
-                backgroundColor: "white",
+                backgroundColor: theme === "dark" ? "#333" : "white",
                 borderRadius: 20,
                 padding: 20,
               }}
@@ -236,7 +276,11 @@ const createNewPassword = () => {
                   }}
                   className="rounded-full flex items-center justify-center"
                 >
-                  <Fontisto name="locked" size={50} color="#0D0D0D" />
+                  <Fontisto
+                    name="locked"
+                    size={50}
+                    color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  />
                 </View>
                 <View
                   className="rounded-full"
@@ -318,7 +362,9 @@ const createNewPassword = () => {
               </View>
               <View style={{ marginTop: -16 }}>
                 <Text
-                  className="text-3xl font-UrbanistBold text-primary text-center"
+                  className={`text-3xl font-UrbanistBold text-center ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
                   style={{ lineHeight: 38 }}
                 >
                   Reset Password Successful!
@@ -326,10 +372,12 @@ const createNewPassword = () => {
               </View>
               <View style={{ marginTop: -24 }}>
                 <Text
-                  className="text-center font-UrbanistMedium text-secondary text-lg"
+                  className={`text-center font-UrbanistMedium text-lg ${
+                    theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                  }`}
                   style={{ lineHeight: 28 }}
                 >
-                  Please wait...{"\n"}You will be directed to the homepage.
+                  Please wait...\nYou will be directed to the homepage.
                 </Text>
                 <ActivityIndicator
                   size={65}

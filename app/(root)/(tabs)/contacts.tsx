@@ -15,6 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 type Contact = {
   id: string;
@@ -27,6 +28,7 @@ type Contact = {
 export default function Contacts() {
   const { type } = useLocalSearchParams();
   const [contacts, setContacts] = useState(allContacts);
+  const { theme } = useTheme();
 
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
     "All Contacts"
@@ -66,7 +68,9 @@ export default function Contacts() {
         }}
       >
         <View
-          className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+          className={`rounded-full flex items-center justify-center ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
           style={{ width: 60, height: 60 }}
         >
           {contactImage ? (
@@ -78,15 +82,26 @@ export default function Contacts() {
               />
             </>
           ) : (
-            <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
+            <FontAwesome5
+              name="user-alt"
+              size={21}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+            />
           )}
         </View>
         <View className="gap-2 ml-4">
-          <Text className="font-UrbanistBold" style={{ fontSize: 18 }}>
+          <Text
+            className={`font-UrbanistBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+            style={{ fontSize: 18 }}
+          >
             {item.name}
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 14 }}
           >
             {item.email}
@@ -107,6 +122,7 @@ export default function Contacts() {
         >
           <Image
             source={item.favorite ? icons.star : icons.starOutline}
+            tintColor={theme === "dark" ? "#fff" : undefined}
             style={{ height: 28, width: 28 }}
           />
         </TouchableOpacity>
@@ -116,18 +132,24 @@ export default function Contacts() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white">
+      <View
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View
           className="flex-row justify-between items-center pt-5 pl-5 pr-5"
-          style={{ marginTop: 28 }}
+          style={{ marginTop: 30 }}
         >
           <Image
-            source={images.BlackLogo}
+            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
             style={{ width: 50, height: 40, padding: 6 }}
           />
 
           <Text
-            className="font-UrbanistBold text-3xl"
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ marginLeft: -20 }}
           >
             Contacts
@@ -136,7 +158,7 @@ export default function Contacts() {
             <SimpleLineIcons
               name="options-vertical"
               size={22}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
         </View>
@@ -144,7 +166,7 @@ export default function Contacts() {
           <AntDesign
             name="search1"
             size={24}
-            color={searchFocused ? "#0D0D0D" : "#9CA3AF"}
+            color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
             style={{ position: "absolute", left: 36, top: 132, zIndex: 1 }}
           />
         )}
@@ -160,7 +182,11 @@ export default function Contacts() {
               : "        Search favorites"
           }
           placeholderTextColor="#9CA3AF"
-          className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary opacity-4 self-center"
+          className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 opacity-4 self-center ${
+            theme === "dark"
+              ? "bg-dark-secondary text-dark-primary"
+              : "bg-[#F6F8FA] text-primary"
+          }`}
           style={{ width: "90%", marginTop: 28 }}
           onFocus={() => setSearchFocused(true)}
           onBlur={() => {
@@ -173,11 +199,16 @@ export default function Contacts() {
           {tabs.map((tab: "All Contacts" | "Favorites") => (
             <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
               <Text
-                className="font-UrbanistSemiBold text-xl"
-                style={{
-                  marginLeft: tab === "Favorites" ? -20 : 0,
-                  color: selectedTab === tab ? "#0D0D0D" : "#9CA3AF",
-                }}
+                className={`font-UrbanistSemiBold text-xl ${
+                  selectedTab === tab
+                    ? theme === "dark"
+                      ? "text-dark-primary"
+                      : "text-primary"
+                    : theme === "dark"
+                    ? "text-dark-secondary"
+                    : "text-[#9CA3AF]"
+                }`}
+                style={{ marginLeft: tab === "Favorites" ? -20 : 0 }}
               >
                 {tab}
               </Text>
@@ -191,7 +222,11 @@ export default function Contacts() {
               width: "45%",
               marginTop: 14,
               backgroundColor:
-                selectedTab === "All Contacts" ? "#82E394" : "#F6F8FA",
+                selectedTab === "All Contacts"
+                  ? "#82E394"
+                  : theme === "dark"
+                  ? "#333"
+                  : "#F6F8FA",
             }}
           />
           <View
@@ -200,7 +235,11 @@ export default function Contacts() {
               width: "45%",
               marginTop: 14,
               backgroundColor:
-                selectedTab === "Favorites" ? "#82E394" : "#F6F8FA",
+                selectedTab === "Favorites"
+                  ? "#82E394"
+                  : theme === "dark"
+                  ? "#333"
+                  : "#F6F8FA",
             }}
           />
         </View>
@@ -224,9 +263,14 @@ export default function Contacts() {
             router.push("/(root)/(contacts)/add-new-contact");
           }}
         >
-          <Feather name="plus" size={32} color="#0D0D0D" />
+          <Feather
+            name="plus"
+            size={32}
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
+          />
         </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
 }
+

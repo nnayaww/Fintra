@@ -1,10 +1,11 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Switch } from "react-native-switch";
 
-const notificationSettings = () => {
+const NotificationSettings = () => {
   const [isTransactionEnabled, setIsTransactionEnabled] = useState(true);
   const [isFraudEnabled, setIsFraudEnabled] = useState(false);
   const [isPaymentNotificationsEnabled, setIsPaymentNotificationsEnabled] =
@@ -18,24 +19,35 @@ const notificationSettings = () => {
   const [isUpdatesEnabled, setIsUpdatesEnabled] = useState(false);
   const [isPromotionEnabled, setIsPromotionEnabled] = useState(true);
   const [isSurveyEnabled, setIsSurveyEnabled] = useState(false);
+  const { theme } = useTheme();
 
   return (
-    <View className="flex-1 bg-white p-5">
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View className="flex-row items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            router.back();
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace("/(root)/(tabs)/home");
+            }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22 }}
           />
         </TouchableOpacity>
         <Text
-          className="font-UrbanistBold text-3xl text-primary mt-5"
+          className={`font-UrbanistBold text-3xl mt-5 ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ marginHorizontal: 65 }}
         >
           Notification
@@ -64,7 +76,9 @@ const notificationSettings = () => {
         <View className="flex p-2 mt-5" style={{ gap: 30 }}>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Transaction status updates
@@ -91,7 +105,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               Fraud or suspicious security alerts
@@ -118,7 +134,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               Payment request notifications
@@ -145,7 +163,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Card activity notifications
@@ -172,7 +192,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               Customer support notifications
@@ -199,7 +221,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Account balance alerts
@@ -226,7 +250,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Security alerts
@@ -253,7 +279,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%" }}
             >
               Daily or weekly summary
@@ -297,7 +325,9 @@ const notificationSettings = () => {
         <View className="flex p-2 mt-5" style={{ gap: 30 }}>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               App updates & enchancements
@@ -324,7 +354,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               Promotional offers & updates
@@ -351,7 +383,9 @@ const notificationSettings = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19, width: "70%", lineHeight: 26 }}
             >
               Participate in a survey
@@ -382,4 +416,5 @@ const notificationSettings = () => {
   );
 };
 
-export default notificationSettings;
+export default NotificationSettings;
+

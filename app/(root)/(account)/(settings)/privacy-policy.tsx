@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React from "react";
@@ -9,24 +10,31 @@ import {
   View,
 } from "react-native";
 
-const privacyPolicy = () => {
+const PrivacyPolicy = () => {
+  const { theme } = useTheme();
   return (
-    <View className="flex-1 bg-white p-5">
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View className="flex-row items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(root)/(tabs)/account");
+            router.back();
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22 }}
           />
         </TouchableOpacity>
         <Text
-          className="font-UrbanistBold text-3xl text-primary mt-5"
+          className={`font-UrbanistBold text-3xl mt-5 ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ marginHorizontal: 55 }}
         >
           Privacy Policy
@@ -41,7 +49,9 @@ const privacyPolicy = () => {
       >
         <View style={{ marginTop: 30 }}>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17, lineHeight: 26 }}
           >
             At FinTra, we respect and protect the privacy of our users. This
@@ -49,13 +59,17 @@ const privacyPolicy = () => {
             collect, how we use it, and how we protect your information.
           </Text>
           <Text
-            className="font-UrbanistBold text-2xl text-primary"
+            className={`font-UrbanistBold text-2xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ marginTop: 35 }}
           >
             Information We Collect
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17, lineHeight: 26, marginTop: 6 }}
           >
             We may collect the following types of information to provide and
@@ -70,7 +84,9 @@ const privacyPolicy = () => {
             }}
           >
             <Text
-              className="font-UrbanistMedium text-secondary"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 17, lineHeight: 26 }}
             >
               Personal Information: such as your name, email address, phone
@@ -85,13 +101,17 @@ const privacyPolicy = () => {
             </Text>
           </View>
           <Text
-            className="font-UrbanistBold text-2xl text-primary"
+            className={`font-UrbanistBold text-2xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ marginTop: 35 }}
           >
             How We Use Your Information
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17, lineHeight: 26, marginTop: 6 }}
           >
             We use your information for the following purposes:
@@ -105,7 +125,9 @@ const privacyPolicy = () => {
             }}
           >
             <Text
-              className="font-UrbanistMedium text-secondary"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 17, lineHeight: 26 }}
             >
               - To provide and improve our services, such as sending and
@@ -122,4 +144,5 @@ const privacyPolicy = () => {
   );
 };
 
-export default privacyPolicy;
+export default PrivacyPolicy;
+

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   FormattedTransaction,
   formatTransactions,
@@ -13,8 +14,10 @@ import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 const Home = () => {
+  const { theme } = useTheme();
   const transactionSections = formatTransactions();
   const [contactImage, setContactImage] = useState<string | null>(null);
 
@@ -29,7 +32,9 @@ const Home = () => {
   const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
     <View className="flex-row py-4 items-center">
       <View
-        className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+        className={`rounded-full flex items-center justify-center ${
+          theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+        }`}
         style={{ width: 60, height: 60 }}
       >
         {contactImage ? (
@@ -41,19 +46,27 @@ const Home = () => {
             />
           </>
         ) : (
-          <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
+          <FontAwesome5
+            name="user-alt"
+            size={21}
+            color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+          />
         )}
       </View>
       <View className="flex-1 flex-col ml-5 gap-3">
         <View className="flex-row justify-between items-center">
           <Text
-            className="font-UrbanistSemiBold text-primary"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19 }}
           >
             {item.name}
           </Text>
           <Text
-            className="text-primary font-UrbanistSemiBold"
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 19 }}
           >
             {item.category === "Income"
@@ -67,13 +80,17 @@ const Home = () => {
         </View>
         <View className="flex-row justify-between items-center">
           <Text
-            className="text-secondary font-UrbanistMedium"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 15 }}
           >
             {item.time}
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 14 }}
           >
             {item.category}
@@ -105,39 +122,48 @@ const Home = () => {
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View
         style={{
           height: Constants.statusBarHeight,
           backgroundColor: "#82E394",
           width: "100%",
           position: "absolute",
-          top: 0,
+          top: 1,
           left: 0,
           zIndex: 10,
         }}
       />
       <StatusBar backgroundColor="#82E394" style="dark" />
       <View
-        style={{ height: "52%", paddingTop: 40 }}
+        style={{ height: "52%", paddingTop: 70 }}
         className="bg-general w-full p-5"
       >
         <View className="flex-row mt-2 justify-between">
-          <Image source={images.BlackLogo} style={{ width: 50, height: 30 }} />
+          <Image
+            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+            style={{ width: 60, height: 40 }}
+          />
           <Text
-            className="font-UrbanistBold text-3xl"
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ marginLeft: -14 }}
           >
             FinTra
           </Text>
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(root)/(home)/notification");
+              router.push("/(root)/(home)/notification");
             }}
           >
             <Image
               source={icons.bell}
-              tintColor={"#0D0D0D"}
+              tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ width: 28, height: 31, marginLeft: 7 }}
             />
           </TouchableOpacity>
@@ -148,7 +174,9 @@ const Home = () => {
         >
           <View className="flex-row gap-2 justify-center">
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 50 }}
             >
               {isNewUserBool
@@ -158,11 +186,15 @@ const Home = () => {
             <FontAwesome6
               name="cedi-sign"
               size={20}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ marginTop: 16 }}
             />
           </View>
-          <Text className="font-UrbanistMedium text-primary text-xl mt-2">
+          <Text
+            className={`font-UrbanistMedium text-xl mt-2 ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Available balance
           </Text>
         </View>
@@ -173,20 +205,27 @@ const Home = () => {
           <View className="flex items-center gap-2">
             <TouchableOpacity
               onPress={() => {
-                router.replace("/(root)/(home)/(send)/send-select-contact");
+                router.push("/(root)/(home)/(send)/send-select-contact");
               }}
-              className="rounded-full border flex justify-center items-center"
+              className={`rounded-full border flex justify-center items-center ${
+                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
+              }`}
               style={{
                 width: 65,
                 height: 65,
-                borderColor: "#0D0D0D",
                 borderWidth: 1,
               }}
             >
-              <Image source={icons.send} style={{ width: 28, height: 28 }} />
+              <Image
+                source={icons.send}
+                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
+                style={{ width: 28, height: 28 }}
+              />
             </TouchableOpacity>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 16 }}
             >
               Send
@@ -195,22 +234,29 @@ const Home = () => {
           <View className="flex items-center gap-2">
             <TouchableOpacity
               onPress={() => {
-                router.replace(
+                router.push(
                   "/(root)/(home)/(request)/request-select-contact"
                 );
               }}
-              className="rounded-full flex justify-center items-center"
+              className={`rounded-full flex justify-center items-center ${
+                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
+              }`}
               style={{
                 width: 65,
                 height: 65,
-                borderColor: "#0D0D0D",
                 borderWidth: 1,
               }}
             >
-              <Image source={icons.down} style={{ width: 28, height: 28 }} />
+              <Image
+                source={icons.down}
+                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
+                style={{ width: 28, height: 28 }}
+              />
             </TouchableOpacity>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 16 }}
             >
               Request
@@ -219,20 +265,27 @@ const Home = () => {
           <View className="flex items-center gap-2">
             <TouchableOpacity
               onPress={() => {
-                router.replace("/(root)/(home)/(top-up)/topUp-enter-amount");
+                router.push("/(root)/(home)/(top-up)/topUp-enter-amount");
               }}
-              className="rounded-full border flex justify-center items-center"
+              className={`rounded-full border flex justify-center items-center ${
+                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
+              }`}
               style={{
                 width: 65,
                 height: 65,
-                borderColor: "#0D0D0D",
                 borderWidth: 1,
               }}
             >
-              <Image source={icons.topUp} style={{ width: 28, height: 28 }} />
+              <Image
+                source={icons.topUp}
+                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
+                style={{ width: 28, height: 28 }}
+              />
             </TouchableOpacity>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 16 }}
             >
               Top Up
@@ -241,27 +294,30 @@ const Home = () => {
           <View className="flex items-center gap-2">
             <TouchableOpacity
               onPress={() => {
-                router.replace(
+                router.push(
                   "/(root)/(home)/(withdraw)/withdraw-enter-amount"
                 );
               }}
-              className="rounded-full border flex justify-center items-center"
+              className={`rounded-full border flex justify-center items-center ${
+                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
+              }`}
               style={{
                 width: 65,
                 height: 65,
-                borderColor: "#0D0D0D",
                 borderWidth: 1,
               }}
             >
               <Ionicons
                 name="log-out-outline"
                 size={32}
-                color="#0D0D0D"
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
                 style={{ marginLeft: 5 }}
               />
             </TouchableOpacity>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 16 }}
             >
               Withdraw
@@ -272,11 +328,17 @@ const Home = () => {
 
       {/* Include conditional rendering for transactions */}
       <View
-        className="flex-1 bg-white"
+        className={`flex-1 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
         style={{ paddingTop: 24, paddingHorizontal: 16 }}
       >
         <View className="flex-row justify-between items-center">
-          <Text className="font-UrbanistBold text-2xl">
+          <Text
+            className={`font-UrbanistBold text-2xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Transaction History
           </Text>
           <TouchableOpacity
@@ -290,15 +352,16 @@ const Home = () => {
             className="flex-row gap-2 items-center"
           >
             <Text
-              className="font-UrbanistSemiBold text-xl"
-              style={{ color: "#9CA3AF" }}
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-secondary" : "text-[#9CA3AF]"
+              }`}
             >
               View All
             </Text>
             <MaterialCommunityIcons
               name="greater-than"
               size={20}
-              color="#9CA3AF"
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
             />
           </TouchableOpacity>
         </View>
@@ -328,10 +391,19 @@ const Home = () => {
               />
             </View>
             <View className="flex items-center gap-4" style={{ marginTop: 24 }}>
-              <Text className="font-UrbanistBold" style={{ fontSize: 24 }}>
+              <Text
+                className={`font-UrbanistBold ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+                style={{ fontSize: 24 }}
+              >
                 No Transactions
               </Text>
-              <Text className="font-UrbanistMedium text-xl text-secondary">
+              <Text
+                className={`font-UrbanistMedium text-xl ${
+                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                }`}
+              >
                 You haven't made any transactions.
               </Text>
             </View>
@@ -349,14 +421,18 @@ const Home = () => {
                     style={{ marginTop: 20 }}
                   >
                     <Text
-                      className="font-UrbanistSemiBold text-xl"
-                      style={{ color: "#8f949b" }}
+                      className={`font-UrbanistSemiBold text-xl ${
+                        theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"
+                      }`}
                     >
                       {section.sectionTitle}
                     </Text>
                     <View
                       className="h-[1px]"
-                      style={{ width: "90%", backgroundColor: "#e6e6e6" }}
+                      style={{
+                        width: "90%",
+                        backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                      }}
                     />
                   </View>
                   <FlatList
@@ -367,7 +443,10 @@ const Home = () => {
                       <View className="flex items-end">
                         <View
                           className="h-[1px]"
-                          style={{ width: "75%", backgroundColor: "#e6e6e6" }}
+                          style={{
+                            width: "75%",
+                            backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                          }}
                         />
                       </View>
                     )}

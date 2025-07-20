@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
@@ -6,18 +8,27 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUpSuccessful = () => {
+  const { theme } = useTheme();
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View className="flex-row items-center gap-10">
         <TouchableOpacity
           onPress={() => {
-            router.push("/(auth)/SignUp-SetPINCode");
+            // if (router.canGoBack()) {
+              router.back();
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6, marginTop: 22, marginLeft: 14 }}
           />
         </TouchableOpacity>
@@ -33,20 +44,30 @@ const SignUpSuccessful = () => {
             backgroundColor: "#82E394",
             borderStyle: "solid",
             borderWidth: 2,
-            borderColor: "#0D0D0D",
+            borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
           }}
           className="rounded-full border flex items-center justify-center"
         >
-          <FontAwesome6 name="check" size={34} color="#0D0D0D" />
+          <FontAwesome6
+            name="check"
+            size={34}
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
+          />
         </View>
         <View>
-          <Text className="font-UrbanistBold text-heading text-primary">
+          <Text
+            className={`font-UrbanistBold text-heading ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             You're All Set!
           </Text>
         </View>
         <View className="flex p-5 -mt-7">
           <Text
-            className="font-UrbanistMedium text-subtext text-center text-secondary"
+            className={`font-UrbanistMedium text-subtext text-center ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ lineHeight: 26 }}
           >
             Your account is ready. Let's start for a better financial
@@ -71,7 +92,11 @@ const SignUpSuccessful = () => {
             });
           }}
         >
-          <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-buttontext ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Go to My Account
           </Text>
         </TouchableOpacity>

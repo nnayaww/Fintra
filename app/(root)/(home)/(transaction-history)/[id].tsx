@@ -1,4 +1,6 @@
+/* eslint-disable react/no-unescaped-entities */
 import { formatTransactions } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -17,9 +19,14 @@ const TransactionDetail = () => {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showRequestDeclinedModal, setShowRequestDeclinedModal] =
     useState(false);
+  const { theme } = useTheme();
 
   return (
-    <View className="flex-1 bg-white">
+    <View
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View
         style={{ height: "45%", paddingTop: 30 }}
         className="bg-general w-full p-5"
@@ -30,20 +37,24 @@ const TransactionDetail = () => {
         >
           <TouchableOpacity
             onPress={() => {
-              router.push(
-                "/(root)/(home)/(transaction-history)/transaction-history"
-              );
+              // if (router.canGoBack()) {
+                router.back();
+              // } else {
+              //   router.replace("/(root)/(tabs)/home");
+              // }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6 }}
             />
           </TouchableOpacity>
           <Text
-            className="font-UrbanistBold text-primary"
+            className={`font-UrbanistBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 25, marginLeft: -18 }}
           >
             {transaction?.category}
@@ -52,13 +63,15 @@ const TransactionDetail = () => {
             <SimpleLineIcons
               name="options-vertical"
               size={22}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
         </View>
         <View className="flex items-center gap-5 mt-8">
           <View
-            className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+            className={`rounded-full flex items-center justify-center ${
+              theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+            }`}
             style={{ width: 90, height: 90 }}
           >
             {contactImage ? (
@@ -70,12 +83,18 @@ const TransactionDetail = () => {
                 />
               </>
             ) : (
-              <FontAwesome5 name="user-alt" size={26} color="#9CA3AF" />
+              <FontAwesome5
+                name="user-alt"
+                size={26}
+                color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+              />
             )}
           </View>
           <View className="flex-row gap-2 justify-center">
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 40 }}
             >
               {transaction?.category === "Income"
@@ -89,15 +108,25 @@ const TransactionDetail = () => {
             <FontAwesome6
               name="cedi-sign"
               size={20}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ marginTop: 16 }}
             />
           </View>
           <View className="flex gap-3 items-center">
-            <Text className="font-UrbanistBold" style={{ fontSize: 26 }}>
+            <Text
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+              style={{ fontSize: 26 }}
+            >
               {transaction?.name}
             </Text>
-            <Text className="font-UrbanistMedium" style={{ fontSize: 19 }}>
+            <Text
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
+              style={{ fontSize: 19 }}
+            >
               {transaction?.email}
             </Text>
           </View>
@@ -105,15 +134,27 @@ const TransactionDetail = () => {
       </View>
 
       <View className="flex mt-5">
-        <Row label="You sent" value={`₵ ${transaction?.amount.toFixed(2)}`} />
-        <Row label="To" value={transaction?.name} />
-        <Row label="Email" value={transaction?.email} />
+        <Row
+          label="You sent"
+          value={`₵ ${transaction?.amount.toFixed(2)}`}
+          theme={theme}
+        />
+        <Row label="To" value={transaction?.name} theme={theme} />
+        <Row label="Email" value={transaction?.email} theme={theme} />
         {transaction?.category === "Incoming Request" && (
-          <Row label="Status" value={transaction?.status} />
+          <Row label="Status" value={transaction?.status} theme={theme} />
         )}
-        <Row label="Date" value={transaction?.date} />
-        <Row label="Transaction ID" value={transaction?.transactionId} />
-        <Row label="Reference ID" value={transaction?.referenceId} />
+        <Row label="Date" value={transaction?.date} theme={theme} />
+        <Row
+          label="Transaction ID"
+          value={transaction?.transactionId}
+          theme={theme}
+        />
+        <Row
+          label="Reference ID"
+          value={transaction?.referenceId}
+          theme={theme}
+        />
       </View>
       {transaction?.category === "Incoming Request" &&
       transaction?.status === "Unpaid" ? (
@@ -125,9 +166,15 @@ const TransactionDetail = () => {
             onPress={() => {
               setShowDeclineModal(true);
             }}
-            className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+            className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+              theme === "dark" ? "bg-dark-background" : "bg-white"
+            }`}
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Decline
             </Text>
           </TouchableOpacity>
@@ -137,7 +184,11 @@ const TransactionDetail = () => {
             }}
             className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Accept
             </Text>
           </TouchableOpacity>
@@ -158,14 +209,20 @@ const TransactionDetail = () => {
                 `/(root)/(home)/(transaction-history)/receipt?id=${id}`
               )
             }
-            className="flex items-center rounded-full p-5"
+            className={`flex items-center rounded-full p-5 ${
+              theme === "dark" ? "bg-dark-background" : "bg-white"
+            }`}
             style={{
               borderStyle: "solid",
               borderWidth: 1.5,
               borderColor: "#82E394",
             }}
           >
-            <Text className="font-UrbanistBold text-primary text-xl">
+            <Text
+              className={`font-UrbanistBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               View Receipt
             </Text>
           </TouchableOpacity>
@@ -184,7 +241,7 @@ const TransactionDetail = () => {
           style={{
             height: "64%",
             width: "100%",
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             padding: 10,
@@ -196,34 +253,55 @@ const TransactionDetail = () => {
             style={{
               width: 40,
               height: 3,
-              backgroundColor: "#ccc",
+              backgroundColor: theme === "dark" ? "#666" : "#ccc",
               borderRadius: 3,
               alignSelf: "center",
             }}
           />
           <View className="flex mt-2 self-center">
-            <Text className="font-UrbanistBold" style={{ fontSize: 24 }}>
+            <Text
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+              style={{ fontSize: 24 }}
+            >
               Accept Request
             </Text>
           </View>
           <View
             className="h-[1px] self-center"
-            style={{ width: "90%", backgroundColor: "#e6e6e6", marginTop: 8 }}
+            style={{
+              width: "90%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginTop: 8,
+            }}
           />
           <View
-            className="bg-[#F6F8FA] flex items-center justify-center gap-5 self-center mt-3 rounded-lg"
+            className={`flex items-center justify-center gap-5 self-center mt-3 rounded-lg ${
+              theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+            }`}
             style={{ width: "90%", height: "35%" }}
           >
-            <Text className="text-secondary text-xl font-UrbanistMedium">
+            <Text
+              className={`text-xl font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
+            >
               Amount requested
             </Text>
             <Text
-              className="font-UrbanistBold text-primary"
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 34 }}
             >
               {`₵ ${Number(transaction?.amount).toFixed(2)}`}
             </Text>
-            <Text className="text-secondary text-md font-UrbanistMedium">
+            <Text
+              className={`text-md font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
+            >
               This amount will be charged from your balance
             </Text>
           </View>
@@ -233,19 +311,25 @@ const TransactionDetail = () => {
               style={{ marginTop: 5 }}
             >
               <Text
-                className="font-UrbanistSemiBold text-xl"
-                style={{ color: "#8f949b" }}
+                className={`font-UrbanistSemiBold text-xl ${
+                  theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"
+                }`}
               >
                 Send to
               </Text>
               <View
                 className="h-[1px]"
-                style={{ width: "78%", backgroundColor: "#e6e6e6" }}
+                style={{
+                  width: "78%",
+                  backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                }}
               />
             </View>
             <View className="flex-row py-3 items-center">
               <View
-                className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+                className={`rounded-full flex items-center justify-center ${
+                  theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+                }`}
                 style={{ width: 70, height: 70 }}
               >
                 {contactImage ? (
@@ -257,15 +341,26 @@ const TransactionDetail = () => {
                     />
                   </>
                 ) : (
-                  <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
+                  <FontAwesome5
+                    name="user-alt"
+                    size={21}
+                    color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+                  />
                 )}
               </View>
               <View className="gap-2 ml-4">
-                <Text className="font-UrbanistBold" style={{ fontSize: 20 }}>
+                <Text
+                  className={`font-UrbanistBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  style={{ fontSize: 20 }}
+                >
                   {transaction?.name}
                 </Text>
                 <Text
-                  className="font-UrbanistMedium text-secondary"
+                  className={`font-UrbanistMedium ${
+                    theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                  }`}
                   style={{ fontSize: 16 }}
                 >
                   {transaction?.email}
@@ -274,7 +369,11 @@ const TransactionDetail = () => {
             </View>
             <View
               className="h-[1px] self-center"
-              style={{ width: "90%", backgroundColor: "#e6e6e6", marginTop: 4 }}
+              style={{
+                width: "90%",
+                backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                marginTop: 4,
+              }}
             />
           </View>
           <View
@@ -285,9 +384,15 @@ const TransactionDetail = () => {
               onPress={() => {
                 setShowAcceptModal(false);
               }}
-              className="bg-white flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full"
+              className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+                theme === "dark" ? "bg-dark-background" : "bg-white"
+              }`}
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
                 Cancel
               </Text>
             </TouchableOpacity>
@@ -303,9 +408,13 @@ const TransactionDetail = () => {
                   },
                 });
               }}
-              className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
+              className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
             >
-              <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
                 Send
               </Text>
             </TouchableOpacity>
@@ -325,7 +434,7 @@ const TransactionDetail = () => {
           style={{
             height: "35%",
             width: "100%",
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingVertical: 10,
@@ -339,7 +448,7 @@ const TransactionDetail = () => {
             style={{
               width: 40,
               height: 3,
-              backgroundColor: "#ccc",
+              backgroundColor: theme === "dark" ? "#666" : "#ccc",
               borderRadius: 3,
               alignSelf: "center",
             }}
@@ -347,19 +456,27 @@ const TransactionDetail = () => {
           {/* Your modal content */}
           <View style={{ marginTop: 10 }}>
             <Text
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 24 }}
-              className="font-UrbanistBold text-primary"
             >
               Decline Request
             </Text>
           </View>
           <View
             className="h-[1px]"
-            style={{ width: "100%", backgroundColor: "#e6e6e6", marginTop: 14 }}
+            style={{
+              width: "100%",
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginTop: 14,
+            }}
           />
           <View style={{ marginTop: 26 }}>
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 20 }}
             >
               Decline request of {`₵ ${transaction?.amount}`} from{" "}
@@ -372,9 +489,15 @@ const TransactionDetail = () => {
           >
             <TouchableOpacity
               onPress={() => setShowDeclineModal(false)}
-              className="bg-white flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full"
+              className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+                theme === "dark" ? "bg-dark-background" : "bg-white"
+              }`}
             >
-              <Text className="font-UrbanistSemiBold text-xl text-primary">
+              <Text
+                className={`font-UrbanistSemiBold text-xl ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
                 No, don't decline
               </Text>
             </TouchableOpacity>
@@ -385,7 +508,11 @@ const TransactionDetail = () => {
               }}
               className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
             >
-              <Text className="font-UrbanistSemiBold text-primary text-xl">
+              <Text
+                className={`font-UrbanistSemiBold text-primary text-xl ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
                 Yes, Decline
               </Text>
             </TouchableOpacity>
@@ -405,7 +532,7 @@ const TransactionDetail = () => {
           style={{
             height: "25%",
             width: "100%",
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
             paddingVertical: 10,
@@ -419,7 +546,7 @@ const TransactionDetail = () => {
             style={{
               width: 40,
               height: 3,
-              backgroundColor: "#ccc",
+              backgroundColor: theme === "dark" ? "#666" : "#ccc",
               borderRadius: 3,
               alignSelf: "center",
             }}
@@ -433,14 +560,20 @@ const TransactionDetail = () => {
                 backgroundColor: "#82E394",
                 borderStyle: "solid",
                 borderWidth: 2,
-                borderColor: "#0D0D0D",
+                borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
               }}
               className="rounded-full border flex items-center justify-center"
             >
-              <FontAwesome6 name="check" size={34} color="#0D0D0D" />
+              <FontAwesome6
+                name="check"
+                size={34}
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
+              />
             </View>
             <Text
-              className="font-UrbanistSemiBold self-center mt-4 text-primary"
+              className={`font-UrbanistSemiBold self-center mt-4 ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 20 }}
             >
               Request declined!
@@ -457,18 +590,28 @@ export default TransactionDetail;
 function Row({
   label,
   value,
+  theme,
 }: {
   label: string;
   value: string | number | undefined;
+  theme: string;
 }) {
   return (
-    <View className="flex-row justify-between items-center px-6 my-3">
-      <Text className="font-UrbanistMedium text-secondary text-xl">
+    <View className="flex-row justify-between items-center my-3">
+      <Text
+        className={`font-UrbanistMedium text-xl ${
+          theme === "dark" ? "text-dark-secondary" : "text-secondary"
+        }`}
+      >
         {label}
       </Text>
       {label === "Status" && value === "Paid" ? (
         <View className="p-3 bg-general rounded-md">
-          <Text className="font-UrbanistBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             {value}
           </Text>
         </View>
@@ -477,7 +620,13 @@ function Row({
           <Text className="font-UrbanistBold text-xl text-white">{value}</Text>
         </View>
       ) : (
-        <Text className="font-UrbanistBold text-xl text-primary">{value}</Text>
+        <Text
+          className={`font-UrbanistBold text-xl ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
+        >
+          {value}
+        </Text>
       )}
     </View>
   );

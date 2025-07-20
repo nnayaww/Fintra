@@ -1,16 +1,17 @@
 import { FormattedTransaction, formatTransactions } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const FILTERS = ["All", "Income", "Sent", "Request", "Top-up", "Withdraw"];
@@ -21,6 +22,7 @@ const Transactionhistory = () => {
   const transactionSections = formatTransactions();
   const [contactImage, setContactImage] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState("All");
+  const { theme } = useTheme();
 
   const allTransactions: FormattedTransaction[] = transactionSections.flatMap(
     (section) => section.data
@@ -59,7 +61,9 @@ const Transactionhistory = () => {
         }
       >
         <View
-          className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+          className={`rounded-full flex items-center justify-center ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
           style={{ width: 60, height: 60 }}
         >
           {contactImage ? (
@@ -71,19 +75,27 @@ const Transactionhistory = () => {
               />
             </>
           ) : (
-            <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
+            <FontAwesome5
+              name="user-alt"
+              size={21}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+            />
           )}
         </View>
         <View className="flex-1 flex-col ml-5 gap-3">
           <View className="flex-row justify-between items-center">
             <Text
-              className="font-UrbanistSemiBold text-primary"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19 }}
             >
               {item.name}
             </Text>
             <Text
-              className="text-primary font-UrbanistSemiBold"
+              className={`font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
               style={{ fontSize: 19 }}
             >
               {item.category === "Income"
@@ -97,13 +109,17 @@ const Transactionhistory = () => {
           </View>
           <View className="flex-row justify-between items-center">
             <Text
-              className="text-secondary font-UrbanistMedium"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 15 }}
             >
               {item.time}
             </Text>
             <Text
-              className="font-UrbanistMedium text-secondary"
+              className={`font-UrbanistMedium ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
               style={{ fontSize: 14 }}
             >
               {item.category}
@@ -114,28 +130,35 @@ const Transactionhistory = () => {
     </View>
   );
   return (
-    <View className="flex-1 bg-white">
+    <View
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <View
         className="flex-row justify-between items-center pt-5 pl-5 pr-5"
         style={{ marginTop: 32 }}
       >
         <TouchableOpacity
           onPress={() => {
-            router.push({
-              pathname: "/(root)/(tabs)/home",
-              params: { isNewUser: isNewUserBool ? "true" : "false" },
-            });
+            // if (router.canGoBack()) {
+              router.back();
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6 }}
           />
         </TouchableOpacity>
         <Text
-          className="font-UrbanistBold text-primary"
+          className={`font-UrbanistBold ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
           style={{ fontSize: 22 }}
         >
           Transaction History
@@ -144,7 +167,7 @@ const Transactionhistory = () => {
           <AntDesign
             name="search1"
             size={24}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ padding: 6 }}
           />
         </TouchableOpacity>
@@ -163,14 +186,33 @@ const Transactionhistory = () => {
             <TouchableOpacity
               key={label}
               onPress={() => setSelectedFilter(label)}
-              className="px-5 py-2 border border-[#e6e6e6] bg-transparent rounded-full justify-center items-center  min-h-[40px]"
+              className="px-5 py-2 border rounded-full justify-center items-center  min-h-[40px]"
               style={{
                 backgroundColor:
-                  selectedFilter === label ? "#82E394" : "transparent",
-                borderColor: selectedFilter === label ? "#82E394" : "#e6e6e6",
+                  selectedFilter === label
+                    ? "#82E394"
+                    : theme === "dark"
+                    ? "transparent"
+                    : "transparent",
+                borderColor:
+                  selectedFilter === label
+                    ? "#82E394"
+                    : theme === "dark"
+                    ? "#444"
+                    : "#e6e6e6",
               }}
             >
-              <Text className="text-primary text-lg font-UrbanistBold">
+              <Text
+                className={`text-lg font-UrbanistBold ${
+                  selectedFilter === label
+                    ? theme === "dark"
+                      ? "text-dark-primary"
+                      : "text-primary"
+                    : theme === "dark"
+                    ? "text-dark-secondary"
+                    : "text-primary"
+                }`}
+              >
                 {label}
               </Text>
             </TouchableOpacity>
@@ -180,7 +222,9 @@ const Transactionhistory = () => {
       {isNewUserBool || !hasTransactions ? (
         <View>
           <Text
-            className="text-center font-UrbanistSemiBold text-2xl text-secondary"
+            className={`text-center font-UrbanistSemiBold text-2xl ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ marginTop: 50 }}
           >
             No transactions found
@@ -198,13 +242,18 @@ const Transactionhistory = () => {
               <View className="flex items-end">
                 <View
                   className="h-[1px]"
-                  style={{ width: "80%", backgroundColor: "#e6e6e6" }}
+                  style={{
+                    width: "80%",
+                    backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                  }}
                 />
               </View>
             )}
             ListEmptyComponent={
               <Text
-                className="text-center font-UrbanistSemiBold text-2xl text-secondary"
+                className={`text-center font-UrbanistSemiBold text-2xl ${
+                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                }`}
                 style={{ marginTop: 50 }}
               >
                 No transactions found
@@ -218,3 +267,4 @@ const Transactionhistory = () => {
 };
 
 export default Transactionhistory;
+

@@ -1,13 +1,14 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const SignUpSetPINCode = () => {
@@ -15,6 +16,7 @@ const SignUpSetPINCode = () => {
   const inputs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const [anyFocused, setAnyFocused] = useState(false);
   const [pinError, setPinError] = useState(""); // Add error state
+  const { theme } = useTheme();
 
   const handleChange = (text: string, idx: number) => {
     setPinError(""); // Clear error on input
@@ -43,17 +45,25 @@ const SignUpSetPINCode = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5 gap-10">
+      <View
+        className={`flex-1 p-5 gap-10 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View className="flex-row items-center gap-10">
           <TouchableOpacity
             onPress={() => {
-              router.push("/(auth)/SignUp-CompleteUserProfile");
+              // if (router.canGoBack()) {
+                router.back();
+              // } else {
+              //   router.replace("/(root)/(tabs)/home");
+              // }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6, marginTop: 22 }}
             />
           </TouchableOpacity>
@@ -61,11 +71,17 @@ const SignUpSetPINCode = () => {
         <View className="flex gap-10">
           <Text
             style={{ lineHeight: 40 }}
-            className="font-UrbanistBold text-primary text-3xl"
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
           >
             Set your PIN code 🔐
           </Text>
-          <Text className="font-UrbanistMedium text-secondary text-lg -mt-2">
+          <Text
+            className={`font-UrbanistMedium text-lg -mt-2 ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
+          >
             Add a PIN to make your account more secure.You may be asked for a
             PIN when making a transaction.
           </Text>
@@ -81,10 +97,13 @@ const SignUpSetPINCode = () => {
                 onFocus={() => setAnyFocused(true)}
                 onBlur={() => setAnyFocused(false)}
                 maxLength={1}
-                className="text-center text-primary border-none font-UrbanistSemiBold rounded-lg"
+                className={`text-center font-UrbanistSemiBold rounded-lg ${
+                  theme === "dark"
+                    ? "bg-dark-secondary text-dark-primary"
+                    : "bg-[#F6F8FA] text-primary"
+                }`}
                 style={{
                   fontSize: 35,
-                  backgroundColor: "#F6F8FA",
                   width: 80,
                   height: 80,
                 }}
@@ -131,7 +150,11 @@ const SignUpSetPINCode = () => {
             className="bg-general flex items-center justify-center p-5 border-none rounded-full"
             onPress={handleFinish}
           >
-            <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-buttontext ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Finish
             </Text>
           </TouchableOpacity>

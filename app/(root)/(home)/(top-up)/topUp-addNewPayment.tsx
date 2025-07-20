@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 const TopUpAddNewPayment = () => {
   const [AccountHolderName, setAccountHolderName] = useState("");
@@ -30,6 +31,7 @@ const TopUpAddNewPayment = () => {
   const [CVV, setCVV] = useState("");
   const [CVVError, setCVVError] = useState("");
   const [CVVFocused, setCVVFocused] = useState(false);
+  const { theme } = useTheme();
 
   const handleErrors = () => {
     let valid = true;
@@ -77,7 +79,11 @@ const TopUpAddNewPayment = () => {
   };
 
   return (
-    <View className="flex-1 bg-white p-5">
+    <View
+      className={`flex-1 p-5 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+    >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -86,18 +92,20 @@ const TopUpAddNewPayment = () => {
         <View className="flex-row justify-between items-center mt-3">
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(root)/(home)/(top-up)/select-topUp-method");
-            }}
+            router.back();
+          }}
           >
             <Fontisto
               name="close-a"
               size={17}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6, marginTop: 22 }}
             />
           </TouchableOpacity>
           <Text
-            className="font-UrbanistBold text-primary mt-5"
+            className={`font-UrbanistBold mt-5 ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 22 }}
           >
             Add New Top Up Method
@@ -110,7 +118,7 @@ const TopUpAddNewPayment = () => {
             <MaterialCommunityIcons
               name="line-scan"
               size={23}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ marginTop: 20 }}
             />
           </TouchableOpacity>
@@ -129,7 +137,11 @@ const TopUpAddNewPayment = () => {
             ></View>
           </View>
           <View style={{ marginTop: 30 }}>
-            <Text className="text-2xl font-UrbanistSemiBold">
+            <Text
+              className={`text-2xl font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Account Holder Name
             </Text>
             <TextInput
@@ -140,7 +152,11 @@ const TopUpAddNewPayment = () => {
               }}
               placeholder="Account Holder Name"
               placeholderTextColor="#9CA3AF"
-              className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-dark-secondary text-dark-primary"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
               onFocus={() => setAccountHolderNameFocused(true)}
               onBlur={() => setAccountHolderNameFocused(false)}
             />
@@ -159,14 +175,24 @@ const TopUpAddNewPayment = () => {
             ) : null}
           </View>
           <View style={{ marginTop: 30 }}>
-            <Text className="text-2xl font-UrbanistSemiBold">Card Number</Text>
+            <Text
+              className={`text-2xl font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
+              Card Number
+            </Text>
             <TextInput
               value={CardNumber}
               placeholder="XXXX XXXX XXXX XXXX"
               keyboardType="numeric"
               maxLength={19}
               placeholderTextColor="#9CA3AF"
-              className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-dark-secondary text-dark-primary"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
               onFocus={() => setCardNumberFocused(true)}
               onBlur={() => setCardNumberFocused(false)}
               onChangeText={(text) => {
@@ -204,9 +230,17 @@ const TopUpAddNewPayment = () => {
                 }}
                 activeOpacity={0.7}
               >
-                <FontAwesome5 name="calendar-alt" size={24} color="#0D0D0D" />
+                <FontAwesome5
+                  name="calendar-alt"
+                  size={24}
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                />
               </TouchableOpacity>
-              <Text className="text-2xl font-UrbanistSemiBold">
+              <Text
+                className={`text-2xl font-UrbanistSemiBold ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
                 Expiry Date
               </Text>
               <TextInput
@@ -215,7 +249,11 @@ const TopUpAddNewPayment = () => {
                 keyboardType="numeric"
                 placeholder="mm/dd"
                 placeholderTextColor="#9CA3AF"
-                className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                  theme === "dark"
+                    ? "bg-dark-secondary text-dark-primary"
+                    : "bg-[#F6F8FA] text-primary"
+                }`}
                 editable={false}
               />
               {ExpiryDateError ? (
@@ -248,14 +286,24 @@ const TopUpAddNewPayment = () => {
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-2xl font-UrbanistSemiBold">CVV</Text>
+              <Text
+                className={`text-2xl font-UrbanistSemiBold ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
+                CVV
+              </Text>
               <TextInput
                 value={CVV}
                 placeholder="XXX"
                 keyboardType="numeric"
                 maxLength={3}
                 placeholderTextColor="#9CA3AF"
-                className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-3 opacity-4 focus:outline-none focus:border-blue-400"
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                  theme === "dark"
+                    ? "bg-dark-secondary text-dark-primary"
+                    : "bg-[#F6F8FA] text-primary"
+                }`}
                 onFocus={() => setCVVFocused(true)}
                 onBlur={() => setCVVFocused(false)}
                 onChangeText={(text) => {
@@ -296,7 +344,11 @@ const TopUpAddNewPayment = () => {
           className="bg-general flex items-center justify-center p-5 border-none rounded-full"
           onPress={handleErrors}
         >
-          <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-buttontext ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Save
           </Text>
         </TouchableOpacity>
@@ -306,3 +358,4 @@ const TopUpAddNewPayment = () => {
 };
 
 export default TopUpAddNewPayment;
+

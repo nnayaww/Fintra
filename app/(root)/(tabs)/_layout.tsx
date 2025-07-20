@@ -1,33 +1,42 @@
 import { icons } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-const TabIcon = ({ source, focused }: { source: any; focused: boolean }) => (
-  <Image
-    source={source}
-    style={{
-      width: 28,
-      height: 28,
-      tintColor: focused ? "#0D0D0D" : "#9CA3AF",
-      marginTop: 15,
-    }}
-    resizeMode="contain"
-  />
-);
+const TabIcon = ({ source, focused }: { source: any; focused: boolean }) => {
+  const { theme } = useTheme();
+  return (
+    <Image
+      source={source}
+      style={{
+        width: 28,
+        height: 28,
+        tintColor: focused
+          ? theme === "dark"
+            ? "#fff"
+            : "#0D0D0D"
+          : theme === "dark"
+          ? "#A0A0A0"
+          : "#9CA3AF",
+        marginTop: 15,
+      }}
+      resizeMode="contain"
+    />
+  );
+};
 
-const Layout = () => (
-  <SafeAreaView className="flex-1 bg-white" edges={["left", "right", "bottom"]}>
-    <StatusBar style="dark" backgroundColor="transparent" />
+const TabsLayout = () => {
+  const { theme } = useTheme();
+  return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#0D0D0D",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarActiveTintColor: theme === "dark" ? "#fff" : "#0D0D0D",
+        tabBarInactiveTintColor: theme === "dark" ? "#A0A0A0" : "#9CA3AF",
         tabBarShowLabel: true,
         headerShown: false,
         tabBarStyle: {
           height: 80,
+          backgroundColor: theme === "dark" ? "#121212" : "#fff",
         },
         tabBarLabelStyle: {
           marginTop: 15,
@@ -64,8 +73,8 @@ const Layout = () => (
         name="qr-code"
         options={{
           title: "QR-Code",
-          tabBarIcon: ({ focused, color }) => (
-            <TabIcon focused={focused} source={icons.scan} />
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} source={icons.qrcode} />
           ),
         }}
       />
@@ -91,7 +100,7 @@ const Layout = () => (
         }}
       />
     </Tabs>
-  </SafeAreaView>
-);
+  );
+};
 
-export default Layout;
+export default TabsLayout;

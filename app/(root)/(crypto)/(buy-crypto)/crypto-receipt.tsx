@@ -6,6 +6,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Share, Text, TouchableOpacity, View } from "react-native";
 import { captureScreen } from "react-native-view-shot";
+import { useTheme } from "@/lib/ThemeContext";
 
 const CryptoReceipt = () => {
   const { amount, name, price, CalcAmount, symbol } = useLocalSearchParams();
@@ -21,6 +22,7 @@ const CryptoReceipt = () => {
     (Array.isArray(CalcAmount) ? CalcAmount[0] : CalcAmount) +
     " " +
     displaySymbol;
+  const { theme } = useTheme();
 
   const handleShare = async () => {
     try {
@@ -76,20 +78,25 @@ const CryptoReceipt = () => {
   );
 
   return (
-    <View className="flex-1 bg-white p-2" style={{ paddingTop: 30 }}>
+    <View
+      className={`flex-1 p-2 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
+      style={{ paddingTop: 30 }}
+    >
       <View
         className="flex-row justify-between items-center"
         style={{ marginTop: 20 }}
       >
         <TouchableOpacity
           onPress={() => {
-            router.push("/(root)/(tabs)/crypto");
+            router.back();
           }}
         >
           <AntDesign
             name="close"
             size={30}
-            color="#0D0D0D"
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
             style={{ paddingHorizontal: 14 }}
           />
         </TouchableOpacity>
@@ -102,15 +109,21 @@ const CryptoReceipt = () => {
             backgroundColor: "#82E394",
             borderStyle: "solid",
             borderWidth: 2,
-            borderColor: "#0D0D0D",
+            borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
           }}
           className="rounded-full border flex items-center justify-center"
         >
-          <FontAwesome6 name="check" size={34} color="#0D0D0D" />
+          <FontAwesome6
+            name="check"
+            size={34}
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
+          />
         </View>
         <View className="flex-row gap-2 justify-center">
           <Text
-            className="font-UrbanistBold text-primary"
+            className={`font-UrbanistBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ fontSize: 40 }}
           >
             {`₵ ${displayNewCryptoBalance}`}
@@ -118,19 +131,25 @@ const CryptoReceipt = () => {
         </View>
         <View className="flex gap-3 items-center">
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17 }}
           >
             You topped up to Crypto Balance
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17 }}
           >
             {`₵${formatBalance(displayAmount)}`} deducted from FinTra Balance
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 17 }}
           >
             Oppong Agyeman
@@ -140,22 +159,33 @@ const CryptoReceipt = () => {
       </View>
       <View className="p-4 mt-2">
         <View
-          className="flex bg-[#F6F8FA] rounded-lg"
-          style={{ borderWidth: 2, borderColor: "#ebedf0" }}
+          className={`flex rounded-lg ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
+          style={{
+            borderWidth: 2,
+            borderColor: theme === "dark" ? "#444" : "#ebedf0",
+          }}
         >
-          <Row label="You bought" value={displayCalcAmount} />
-          <Row label="Coin" value={displayName} />
+          <Row
+            label="You bought"
+            value={displayCalcAmount}
+            theme={theme}
+          />
+          <Row label="Coin" value={displayName} theme={theme} />
           <Row
             label="Current Coin Price"
-            value={`$${formatBalance(displayPrice)}`}
+            value={`${formatBalance(displayPrice)}`}
+            theme={theme}
           />
           <Row
             label="Amount Entered"
             value={`₵${formatBalance(displayAmount)}`}
+            theme={theme}
           />
-          <Row label="Date" value={formatDate(new Date())} />
-          <Row label="Transaction ID" value={""} />
-          <Row label="Reference ID" value={""} />
+          <Row label="Date" value={formatDate(new Date())} theme={theme} />
+          <Row label="Transaction ID" value={""} theme={theme} />
+          <Row label="Reference ID" value={""} theme={theme} />
         </View>
       </View>
       <View
@@ -164,9 +194,15 @@ const CryptoReceipt = () => {
       >
         <TouchableOpacity
           onPress={handleDownload}
-          className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Download
           </Text>
         </TouchableOpacity>
@@ -174,7 +210,11 @@ const CryptoReceipt = () => {
           onPress={handleShare}
           className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Share
           </Text>
         </TouchableOpacity>
@@ -188,27 +228,43 @@ export default CryptoReceipt;
 function Row({
   label,
   value,
+  theme,
 }: {
   label: string;
   value: string | number | undefined;
+  theme: string;
 }) {
   return (
     <View className="flex-row justify-between items-center px-6 my-3">
-      <Text className="font-UrbanistMedium text-secondary text-xl">
+      <Text
+        className={`font-UrbanistMedium text-xl ${
+          theme === "dark" ? "text-dark-secondary" : "text-secondary"
+        }`}
+      >
         {label}
       </Text>
       {label === "Status" && value === "Paid" ? (
         <View className="p-3 bg-general rounded-md">
-          <Text className="font-UrbanistBold text-xl text-primary">
+          <Text
+            className={`font-UrbanistBold text-xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             {value}
           </Text>
         </View>
-      ) : label === "Status" && value === "Declined" ? (
+      ) : label === "Status" && (value === "Declined" || value === "Unpaid") ? (
         <View className="p-3 bg-[#f54f4f] rounded-md">
           <Text className="font-UrbanistBold text-xl text-white">{value}</Text>
         </View>
       ) : (
-        <Text className="font-UrbanistBold text-xl text-primary">{value}</Text>
+        <Text
+          className={`font-UrbanistBold text-xl ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
+        >
+          {value}
+        </Text>
       )}
     </View>
   );

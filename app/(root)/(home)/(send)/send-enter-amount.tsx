@@ -65,7 +65,11 @@ const SendEnterAmount = () => {
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                router.replace("/(root)/(home)/(send)/send-select-contact");
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/(root)/(tabs)/home");
+                }
               }}
             >
               <Ionicons

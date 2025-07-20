@@ -1,12 +1,6 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { Redirect } from "expo-router";
 
-const qrCode = () => {
-  return (
-    <View>
-      <Text>qr-code</Text>
-    </View>
-  )
-}
-
-export default qrCode;
+const qrcode = () => {
+  return <Redirect href="/(root)/(tabs)/qrcode/qr-code-contact-details" />;
+};
+export default qrcode;

@@ -68,6 +68,7 @@ export const icons = {
   starOutline,
 };
 
+
 export const onboarding = [
   {
     id: 1,

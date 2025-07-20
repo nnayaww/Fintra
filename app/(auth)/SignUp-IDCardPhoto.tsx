@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -6,17 +7,18 @@ import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
-  Image,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 const SignUpIDCardPhoto = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState("");
   const { name } = useLocalSearchParams();
+  const { theme } = useTheme();
 
   const pickImage = async () => {
     // Ask for permission
@@ -41,32 +43,42 @@ const SignUpIDCardPhoto = () => {
 
   return (
     <SafeAreaView
-      className="flex-1 p-5 gap-10"
-      style={{ backgroundColor: "#181A20" }}
+      className={`flex-1 p-5 gap-10 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
     >
-      <StatusBar style="light" backgroundColor="transparent" />
+      <StatusBar
+        style={theme === "dark" ? "light" : "dark"}
+        backgroundColor="transparent"
+      />
       <TouchableOpacity
         onPress={() => {
-          router.replace("/(auth)/SignUp-ProofofResidency");
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace("/(root)/(tabs)/home");
+          }
         }}
       >
         <Ionicons
           name="arrow-back"
           size={28}
-          color="white"
+          color={theme === "dark" ? "#fff" : "#0D0D0D"}
           style={{ padding: 6, marginTop: 22 }}
         />
       </TouchableOpacity>
       <View className="flex" style={{ gap: 30 }}>
         <Text
-          className="font-UrbanistBold text-3xl text-center"
-          style={{ color: "white" }}
+          className={`font-UrbanistBold text-3xl text-center ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
         >
           Photo of your ID Card
         </Text>
         <Text
-          className="font-UrbanistMedium text-lg text-center"
-          style={{ color: "white" }}
+          className={`font-UrbanistMedium text-lg text-center ${
+            theme === "dark" ? "text-dark-secondary" : "text-secondary"
+          }`}
         >
           Please upload photo of your ID card
         </Text>
@@ -76,7 +88,7 @@ const SignUpIDCardPhoto = () => {
           className="flex w-full justify-center items-center"
           style={{
             height: 225,
-            backgroundColor: "lightgray",
+            backgroundColor: theme === "dark" ? "#333" : "lightgray",
             marginTop: 54,
           }}
         >
@@ -94,7 +106,7 @@ const SignUpIDCardPhoto = () => {
                   position: "absolute",
                   top: 8,
                   right: 8,
-                  backgroundColor: "#fff",
+                  backgroundColor: theme === "dark" ? "#000" : "#fff",
                   borderRadius: 12,
                   padding: 2,
                   elevation: 2,
@@ -109,7 +121,11 @@ const SignUpIDCardPhoto = () => {
               </TouchableOpacity>
             </>
           ) : (
-            <MaterialIcons name="photo" size={100} color="gray" />
+            <MaterialIcons
+              name="photo"
+              size={100}
+              color={theme === "dark" ? "#A0A0A0" : "gray"}
+            />
           )}
         </View>
         {photoError ? (
@@ -138,11 +154,16 @@ const SignUpIDCardPhoto = () => {
           style={{
             width: 90,
             height: 90,
-            backgroundColor: "white",
+            backgroundColor: theme === "dark" ? "#333" : "white",
+            borderColor: theme === "dark" ? "#fff" : "#196126",
           }}
           onPress={pickImage}
         >
-          <MaterialIcons name="photo" size={38} color="#196126" />
+          <MaterialIcons
+            name="photo"
+            size={38}
+            color={theme === "dark" ? "#fff" : "#196126"}
+          />
         </TouchableOpacity>
       </View>
       <View
@@ -167,7 +188,11 @@ const SignUpIDCardPhoto = () => {
             }
           }}
         >
-          <Text className="font-UrbanistSemiBold text-buttontext text-primary">
+          <Text
+            className={`font-UrbanistSemiBold text-buttontext ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+          >
             Continue
           </Text>
         </TouchableOpacity>
@@ -177,3 +202,4 @@ const SignUpIDCardPhoto = () => {
 };
 
 export default SignUpIDCardPhoto;
+

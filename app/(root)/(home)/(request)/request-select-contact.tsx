@@ -6,15 +6,17 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Image,
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    FlatList,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
+import { useTheme } from "@/lib/ThemeContext";
 
 type Contact = {
   id: string;
@@ -26,6 +28,7 @@ type Contact = {
 
 export default function RequestSelectContact() {
   const { type } = useLocalSearchParams();
+  const { theme } = useTheme();
 
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
     "All Contacts"
@@ -64,7 +67,9 @@ export default function RequestSelectContact() {
         }}
       >
         <View
-          className="rounded-full flex items-center justify-center bg-[#F6F8FA]"
+          className={`rounded-full flex items-center justify-center ${
+            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+          }`}
           style={{ width: 60, height: 60 }}
         >
           {contactImage ? (
@@ -76,15 +81,26 @@ export default function RequestSelectContact() {
               />
             </>
           ) : (
-            <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
+            <FontAwesome5
+              name="user-alt"
+              size={21}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+            />
           )}
         </View>
         <View className="gap-2 ml-4">
-          <Text className="font-UrbanistBold" style={{ fontSize: 18 }}>
+          <Text
+            className={`font-UrbanistBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+            style={{ fontSize: 18 }}
+          >
             {item.name}
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
+            className={`font-UrbanistMedium ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
             style={{ fontSize: 14 }}
           >
             {item.email}
@@ -96,114 +112,130 @@ export default function RequestSelectContact() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior="padding"
+        keyboardVerticalOffset={100}
+      >
         <View
-          className="flex-row items-center pt-5 pl-5 pr-5"
-          style={{ marginTop: 32 }}
+          className={`flex-1 ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
         >
+          <View
+            className="flex-row items-center pt-5 pl-5 pr-5"
+            style={{ marginTop: 32 }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                // if (router.canGoBack()) {
+                  router.back();
+                // } else {
+                //   router.push("/(root)/(tabs)/home");
+                // }
+              }}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={28}
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                style={{ padding: 6 }}
+              />
+            </TouchableOpacity>
+            <Text
+              className={`font-UrbanistBold text-3xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+              style={{ marginHorizontal: 60 }}
+            >
+              Request from
+            </Text>
+          </View>
+          {!isTyping && (
+            <AntDesign
+              name="search1"
+              size={24}
+              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+              style={{ position: "absolute", left: 36, top: 138, zIndex: 1 }}
+            />
+          )}
+          <TextInput
+            value={searchText}
+            onChangeText={(text) => {
+              setSearchText(text);
+              setIsTyping(text.length > 0);
+            }}
+            placeholder="        Search contact"
+            placeholderTextColor="#9CA3AF"
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 opacity-4 self-center ${
+              theme === "dark"
+                ? "bg-dark-secondary text-dark-primary"
+                : "bg-[#F6F8FA] text-primary"
+            }`}
+            style={{ width: "90%", marginTop: 28 }}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => {
+              setSearchFocused(false);
+              if (searchText.length === 0) setIsTyping(false);
+            }}
+          />
+          <View className="flex-row self-center">
+            <View
+              style={{
+                height: 5,
+                width: "45%",
+                marginTop: 14,
+                backgroundColor:
+                  selectedTab === "All Contacts"
+                    ? "#82E394"
+                    : theme === "dark"
+                    ? "#333"
+                    : "#F6F8FA",
+              }}
+            />
+            <View
+              style={{
+                height: 5,
+                width: "45%",
+                marginTop: 14,
+                backgroundColor:
+                  selectedTab === "Favorites"
+                    ? "#82E394"
+                    : theme === "dark"
+                    ? "#333"
+                    : "#F6F8FA",
+              }}
+            />
+          </View>
+          <FlatList
+            data={filteredContacts}
+            keyExtractor={(item) => item.id}
+            renderItem={renderContact}
+            contentContainerStyle={{ paddingBottom: 30, paddingTop: 10 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          />
           <TouchableOpacity
+            className="flex items-center justify-center bg-general rounded-full"
+            style={{
+              position: "absolute",
+              width: 70,
+              height: 70,
+              bottom: 40,
+              right: 20,
+            }}
             onPress={() => {
-              router.push("/(root)/(tabs)/home");
+              router.push("/(root)/(contacts)/add-new-contact");
             }}
           >
-            <Ionicons
-              name="arrow-back"
-              size={28}
-              color="#0D0D0D"
-              style={{ padding: 6 }}
+            <Feather
+              name="plus"
+              size={32}
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>
-
-          <Text
-            className="font-UrbanistBold text-3xl text-primary"
-            style={{ marginHorizontal: 60 }}
-          >
-            Request from
-          </Text>
         </View>
-        {!isTyping && (
-          <AntDesign
-            name="search1"
-            size={24}
-            color={searchFocused ? "#0D0D0D" : "#9CA3AF"}
-            style={{ position: "absolute", left: 36, top: 138, zIndex: 1 }}
-          />
-        )}
-        <TextInput
-          value={searchText}
-          onChangeText={(text) => {
-            setSearchText(text);
-            setIsTyping(text.length > 0);
-          }}
-          placeholder="        Search contact"
-          placeholderTextColor="#9CA3AF"
-          className="text-xl font-UrbanistSemiBold border-none rounded-lg p-5 bg-[#F6F8FA] text-primary opacity-4 self-center"
-          style={{ width: "90%", marginTop: 28 }}
-          onFocus={() => setSearchFocused(true)}
-          onBlur={() => {
-            setSearchFocused(false);
-            if (searchText.length === 0) setIsTyping(false);
-          }}
-        />
-
-        <View className="flex-row justify-around" style={{ marginTop: 28 }}>
-          {tabs.map((tab: "All Contacts" | "Favorites") => (
-            <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
-              <Text
-                className="font-UrbanistSemiBold text-xl"
-                style={{
-                  marginLeft: tab === "Favorites" ? -20 : 0,
-                  color: selectedTab === tab ? "#0D0D0D" : "#9CA3AF",
-                }}
-              >
-                {tab}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <View className="flex-row self-center">
-          <View
-            style={{
-              height: 5,
-              width: "45%",
-              marginTop: 14,
-              backgroundColor:
-                selectedTab === "All Contacts" ? "#82E394" : "#F6F8FA",
-            }}
-          />
-          <View
-            style={{
-              height: 5,
-              width: "45%",
-              marginTop: 14,
-              backgroundColor:
-                selectedTab === "Favorites" ? "#82E394" : "#F6F8FA",
-            }}
-          />
-        </View>
-        <FlatList
-          data={filteredContacts}
-          keyExtractor={(item) => item.id}
-          renderItem={renderContact}
-          contentContainerStyle={{ paddingBottom: 30, paddingTop: 10 }}
-          showsVerticalScrollIndicator={false}
-        />
-        <TouchableOpacity
-          className="flex items-center justify-center bg-general rounded-full"
-          style={{
-            position: "absolute",
-            width: 70,
-            height: 70,
-            bottom: 40,
-            right: 20,
-          }}
-          onPress={() => {
-            router.push("/(root)/(contacts)/add-new-contact");
-          }}
-        >
-          <Feather name="plus" size={32} color="#0D0D0D" />
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

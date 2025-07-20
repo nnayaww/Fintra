@@ -1,8 +1,6 @@
 import { Redirect } from "expo-router";
-import "./global.css";
 
-const index = () => {
+const Index = () => {
   return <Redirect href="/(auth)/onboarding" />;
 };
-
-export default index;
+export default Index;

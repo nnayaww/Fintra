@@ -3,12 +3,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const forgotpassword = () => {
@@ -39,7 +39,11 @@ const forgotpassword = () => {
         <View className="flex-row items-center gap-10">
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(auth)/sign-in");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
           >
             <Ionicons

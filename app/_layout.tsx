@@ -1,13 +1,34 @@
+import { ThemeProvider, useTheme } from "@/lib/ThemeContext";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-reanimated";
 import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
+
+const RootLayoutNav = () => {
+  const { theme } = useTheme();
+
+  return (
+    <SafeAreaProvider
+      className={`flex-1 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`}
+    >
+      <StatusBar
+        style={theme === "dark" ? "light" : "dark"}
+        backgroundColor="transparent"
+      />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(root)" />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+    </SafeAreaProvider>
+  );
+};
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -31,14 +52,8 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <StatusBar style="dark" backgroundColor="transparent" />
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(root)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </SafeAreaView>
+    <ThemeProvider>
+      <RootLayoutNav />
+    </ThemeProvider>
   );
 }

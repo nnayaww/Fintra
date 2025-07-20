@@ -1,18 +1,20 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const codeVerification = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const inputs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  const { theme } = useTheme();
 
   const handleChange = (text: string, idx: number) => {
     setOtpError("");
@@ -58,17 +60,25 @@ const codeVerification = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5 gap-10">
+      <View
+        className={`flex-1 p-5 gap-10 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View className="flex-row items-center gap-10">
           <TouchableOpacity
             onPress={() => {
-              router.replace("/(auth)/forgot-password");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6, marginTop: 22 }}
             />
           </TouchableOpacity>
@@ -76,11 +86,17 @@ const codeVerification = () => {
         <View className="flex gap-10">
           <Text
             style={{ lineHeight: 40 }}
-            className="font-UrbanistBold text-primary text-3xl"
+            className={`font-UrbanistBold text-3xl ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
           >
             OTP code verification 🔐
           </Text>
-          <Text className="font-UrbanistMedium text-secondary text-lg -mt-2">
+          <Text
+            className={`font-UrbanistMedium text-lg -mt-2 ${
+              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+            }`}
+          >
             We have sent an OTP code to your email. Please enter the OTP code
             below to verify.
           </Text>
@@ -93,8 +109,12 @@ const codeVerification = () => {
                 onChangeText={(text) => handleChange(text, idx)}
                 keyboardType="number-pad"
                 maxLength={1}
-                className="text-3xl text-center text-primary border-none font-UrbanistSemiBold rounded-lg"
-                style={{ backgroundColor: "#F6F8FA", width: 80, height: 80 }}
+                className={`text-3xl text-center font-UrbanistSemiBold rounded-lg ${
+                  theme === "dark"
+                    ? "bg-dark-secondary text-dark-primary"
+                    : "bg-[#F6F8FA] text-primary"
+                }`}
+                style={{ width: 80, height: 80 }}
                 returnKeyType="next"
                 onKeyPress={({ nativeEvent }) => {
                   if (
@@ -127,12 +147,20 @@ const codeVerification = () => {
             </Text>
           ) : null}
           <View className="flex items-center" style={{ marginTop: 16 }}>
-            <Text className="text-primary font-UrbanistMedium text-xl">
+            <Text
+              className={`font-UrbanistMedium text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Didn't receive email?
             </Text>
           </View>
           <View className="flex items-center" style={{ marginTop: -8 }}>
-            <Text className="text-primary font-UrbanistMedium text-xl">
+            <Text
+              className={`font-UrbanistMedium text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               You can resend code in {timer} s
             </Text>
           </View>

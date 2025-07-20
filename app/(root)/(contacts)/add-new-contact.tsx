@@ -1,17 +1,18 @@
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  Modal,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    ActivityIndicator,
+    Keyboard,
+    Modal,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const AddNewContact = () => {
@@ -23,6 +24,7 @@ const AddNewContact = () => {
   const [emailFocused, setEmailFocused] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -70,22 +72,32 @@ const AddNewContact = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 bg-white p-5">
+      <View
+        className={`flex-1 p-5 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
+      >
         <View className="flex-row items-center mt-3">
           <TouchableOpacity
             onPress={() => {
-              router.push("/(root)/(tabs)/contacts");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
           >
             <Ionicons
               name="arrow-back"
               size={28}
-              color="#0D0D0D"
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ padding: 6, marginTop: 22 }}
             />
           </TouchableOpacity>
           <Text
-            className="font-UrbanistBold text-primary mt-5"
+            className={`font-UrbanistBold mt-5 ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
             style={{ marginHorizontal: 40, fontSize: 24 }}
           >
             Add New Contact
@@ -93,7 +105,11 @@ const AddNewContact = () => {
         </View>
         <View className="mt-3">
           <View style={{ marginTop: 30 }}>
-            <Text className="text-2xl font-UrbanistSemiBold">
+            <Text
+              className={`text-2xl font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Account Holder Name
             </Text>
             <TextInput
@@ -104,7 +120,11 @@ const AddNewContact = () => {
               }}
               placeholder="Account Holder Name"
               placeholderTextColor="#9CA3AF"
-              className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-5 opacity-4 focus:outline-none focus:border-blue-400"
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-5 opacity-4 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-dark-secondary text-dark-primary"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
               onFocus={() => setAccountHolderNameFocused(true)}
               onBlur={() => setAccountHolderNameFocused(false)}
             />
@@ -127,7 +147,7 @@ const AddNewContact = () => {
               <MaterialIcons
                 name="email"
                 size={24}
-                color={emailFocused ? "#0D0D0D" : "#9CA3AF"}
+                color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
                 style={{
                   position: "absolute",
                   left: 20,
@@ -136,7 +156,13 @@ const AddNewContact = () => {
                 }}
               />
             )}
-            <Text className="text-2xl font-UrbanistSemiBold">Email</Text>
+            <Text
+              className={`text-2xl font-UrbanistSemiBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
+              Email
+            </Text>
             <TextInput
               value={email}
               onChangeText={(text) => {
@@ -145,7 +171,11 @@ const AddNewContact = () => {
               }}
               placeholder="         user@example.com"
               placeholderTextColor="#9CA3AF"
-              className="text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 bg-[#F6F8FA] text-primary mt-5 opacity-4 focus:outline-none focus:border-blue-400"
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-5 opacity-4 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-dark-secondary text-dark-primary"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
             />
@@ -170,11 +200,21 @@ const AddNewContact = () => {
         >
           <TouchableOpacity
             onPress={() => {
-              router.push("/(root)/(tabs)/contacts");
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace("/(root)/(tabs)/home");
+              }
             }}
-            className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+            className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+              theme === "dark" ? "bg-dark-background" : "bg-white"
+            }`}
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Cancel
             </Text>
           </TouchableOpacity>
@@ -182,7 +222,11 @@ const AddNewContact = () => {
             onPress={handleSearchContact}
             className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
           >
-            <Text className="font-UrbanistSemiBold text-xl text-primary">
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
               Search Contact
             </Text>
           </TouchableOpacity>
@@ -201,7 +245,7 @@ const AddNewContact = () => {
               style={{
                 height: "60%",
                 width: "80%",
-                backgroundColor: "white",
+                backgroundColor: theme === "dark" ? "#333" : "white",
                 borderRadius: 20,
                 padding: 20,
               }}
@@ -217,7 +261,11 @@ const AddNewContact = () => {
                   }}
                   className="rounded-full flex items-center justify-center"
                 >
-                  <FontAwesome5 name="user-alt" size={50} color="#0D0D0D" />
+                  <FontAwesome5
+                    name="user-alt"
+                    size={50}
+                    color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  />
                 </View>
                 <View
                   className="rounded-full"
@@ -298,13 +346,20 @@ const AddNewContact = () => {
                 ></View>
               </View>
               <View style={{ marginTop: -10 }}>
-                <Text className="text-3xl font-UrbanistBold text-primary">
+                <Text
+                  className={`font-UrbanistBold ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                  style={{ fontSize: 34 }}
+                >
                   Searching Contact...
                 </Text>
               </View>
               <View style={{ marginTop: -10 }}>
                 <Text
-                  className="text-center font-UrbanistMedium text-secondary text-lg"
+                  className={`text-center font-UrbanistMedium text-lg ${
+                    theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                  }`}
                   style={{ lineHeight: 28 }}
                 >
                   Please wait while we search for the contact.
