@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { useSignUp } from "./context/SignUpContext";
+import { useSignUp } from "@/context/SignUpContext";
 
 const SignUpReview = () => {
   const { theme } = useTheme();

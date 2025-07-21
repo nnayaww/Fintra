@@ -1,3 +1,5 @@
+import { useSignUp } from "@/context/SignUpContext";
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -5,8 +7,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router } from "expo-router";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
-import { useSignUp } from "./context/SignUpContext";
 
 const SignUpSelectAccountType = () => {
   const { theme } = useTheme();

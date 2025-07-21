@@ -1,5 +1,5 @@
+import { SignUpProvider } from "@/context/SignUpContext";
 import { Stack } from "expo-router";
-import { SignUpProvider } from "./context/SignUpContext";
 
 const AuthLayout = () => {
   return (

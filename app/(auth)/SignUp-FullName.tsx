@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { useSignUp } from "./context/SignUpContext";
+import { useSignUp } from "@/context/SignUpContext";
 
 const SignUpFullName = () => {
   const { theme } = useTheme();

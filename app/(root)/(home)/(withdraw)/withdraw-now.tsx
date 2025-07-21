@@ -1,55 +1,126 @@
+import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   Keyboard,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 
 const WithdrawNow = () => {
   const [notes, setNotes] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const { amount, methodName, methodImage, methodNumber } =
     useLocalSearchParams();
   const { theme } = useTheme();
 
-  function formatBalance(amount: number): string {
+  const formatBalance = (amount: number): string => {
     if (amount >= 1_000_000_000) {
       return (amount / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "B";
     }
     if (amount >= 1_000_000) {
       return (amount / 1_000_000).toFixed(2).replace(/\.00$/, "") + "M";
     }
-    // Format with commas for thousands
     return amount.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  }
+  };
+
+  const handleConfirm = async () => {
+    try {
+      setIsLoading(true);
+      const userId = await AsyncStorage.getItem("userId");
+      const name = await AsyncStorage.getItem("fullName");
+      const phone = await AsyncStorage.getItem("phone");
+      const token = await AsyncStorage.getItem("token");
+
+      if (!userId || !name || !phone || !token) {
+        Alert.alert("Missing Info", "User details are missing. Please log in again.");
+        setIsLoading(false);
+        return;
+      }
+
+      const selectedMethodName = Array.isArray(methodName) ? methodName[0] : methodName;
+      const accountNumber = selectedMethodName?.toLowerCase() === 'momo'
+        ? phone
+        : Array.isArray(methodNumber) ? methodNumber[0] : methodNumber;
+
+      const payload = {
+        userId,
+        amount: parseFloat(Array.isArray(amount) ? amount[0] : (amount as string)) * 100,
+        name,
+        accountNumber,
+        bankCode: selectedMethodName,
+      };
+
+      console.log('Withdrawal Request Payload:', payload);
+
+      const response = await axios.post(
+        "https://fintra-1.onrender.com/api/payment/withdraw",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 15000,
+        }
+      );
+
+      console.log('Withdrawal API Response:', response.data);
+
+      Alert.alert(
+        "Withdrawal Initiated",
+        response.data.message || "Your withdrawal is being processed.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push({
+                pathname: "/(root)/(home)/(withdraw)/withdraw-successful",
+                params: {
+                  amount,
+                  methodName,
+                  methodNumber: accountNumber,
+                  notes,
+                  reference: response.data.reference,
+                },
+              });
+            },
+          },
+        ]
+      );
+
+    } catch (error: any) {
+      console.error('Withdrawal Error:', error?.response?.data || error.message);
+      Alert.alert(
+        "Withdrawal Failed",
+        error?.response?.data?.message || "Something went wrong"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
         className={`flex-1 p-5 ${
           theme === "dark" ? "bg-dark-background" : "bg-white"
         }`}
-        style={{ paddingTop: 40 }}
+        style={{ paddingTop: 60 }}
       >
+        {/* Header */}
         <View className="flex-row items-center">
-          <TouchableOpacity
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace("/(root)/(tabs)/home");
-              }
-            }}
-          >
+          <TouchableOpacity onPress={() => router.back()}>
             <Ionicons
               name="arrow-back"
               size={28}
@@ -68,6 +139,8 @@ const WithdrawNow = () => {
             </Text>
           </View>
         </View>
+
+        {/* Amount */}
         <View className="mt-10">
           <Text
             className={`font-UrbanistSemiBold ${
@@ -78,7 +151,7 @@ const WithdrawNow = () => {
             Amount to Withdraw
           </Text>
           <View
-            className={`py-2 px-4 rounded-lg mt-4 flex justify-center ${
+            className={`py-2 px-4 rounded-lg mt-4 ${
               theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
             }`}
             style={{ height: 70 }}
@@ -88,12 +161,13 @@ const WithdrawNow = () => {
                 theme === "dark" ? "text-dark-primary" : "text-primary"
               }`}
               style={{ fontSize: 28 }}
-            >{`₵ ${formatBalance(
-              Number(Array.isArray(amount) ? amount[0] : amount)
-            )}`}</Text>
+            >
+              ₵ {formatBalance(Number(amount))}
+            </Text>
           </View>
         </View>
 
+        {/* Method */}
         <View className="mt-10">
           <Text
             className={`font-UrbanistSemiBold ${
@@ -121,12 +195,12 @@ const WithdrawNow = () => {
                     typeof methodImage === "string" &&
                     methodImage.startsWith("http")
                       ? { uri: methodImage }
-                      : methodName === "Visa"
+                        : methodName === "Visa"
                       ? require("@/assets/images/visa.jpg")
                       : methodName === "Mastercard"
                       ? require("@/assets/images/mastercard.jpg")
-                      : methodName === "Paypal"
-                      ? require("@/assets/images/paypal.jpg")
+                      : methodName === "Momo"
+                      ? require("@/assets/images/momo.png")
                       : methodName === "Apple Pay"
                       ? require("@/assets/images/applepay.jpg")
                       : methodName === "Google Pay"
@@ -137,42 +211,28 @@ const WithdrawNow = () => {
                     width: 50,
                     height: 50,
                     marginRight: 12,
-                    marginLeft: -6,
                     borderRadius: 9999,
                   }}
                   resizeMode="cover"
                 />
               )}
-              {methodName === "Mastercard" || methodName === "Visa" ? (
-                <Text
-                  className={`font-UrbanistBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
-                  }`}
-                  style={{ fontSize: 20 }}
-                >
-                  {methodNumber || "Select Account"}
-                </Text>
-              ) : (
-                <Text
-                  className={`font-UrbanistBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
-                  }`}
-                  style={{ fontSize: 20 }}
-                >
-                  {methodName || "Select Account"}
-                </Text>
-              )}
+              <Text
+                className={`font-UrbanistBold ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+                style={{ fontSize: 20 }}
+              >
+                {methodNumber || methodName}
+              </Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                router.replace({
+              onPress={() =>
+                router.push({
                   pathname:
                     "/(root)/(home)/(withdraw)/withdraw-destination-account",
-                  params: {
-                    amount,
-                  },
-                });
-              }}
+                  params: { amount },
+                })
+              }
             >
               <Text className="font-UrbanistBold text-[#196126] text-xl">
                 Change
@@ -180,6 +240,8 @@ const WithdrawNow = () => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Notes
         <Text
           className={`font-UrbanistSemiBold mt-10 ${
             theme === "dark" ? "text-dark-primary" : "text-primary"
@@ -204,15 +266,17 @@ const WithdrawNow = () => {
             multiline
             numberOfLines={4}
           />
-        </View>
+        </View> */}
+
+        {/* Buttons */}
         <View
           className="flex-row gap-4 items-center"
           style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
         >
           <TouchableOpacity
-            onPress={() => {
-              router.replace("/(root)/(home)/(withdraw)/withdraw-enter-amount");
-            }}
+            onPress={() =>
+              router.push("/(root)/(tabs)/home")
+            }
             className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
               theme === "dark" ? "bg-dark-background" : "bg-white"
             }`}
@@ -225,18 +289,10 @@ const WithdrawNow = () => {
               Cancel
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/(root)/(home)/(withdraw)/withdraw-successful",
-                params: {
-                  methodName,
-                  methodNumber,
-                  amount,
-                  notes,
-                },
-              })
-            }
+            onPress={handleConfirm}
+            disabled={isLoading}
             className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
           >
             <Text
@@ -244,7 +300,7 @@ const WithdrawNow = () => {
                 theme === "dark" ? "text-dark-primary" : "text-primary"
               }`}
             >
-              Confirm
+              {isLoading ? "Processing..." : "Confirm"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -254,4 +310,3 @@ const WithdrawNow = () => {
 };
 
 export default WithdrawNow;
-

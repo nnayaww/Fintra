@@ -1,3 +1,4 @@
+import { useSignUp } from "@/context/SignUpContext";
 import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -13,7 +14,6 @@ import {
   View,
 } from "react-native";
 import CountryPicker from "react-native-country-picker-modal";
-import { useSignUp } from "./context/SignUpContext";
 
 const SignUpCompleteUserProfile = () => {
   const { theme } = useTheme();

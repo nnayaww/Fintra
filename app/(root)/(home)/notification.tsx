@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
@@ -19,11 +20,11 @@ const notification = () => {
       >
         <TouchableOpacity
           onPress={() => {
-            if (router.canGoBack()) {
+            // if (router.canGoBack()) {
               router.back();
-            } else {
-              router.replace("/(root)/(tabs)/home");
-            }
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons

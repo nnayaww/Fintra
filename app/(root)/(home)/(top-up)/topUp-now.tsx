@@ -145,7 +145,7 @@ const TopUpNow = () => {
               )}
               <Text className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`} style={{ fontSize: 20 }}>
                 {methodNumber || methodName || "Select Method"}
-              </Text>
+                </Text>
             </View>
             <TouchableOpacity onPress={() => router.back()}>
               <Text className="font-UrbanistBold text-[#196126] text-xl">Change</Text>

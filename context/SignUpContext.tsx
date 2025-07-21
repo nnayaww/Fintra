@@ -76,4 +76,4 @@ export const useSignUp = () => {
     throw new Error("useSignUp must be used within a SignUpProvider");
   }
   return context;
-};
+}; 

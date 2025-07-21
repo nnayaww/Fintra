@@ -100,7 +100,9 @@ const handleSignIn = async () => {
     // Store userId and email for top-up
     await AsyncStorage.setItem("userId", String(data.user.id));
     await AsyncStorage.setItem("email", data.user.email);
-    await AsyncStorage.setItem("token", data.token); // optional, for auth
+    await AsyncStorage.setItem("token", data.token);
+    await AsyncStorage.setItem("fullName", `${data.user.first_name} ${data.user.last_name}`);
+    await AsyncStorage.setItem("phone", data.user.phone); // Store phone number
 
     // ✅ Save to AsyncStorage if "Remember Me" is checked
     if (rememberMe) {

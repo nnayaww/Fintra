@@ -31,10 +31,10 @@ const WithdrawDestinationAccount = () => {
   const methods = [
     {
       id: "1",
-      name: "Paypal",
-      image: images.paypal,
+      name: "Momo",
+      image: images.momo,
     },
-    { id: "2", name: "Google Pay", image: images.googlepay },
+    // { id: "2", name: "Google Pay", image: images.googlepay },
 
     { id: "3", name: "Apple Pay", image: images.applepay },
     {
@@ -60,7 +60,7 @@ const WithdrawDestinationAccount = () => {
       setwithdrawError("Selected account not found");
     } else {
       setwithdrawError("");
-      router.replace({
+      router.push({
         pathname: "/(root)/(home)/(withdraw)/withdraw-now",
         params: {
           amount, // already passing this
@@ -81,18 +81,18 @@ const WithdrawDestinationAccount = () => {
       <View className="flex-row justify-between items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            if (router.canGoBack()) {
+            // if (router.canGoBack()) {
               router.back();
-            } else {
-              router.replace("/(root)/(tabs)/home");
-            }
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
             color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ padding: 6, marginTop: 22 }}
+            style={{ padding: 6, marginTop: 25 }}
           />
         </TouchableOpacity>
         <Text
@@ -105,7 +105,7 @@ const WithdrawDestinationAccount = () => {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(root)/(home)/(withdraw)/withdraw-AddNewAccount");
+            router.push("/(root)/(home)/(withdraw)/withdraw-AddNewAccount");
           }}
         >
           <Feather

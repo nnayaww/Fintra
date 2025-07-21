@@ -5,7 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { useSignUp } from "./context/SignUpContext"; // adjust path if needed
+import { useSignUp } from "@/context/SignUpContext";
 
 
 import {

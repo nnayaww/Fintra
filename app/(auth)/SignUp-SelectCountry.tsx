@@ -14,7 +14,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { useSignUp } from "./context/SignUpContext";
+import { useSignUp } from "@/context/SignUpContext";
 
 const SignUpSelectCountry = () => {
   const [search, setSearch] = useState("");
