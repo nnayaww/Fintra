@@ -7,16 +7,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+    ActivityIndicator,
+    Keyboard,
+    KeyboardAvoidingView,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
 
 const SignIn = () => {
@@ -103,11 +103,16 @@ const handleSignIn = async () => {
     await AsyncStorage.setItem("token", data.token);
     await AsyncStorage.setItem("fullName", `${data.user.first_name} ${data.user.last_name}`);
     await AsyncStorage.setItem("phone", data.user.phone); // Store phone number
+    const convertedBalance = (data.user.balance)/100
+    await AsyncStorage.setItem("balance", JSON.stringify(convertedBalance)); // Store balance as string
+    
+    console.log('user balance from async storage:', await AsyncStorage.getItem('balance'))
 
     // ✅ Save to AsyncStorage if "Remember Me" is checked
     if (rememberMe) {
       await AsyncStorage.setItem("userToken", data.token);
       await AsyncStorage.setItem("userInfo", JSON.stringify(data.user));
+      console.log('userInfo from async storage:',await AsyncStorage.getItem('userInfo'));
     }
 
     // Proceed to modal and redirect
@@ -193,10 +198,10 @@ const handleSignIn = async () => {
                   if (emailError) setEmailError("");
                 }}
                 placeholder="         Email"
-                placeholderTextColor="#9CA3AF"
-                className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                   theme === "dark"
-                    ? "bg-dark-secondary text-dark-primary"
+                    ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 onFocus={() => setEmailFocused(true)}
@@ -240,11 +245,11 @@ const handleSignIn = async () => {
                   if (passwordError) setPasswordError("");
                 }}
                 placeholder="         Password"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
                 secureTextEntry={showPassword}
-                className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                   theme === "dark"
-                    ? "bg-dark-secondary text-dark-primary"
+                    ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 onFocus={() => setPasswordFocused(true)}

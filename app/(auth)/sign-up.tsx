@@ -1,22 +1,22 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { useSignUp } from "@/context/SignUpContext";
 import { useTheme } from "@/lib/ThemeContext";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
-import { useSignUp } from "@/context/SignUpContext";
 
 
 import {
-  Keyboard,
-  KeyboardAvoidingView,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+    Keyboard,
+    KeyboardAvoidingView,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
 
 const signUp = () => {
@@ -142,10 +142,10 @@ const signUp = () => {
                   if (emailError) setEmailError("");
                 }}
                 placeholder="         Email"
-                placeholderTextColor="#9CA3AF"
-                className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                   theme === "dark"
-                    ? "bg-dark-secondary text-dark-primary"
+                    ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 onFocus={() => setEmailFocused(true)}
@@ -189,11 +189,11 @@ const signUp = () => {
                   if (passwordError) setPasswordError("");
                 }}
                 placeholder="         Password"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
                 secureTextEntry={showPassword}
-                className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                   theme === "dark"
-                    ? "bg-dark-secondary text-dark-primary"
+                    ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 onFocus={() => setPasswordFocused(true)}

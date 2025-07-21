@@ -119,10 +119,10 @@ const AddNewContact = () => {
                 if (AccountHolderNameError) setAccountHolderNameError("");
               }}
               placeholder="Account Holder Name"
-              placeholderTextColor="#9CA3AF"
-              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-5 opacity-4 focus:outline-none focus:border-blue-400 ${
+              placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                 theme === "dark"
-                  ? "bg-dark-secondary text-dark-primary"
+                  ? "bg-[#23262F] text-white"
                   : "bg-[#F6F8FA] text-primary"
               }`}
               onFocus={() => setAccountHolderNameFocused(true)}
@@ -169,11 +169,11 @@ const AddNewContact = () => {
                 setEmail(text);
                 if (emailError) setEmailError("");
               }}
-              placeholder="         user@example.com"
-              placeholderTextColor="#9CA3AF"
-              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-5 opacity-4 focus:outline-none focus:border-blue-400 ${
+              placeholder="         Email"
+              placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                 theme === "dark"
-                  ? "bg-dark-secondary text-dark-primary"
+                  ? "bg-[#23262F] text-white"
                   : "bg-[#F6F8FA] text-primary"
               }`}
               onFocus={() => setEmailFocused(true)}

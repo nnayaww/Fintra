@@ -1,4 +1,5 @@
 import allContacts, { icons, images } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -6,16 +7,15 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Image,
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    FlatList,
+    Image,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 
 type Contact = {
   id: string;
@@ -138,64 +138,78 @@ export default function Contacts() {
         }`}
       >
         <View
-          className="flex-row justify-between items-center pt-5 pl-5 pr-5"
-          style={{ marginTop: 30 }}
-        >
-          <Image
-            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
-            style={{ width: 50, height: 40, padding: 6 }}
-          />
-
-          <Text
-            className={`font-UrbanistBold text-3xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-            style={{ marginLeft: -20 }}
-          >
-            Contacts
-          </Text>
-          <TouchableOpacity onPress={() => {}}>
-            <SimpleLineIcons
-              name="options-vertical"
-              size={22}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-        </View>
-        {!isTyping && (
-          <AntDesign
-            name="search1"
-            size={24}
-            color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-            style={{ position: "absolute", left: 36, top: 132, zIndex: 1 }}
-          />
-        )}
-        <TextInput
-          value={searchText}
-          onChangeText={(text) => {
-            setSearchText(text);
-            setIsTyping(text.length > 0);
-          }}
-          placeholder={
-            selectedTab === "All Contacts"
-              ? "        Search contact"
-              : "        Search favorites"
-          }
-          placeholderTextColor="#9CA3AF"
-          className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 opacity-4 self-center ${
-            theme === "dark"
-              ? "bg-dark-secondary text-dark-primary"
-              : "bg-[#F6F8FA] text-primary"
+          className={`pt-12 pb-6 px-5 ${
+            theme === "dark" ? "bg-[#23262F]" : "bg-white"
           }`}
-          style={{ width: "90%", marginTop: 28 }}
-          onFocus={() => setSearchFocused(true)}
-          onBlur={() => {
-            setSearchFocused(false);
-            if (searchText.length === 0) setIsTyping(false);
-          }}
-        />
+        >
+          <View
+            className="flex-row justify-between items-center"
+            style={{ marginTop: 30 }}
+          >
+            <Image
+              source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+              style={{ width: 50, height: 40, padding: 6 }}
+            />
+            <Text
+              className={`font-UrbanistBold text-3xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+              style={{ marginLeft: -20 }}
+            >
+              Contacts
+            </Text>
+            <TouchableOpacity onPress={() => {}}>
+              <SimpleLineIcons
+                name="options-vertical"
+                size={22}
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
+              />
+            </TouchableOpacity>
+          </View>
+          <View
+            className={`relative mt-6 ${
+              theme === "dark" ? "bg-[#23262F]" : "bg-white"
+            }`}
+          >
+            {!isTyping && (
+              <AntDesign
+                name="search1"
+                size={24}
+                color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+                style={{ position: "absolute", left: 16, top: 18, zIndex: 1 }}
+              />
+            )}
+            <TextInput
+              value={searchText}
+              onChangeText={(text) => {
+                setSearchText(text);
+                setIsTyping(text.length > 0);
+              }}
+              placeholder={
+                selectedTab === "All Contacts"
+                  ? "        Search contact"
+                  : "        Search favorites"
+              }
+              placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 ${
+                theme === "dark"
+                  ? "bg-[#2D313A] text-white"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => {
+                setSearchFocused(false);
+                if (searchText.length === 0) setIsTyping(false);
+              }}
+            />
+          </View>
+        </View>
 
-        <View className="flex-row justify-around" style={{ marginTop: 28 }}>
+        <View
+          className={`flex-row justify-around pt-6 pb-4 ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
+        >
           {tabs.map((tab: "All Contacts" | "Favorites") => (
             <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
               <Text

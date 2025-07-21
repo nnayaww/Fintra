@@ -5,13 +5,13 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  Animated,
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Animated,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 import CountryPicker from "react-native-country-picker-modal";
 
@@ -122,10 +122,10 @@ const SignUpCompleteUserProfile = () => {
             }}
             keyboardType="phone-pad"
             placeholder="Enter phone number"
-            placeholderTextColor="#9CA3AF"
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-40 ${
+            placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
               theme === "dark"
-                ? "bg-dark-secondary text-dark-primary"
+                ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
           />
@@ -163,18 +163,18 @@ const SignUpCompleteUserProfile = () => {
                   updateForm({ dob: parsedDate.toISOString() });
                   setDateOfBirthError("");
                 } else {
-                  setDateOfBirthError("Invalid date format");
+                  setDateOfBirthError("Invalid date");
                 }
               } else {
-                setDateOfBirthError("Use MM/DD/YYYY format");
+                setDateOfBirthError("Invalid date format");
               }
             }}
-            placeholder="MM/DD/YYYY"
-            placeholderTextColor="#9CA3AF"
             keyboardType="numeric"
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-90 focus:outline-none ${
+            placeholder="mm/dd/yyyy"
+            placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
               theme === "dark"
-                ? "bg-dark-secondary text-dark-primary"
+                ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
           />

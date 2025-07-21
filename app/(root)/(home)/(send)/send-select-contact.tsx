@@ -1,4 +1,5 @@
 import allContacts from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -16,7 +17,6 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 
 type Contact = {
   id: string;
@@ -99,7 +99,7 @@ export default function SendSelectContact() {
           </Text>
           <Text
             className={`font-UrbanistMedium ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              theme === "dark" ? "text-gray-300" : "text-secondary"
             }`}
             style={{ fontSize: 14 }}
           >
@@ -144,7 +144,7 @@ export default function SendSelectContact() {
             </TouchableOpacity>
             <Text
               className={`font-UrbanistBold text-3xl ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
+                theme === "dark" ? "text-white" : "text-primary"
               }`}
               style={{ marginHorizontal: 80 }}
             >
@@ -166,10 +166,10 @@ export default function SendSelectContact() {
               setIsTyping(text.length > 0);
             }}
             placeholder="        Search contact"
-            placeholderTextColor="#9CA3AF"
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 opacity-4 self-center ${
+            placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 self-center ${
               theme === "dark"
-                ? "bg-dark-secondary text-dark-primary"
+                ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
             style={{ width: "90%", marginTop: 28 }}

@@ -4,12 +4,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const TopUpEnterAmount = () => {
@@ -101,7 +101,7 @@ const TopUpEnterAmount = () => {
               <View className="flex-row">
                 <TextInput
                   className={`font-UrbanistBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                    theme === "dark" ? "text-white" : "text-primary"
                   }`}
                   placeholder="---.--"
                   keyboardType="numeric"
@@ -112,8 +112,11 @@ const TopUpEnterAmount = () => {
                   }}
                   style={{
                     fontSize: 40,
+                    backgroundColor: theme === "dark" ? "#23262F" : "#F6F8FA",
+                    borderRadius: 12,
+                    paddingHorizontal: 16,
                   }}
-                  placeholderTextColor={theme === 'dark' ? '#A0A0A0' : '#9CA3AF'}
+                  placeholderTextColor={theme === 'dark' ? '#B0B0B0' : '#9CA3AF'}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
                 />

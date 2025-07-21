@@ -100,11 +100,11 @@ const createNewPassword = () => {
               if (passwordError) setPasswordError("");
             }}
             placeholder="         Password"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
             secureTextEntry={showPassword}
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 focus:outline-none focus:border-blue-400 ${
               theme === "dark"
-                ? "bg-dark-secondary text-dark-primary"
+                ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
             onFocus={() => setPasswordFocused(true)}
@@ -155,11 +155,11 @@ const createNewPassword = () => {
               if (confirmPasswordError) setConfirmPasswordError("");
             }}
             placeholder="         Confirm Password"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
             secureTextEntry={showConfirmPassword}
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 focus:outline-none focus:border-blue-400 ${
               theme === "dark"
-                ? "bg-dark-secondary text-dark-primary"
+                ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
             onFocus={() => setConfirmPasswordFocused(true)}

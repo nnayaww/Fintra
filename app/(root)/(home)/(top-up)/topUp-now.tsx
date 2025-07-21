@@ -11,14 +11,14 @@ import { router, useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Keyboard,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    Keyboard,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
 const imageMap: Record<string, any> = {
@@ -131,7 +131,12 @@ const TopUpNow = () => {
 
         {/* Method */}
         <View className="mt-10">
-          <Text className={`font-UrbanistSemiBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`} style={{ fontSize: 20 }}>
+          <Text
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-white" : "text-primary"
+            }`}
+            style={{ fontSize: 20 }}
+          >
             Top Up Method
           </Text>
           <View style={{ borderWidth: 2, borderColor: theme === "dark" ? "#444" : "#ebedf0", gap: 14, height: 80 }} className={`flex-row justify-between items-center w-full p-5 mt-4 border rounded-lg ${theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"}`}>
@@ -143,7 +148,12 @@ const TopUpNow = () => {
                   resizeMode="cover"
                 />
               )}
-              <Text className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`} style={{ fontSize: 20 }}>
+              <Text
+                className={`font-UrbanistBold ${
+                  theme === "dark" ? "text-white" : "text-primary"
+                }`}
+                style={{ fontSize: 20 }}
+              >
                 {methodNumber || methodName || "Select Method"}
                 </Text>
             </View>
@@ -155,13 +165,32 @@ const TopUpNow = () => {
 
         {/* Buttons */}
         <View className="flex-row gap-4 items-center absolute" style={{ bottom: 46, right: 20, left: 20 }}>
-          <TouchableOpacity onPress={() => router.back()} className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${theme === "dark" ? "bg-dark-background" : "bg-white"}`}>
-            <Text className={`font-UrbanistSemiBold text-xl ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+              theme === "dark" ? "bg-dark-background" : "bg-white"
+            }`}
+          >
+            <Text
+              className={`font-UrbanistSemiBold text-xl ${
+                theme === "dark" ? "text-white" : "text-primary"
+              }`}
+            >
               Cancel
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleConfirm} disabled={loading} className="bg-general flex-1 items-center justify-center p-5 rounded-full">
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="font-UrbanistSemiBold text-xl text-white">Confirm</Text>}
+          <TouchableOpacity
+            onPress={handleConfirm}
+            disabled={loading}
+            className="bg-general flex-1 items-center justify-center p-5 rounded-full"
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="font-UrbanistSemiBold text-xl text-white">
+                Confirm
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

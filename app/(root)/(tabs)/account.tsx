@@ -8,30 +8,39 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Octicons from "@expo/vector-icons/Octicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Image,
-  Keyboard,
-  ScrollView,
-  Share,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    Keyboard,
+    ScrollView,
+    Share,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Modal from "react-native-modal";
-
-const data = [
-  { id: 1, fullname: "Oppong Agyeman", email: "agyeman12@gmail.com" },
-  { id: 2, fullname: "Kwame Asante", email: "kasante10@gmail.com" },
-];
 
 const Account = () => {
   const { theme } = useTheme();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [showQRCodeModal, setshowQRCodeModal] = useState(false);
   const [showLogoutModal, setshowLogoutModal] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userFullName = await AsyncStorage.getItem("fullName");
+      const userEmail = await AsyncStorage.getItem("email");
+
+      if (userFullName) setFullName(userFullName);
+      if (userEmail) setEmail(userEmail);
+    };
+    fetchUserData();
+  }, []);
 
   const pickImage = async () => {
     // Ask for permission
@@ -67,88 +76,104 @@ const Account = () => {
 
   return (
     <View
-      className={`flex-1 p-2 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`}
-      style={{ paddingTop: 60 }}
+      className={`flex-1 ${
+        theme === "dark" ? "bg-dark-background" : "bg-white"
+      }`}
     >
-      <View className="flex-row px-5">
-        <Image
-          source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
-          style={{ width: 50, height: 40, marginTop: 15, marginLeft: -14 }}
-        />
-        <Text
-          className={`font-UrbanistBold text-3xl mt-5 ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-          style={{ marginHorizontal: 80 }}
-        >
-          Account
-        </Text>
-      </View>
-      <View className="flex-row justify-between p-3" style={{ marginTop: 22 }}>
-        <View
-          style={{
-            width: 78,
-            height: 78,
-            backgroundColor: theme === "dark" ? "#333" : "#F6F8FA",
-          }}
-          className="rounded-full flex items-center justify-center"
-        >
-          {profileImage ? (
-            <>
-              <Image
-                source={{ uri: profileImage }}
-                style={{ width: 78, height: 78, borderRadius: 60 }}
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -6,
-                  backgroundColor: theme === "dark" ? "#000" : "#fff",
-                  borderRadius: 12,
-                  padding: 2,
-                  elevation: 2,
-                }}
-              >
-                <MaterialCommunityIcons
-                  name="close-circle"
-                  size={24}
-                  color="#E53E3E"
-                />
-              </TouchableOpacity>
-            </>
-          ) : (
-            <FontAwesome5
-              name="user-alt"
-              size={24}
-              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-            />
-          )}
-        </View>
-        <View className="flex-row items-center" style={{ paddingLeft: 20 }}>
-          <View style={{ width: "80%" }}>
-            <Text
-              className={`font-UrbanistBold text-xl ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 19 }}
-            >
-              {data[0].fullname}
-            </Text>
-            <Text
-              className={`font-UrbanistMedium text-lg ${theme === "dark" ? "text-dark-secondary" : "text-secondary"}`}
-              style={{ marginTop: 6, lineHeight: 26, width: "80%" }}
-            >
-              {data[0].email}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => setshowQRCodeModal(true)}
-            style={{ marginLeft: -10 }}
+      <View
+        className={`pt-12 pb-6 px-5 ${
+          theme === "dark" ? "bg-[#23262F]" : "bg-white"
+        }`}
+      >
+        <View className="flex-row px-5 mt-3">
+          <Image
+            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+            style={{ width: 50, height: 40, marginTop: 15, marginLeft: -14 }}
+          />
+          <Text
+            className={`font-UrbanistBold text-3xl mt-5 ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+            style={{ marginHorizontal: 80 }}
           >
-            <MaterialCommunityIcons
-              name="qrcode"
-              size={32}
-              color={theme === "dark" ? "#fff" : "black"}
-            />
-          </TouchableOpacity>
+            Account
+          </Text>
+        </View>
+        <View
+          className="flex-row justify-between p-3"
+          style={{ marginTop: 22 }}
+        >
+          <View
+            style={{
+              width: 78,
+              height: 78,
+              backgroundColor: theme === "dark" ? "#333" : "#F6F8FA",
+            }}
+            className="rounded-full flex items-center justify-center"
+          >
+            {profileImage ? (
+              <>
+                <Image
+                  source={{ uri: profileImage }}
+                  style={{ width: 78, height: 78, borderRadius: 60 }}
+                  resizeMode="cover"
+                />
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    top: -8,
+                    right: -6,
+                    backgroundColor: theme === "dark" ? "#000" : "#fff",
+                    borderRadius: 12,
+                    padding: 2,
+                    elevation: 2,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="close-circle"
+                    size={24}
+                    color="#E53E3E"
+                  />
+                </TouchableOpacity>
+              </>
+            ) : (
+              <FontAwesome5
+                name="user-alt"
+                size={24}
+                color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+              />
+            )}
+          </View>
+          <View className="flex-row items-center" style={{ paddingLeft: 20 }}>
+            <View style={{ width: "80%" }}>
+              <Text
+                className={`font-UrbanistBold text-xl ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+                style={{ fontSize: 19 }}
+              >
+                {fullName}
+              </Text>
+              <Text
+                className={`font-UrbanistMedium text-lg ${
+                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
+                }`}
+                style={{ marginTop: 6, lineHeight: 26, width: "80%" }}
+              >
+                {email}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setshowQRCodeModal(true)}
+              style={{ marginLeft: -10 }}
+            >
+              <MaterialCommunityIcons
+                name="qrcode"
+                size={32}
+                color={theme === "dark" ? "#fff" : "black"}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       <ScrollView

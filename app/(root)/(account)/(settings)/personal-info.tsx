@@ -4,11 +4,12 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { router } from "expo-router";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
   Keyboard,
@@ -39,10 +40,6 @@ const PersonalInfo = () => {
   const [FullNameError, setFullNameError] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [countryCode, setCountryCode] = useState("GH");
-  const [DateofBirth, setDateofBirth] = useState<Date | null>(null);
-  const [DateofBirthFocused, setDateofBirthFocused] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateOfBirthError, setDateOfBirthError] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [country, setCountry] = useState<Country>({
     cca2: "GH",
@@ -58,6 +55,19 @@ const PersonalInfo = () => {
   const [phoneError, setPhoneError] = useState("");
   const phoneInput = useRef<PhoneInput>(null);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userFullName = await AsyncStorage.getItem("fullName");
+      const userEmail = await AsyncStorage.getItem("email");
+      const userPhone = await AsyncStorage.getItem("phone");
+
+      if (userFullName) setFullName(userFullName);
+      if (userEmail) setEmail(userEmail);
+      if (userPhone) setPhoneNumber(userPhone);
+    };
+    fetchUserData();
+  }, []);
 
   // Helper to format date as mm/dd/yyyy
   const formatDate = (date: Date) => {
@@ -107,7 +117,7 @@ const PersonalInfo = () => {
     })();
   }, []);
 
-  const handleErrors = () => {
+  const handleSave = async () => {
     let valid = true;
 
     // FullName validation
@@ -140,12 +150,50 @@ const PersonalInfo = () => {
         valid = false;
       } else {
         setPhoneError("");
-        // Optionally, store the E.164 format for backend use:
-        // setPhoneNumber(phoneNumberObj.number);
       }
     }
-    if (valid) {
+
+    if (!valid) return;
+
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const token = await AsyncStorage.getItem("token");
+
+      if (!userId || !token) {
+        // Handle case where user is not logged in
+        return;
+      }
+      const [firstName, ...lastName] = FullName.split(" ");
+      const response = await fetch(
+        `https://fintra-1.onrender.com/users/${userId}`,
+        {
+          method: "Post",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName.join(" "),
+            phone: phoneNumber,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update user information");
+      }
+
+      // Update AsyncStorage with new data
+      await AsyncStorage.setItem("fullName", FullName);
+      await AsyncStorage.setItem("phone", phoneNumber);
+
       router.push("/(root)/(tabs)/account");
+    } catch (error) {
+      console.error("Failed to save user data:", error);
+      // Optionally, show an error message to the user
     }
   };
 
@@ -260,10 +308,10 @@ const PersonalInfo = () => {
                     if (FullNameError) setFullNameError("");
                   }}
                   placeholder="Full Name"
-                  placeholderTextColor="#9CA3AF"
-                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                  placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                     theme === "dark"
-                      ? "bg-dark-secondary text-dark-primary"
+                      ? "bg-[#23262F] text-white"
                       : "bg-[#F6F8FA] text-primary"
                   }`}
                   onFocus={() => setFullNameFocused(true)}
@@ -306,12 +354,13 @@ const PersonalInfo = () => {
                 </Text>
                 <TextInput
                   /* value={user.email} user's email from signup */
+                  value={email}
                   placeholder="         user@example.com"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
                   selectTextOnFocus={false}
-                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
+                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                     theme === "dark"
-                      ? "bg-dark-secondary text-dark-primary"
+                      ? "bg-[#23262F] text-white"
                       : "bg-[#F6F8FA] text-primary"
                   }`}
                   editable={false}
@@ -366,11 +415,11 @@ const PersonalInfo = () => {
                   </TouchableOpacity>
                   <TextInput
                     className={`flex-1 text-lg font-UrbanistSemiBold py-2.5 px-2.5 bg-transparent ml-[-14] ${
-                      theme === "dark" ? "text-dark-primary" : "text-primary"
+                      theme === "dark" ? "text-white" : "text-primary"
                     }`}
                     keyboardType="phone-pad"
                     placeholder="  Phone Number"
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
                     value={phoneNumber}
                     onChangeText={(text) => {
                       // Remove all non-digit characters
@@ -378,6 +427,7 @@ const PersonalInfo = () => {
                       setPhoneNumber(digitsOnly);
                       if (phoneError) setPhoneError("");
                     }}
+                    editable={false}
                   />
                 </View>
                 {phoneError ? (
@@ -394,42 +444,6 @@ const PersonalInfo = () => {
                   </Text>
                 ) : null}
               </View>
-              <View className="relative">
-                <TouchableOpacity
-                  style={{
-                    position: "absolute",
-                    right: 24,
-                    top: 55,
-                    zIndex: 1,
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <FontAwesome5
-                    name="calendar-alt"
-                    size={24}
-                    color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  />
-                </TouchableOpacity>
-                <Text
-                  className={`text-2xl font-UrbanistSemiBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
-                  }`}
-                >
-                  Date of Birth
-                </Text>
-                <TextInput
-                  value={DateofBirth ? formatDate(DateofBirth) : ""}
-                  keyboardType="numeric"
-                  placeholder="mm/dd/yyyy"
-                  placeholderTextColor="#9CA3AF"
-                  className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 opacity-4 focus:outline-none focus:border-blue-400 ${
-                    theme === "dark"
-                      ? "bg-dark-secondary text-dark-primary"
-                      : "bg-[#F6F8FA] text-primary"
-                  }`}
-                  editable={false}
-                />
-              </View>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -443,7 +457,7 @@ const PersonalInfo = () => {
         >
           <TouchableOpacity
             className="bg-general flex items-center justify-center p-5 border-none rounded-full"
-            onPress={handleErrors}
+            onPress={handleSave}
           >
             <Text className="font-UrbanistSemiBold text-buttontext text-primary">
               Save

@@ -99,7 +99,7 @@ const SignUpSetPINCode = () => {
                 maxLength={1}
                 className={`text-center font-UrbanistSemiBold rounded-lg ${
                   theme === "dark"
-                    ? "bg-dark-secondary text-dark-primary"
+                    ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 style={{

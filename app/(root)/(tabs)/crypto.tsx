@@ -3,7 +3,6 @@ import { images } from "@/constants";
 import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import axios from "axios";
-import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
@@ -118,24 +117,16 @@ const crypto = () => {
 
   return (
     <View
-      className={`flex-1 p-5 ${
+      className={`flex-1 ${
         theme === "dark" ? "bg-dark-background" : "bg-white"
       }`}
     >
       <View
-        style={{
-          height: Constants.statusBarHeight,
-          backgroundColor: "#00000",
-          width: "100%",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: 10,
-        }}
-      />
-      {/* <StatusBar backgroundColor="#82E394" style="dark" /> */}
-      <View className="flex" style={{ marginTop: 60 }}>
-        <View className="flex-row px-5">
+        className={`pt-12 pb-6 px-5 ${
+          theme === "dark" ? "bg-[#23262F]" : "bg-white"
+        }`}
+      >
+        <View className="flex-row px-5 mt-8">
           <Image
             source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
             style={{ width: 50, height: 60, marginLeft: -14 }}
@@ -162,8 +153,6 @@ const crypto = () => {
             >
               {CryptoBalance}
             </Text>
-            {/*NewCryptoBalance is the (CalcAmount(which is, (amountEntered/PriceofThatCrypto*dollarRate), because it's in cedis)) * PriceofThatCrypto). Therefore, CryptoBalance will be (CurrentCryptoBalance + NewCryptoBalance)*/}
-            {/*Include logic where crypto balance you bought increases or decreases when the price of the crypto you now hold increases or decreases*/}
             <FontAwesome6
               name="cedi-sign"
               size={20}
@@ -179,26 +168,30 @@ const crypto = () => {
             Your crypto balance
           </Text>
         </View>
+        <TouchableOpacity
+          className="bg-general flex items-center justify-center p-5 border-none rounded-full"
+          onPress={() => {
+            router.push("/(root)/(crypto)/(buy-crypto)/select-crypto");
+          }}
+          style={{ marginTop: 54 }}
+        >
+          <Text
+            className={`font-UrbanistSemiBold ${
+              theme === "dark" ? "text-dark-primary" : "text-primary"
+            }`}
+            style={{ fontSize: 20 }}
+          >
+            Buy Crypto
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        className="bg-general flex items-center justify-center p-5 border-none rounded-full"
-        onPress={() => {
-          router.push("/(root)/(crypto)/(buy-crypto)/select-crypto");
-        }}
-        style={{ marginTop: 54 }}
+      <View
+        className={`flex-1 px-5 ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
       >
         <Text
-          className={`font-UrbanistSemiBold ${
-            theme === "dark" ? "text-dark-primary" : "text-primary"
-          }`}
-          style={{ fontSize: 20 }}
-        >
-          Buy Crypto
-        </Text>
-      </TouchableOpacity>
-      <View className="mt-10">
-        <Text
-          className={`font-UrbanistMedium text-lg pb-2.5 ${
+          className={`font-UrbanistMedium text-lg pb-2.5 mt-6 ${
             theme === "dark" ? "text-dark-secondary" : "text-secondary"
           }`}
         >

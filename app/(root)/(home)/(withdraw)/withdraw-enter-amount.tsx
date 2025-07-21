@@ -1,8 +1,9 @@
 import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Keyboard,
     Text,
@@ -21,6 +22,7 @@ const WithdrawEnterAmount = () => {
   const [inputFocused, setInputFocused] = useState(false);
   const [withdraw, setwithdraw] = useState("");
   const [withdrawError, setwithdrawError] = useState("");
+  const [userBalance, setUserBalance] = useState('');
 
   const handleContinue = () => {
     let valid = true;
@@ -55,7 +57,16 @@ const WithdrawEnterAmount = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  }
+  } 
+
+  
+  useEffect(() => {
+    const getBalnce = async () => {
+      const userBalanceFromLocalStorage: any = await AsyncStorage.getItem('balance'); 
+      setUserBalance(userBalanceFromLocalStorage) 
+    }
+    getBalnce();
+  },[userBalance])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -99,9 +110,15 @@ const WithdrawEnterAmount = () => {
           <View>
             <View className="flex items-center" style={{ marginTop: 120 }}>
               <View className="flex-row">
+                <FontAwesome6
+                  name="cedi-sign"
+                  size={40}
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  style={{marginTop: 20}}
+                />
                 <TextInput
                   className={`font-UrbanistBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                    theme === "dark" ? "text-white" : "text-primary"
                   }`}
                   placeholder="---"
                   keyboardType="numeric"
@@ -111,16 +128,14 @@ const WithdrawEnterAmount = () => {
                     if (withdrawError) setwithdrawError("");
                   }}
                   style={{
-                    fontSize: 40,
+                    fontSize: 60,
+                    backgroundColor: theme === "dark" ? "#23262F" : "#F6F8FA",
+                    borderRadius: 12,
+                    paddingHorizontal: 16,
                   }}
+                  placeholderTextColor={theme === 'dark' ? '#B0B0B0' : '#9CA3AF'}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
-                />
-                <FontAwesome6
-                  name="cedi-sign"
-                  size={20}
-                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  style={{ marginTop: 20 }}
                 />
               </View>
               <View className="flex-row gap-1">
@@ -137,7 +152,7 @@ const WithdrawEnterAmount = () => {
                     theme === "dark" ? "text-dark-primary" : "text-primary"
                   }`}
                   style={{ fontSize: 18 }}
-                >{`₵${formatBalance(9645.5 /* or user.balance */)}`}</Text>
+                >{`₵ ${userBalance}`}</Text>
               </View>
               {withdrawError ? (
                 <Text

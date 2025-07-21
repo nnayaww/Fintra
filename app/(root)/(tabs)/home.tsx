@@ -12,14 +12,16 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Constants from "expo-constants";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "@/lib/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Home = () => {
   const { theme } = useTheme();
   const transactionSections = formatTransactions();
   const [contactImage, setContactImage] = useState<string | null>(null);
+  const [userBalance, setUserBalance] = useState('');
 
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
@@ -27,7 +29,16 @@ const Home = () => {
   const user = {
     isNewUser: isNewUserBool,
     transactions: transactionSections,
-  };
+  };  
+
+  const getBalance = async() => {
+    let userBalance1: any = await AsyncStorage.getItem('balance');
+    setUserBalance(userBalance1)
+  }
+  
+  useEffect(()=>{
+    getBalance()
+  }, [userBalance])
 
   const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
     <View className="flex-row py-4 items-center">
@@ -129,19 +140,11 @@ const Home = () => {
     >
       <View
         style={{
-          height: Constants.statusBarHeight,
-          backgroundColor: "#82E394",
-          width: "100%",
-          position: "absolute",
-          top: 1,
-          left: 0,
-          zIndex: 10,
+          height: "52%",
+          paddingTop: 70,
+          backgroundColor: theme === "dark" ? "#23262F" : "#82E394",
         }}
-      />
-      <StatusBar backgroundColor="#82E394" style="dark" />
-      <View
-        style={{ height: "52%", paddingTop: 70 }}
-        className="bg-general w-full p-5"
+        className="w-full p-5"
       >
         <View className="flex-row mt-2 justify-between">
           <Image
@@ -173,22 +176,20 @@ const Home = () => {
           style={{ marginTop: 50 }}
         >
           <View className="flex-row gap-2 justify-center">
-            <Text
-              className={`font-UrbanistBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 50 }}
-            >
-              {isNewUserBool
-                ? formatBalance(0)
-                : formatBalance(9645000000000.5 /* or user.balance */)}
-            </Text>
             <FontAwesome6
               name="cedi-sign"
               size={20}
               color={theme === "dark" ? "#fff" : "#0D0D0D"}
               style={{ marginTop: 16 }}
             />
+            <Text
+              className={`font-UrbanistBold ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+              style={{ fontSize: 50 }}
+            >
+              {userBalance}
+            </Text>
           </View>
           <Text
             className={`font-UrbanistMedium text-xl mt-2 ${

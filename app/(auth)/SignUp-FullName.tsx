@@ -1,16 +1,16 @@
+import { useSignUp } from "@/context/SignUpContext";
 import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Keyboard,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
+    Keyboard,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
-import { useSignUp } from "@/context/SignUpContext";
 
 const SignUpFullName = () => {
   const { theme } = useTheme();
@@ -128,8 +128,12 @@ const SignUpFullName = () => {
               value={firstName}
               onChangeText={(text) => setFirstName(text)}
               placeholder="First Name"
-              placeholderTextColor="#9CA3AF"
-              className={inputStyle}
+              placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-[#23262F] text-white"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
             />
             {errors.firstName ? (
               <Text style={{ color: "#E53E3E", marginLeft: 8, marginTop: 4, fontSize: 16, fontFamily: "Urbanist-Medium" }}>
@@ -157,8 +161,12 @@ const SignUpFullName = () => {
               value={lastName}
               onChangeText={(text) => setLastName(text)}
               placeholder="Last Name"
-              placeholderTextColor="#9CA3AF"
-              className={inputStyle}
+              placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
+              className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
+                theme === "dark"
+                  ? "bg-[#23262F] text-white"
+                  : "bg-[#F6F8FA] text-primary"
+              }`}
             />
             {errors.lastName ? (
               <Text style={{ color: "#E53E3E", marginLeft: 8, marginTop: 4, fontSize: 16, fontFamily: "Urbanist-Medium" }}>

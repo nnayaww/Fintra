@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -14,7 +15,6 @@ import {
     TouchableWithoutFeedback,
     View,
 } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 
 const RequestNow = () => {
   const { type } = useLocalSearchParams();
@@ -147,7 +147,7 @@ const RequestNow = () => {
           <View className="mt-5">
             <Text
               className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
+                theme === "dark" ? "text-white" : "text-primary"
               }`}
               style={{ fontSize: 20 }}
             >
@@ -155,13 +155,13 @@ const RequestNow = () => {
             </Text>
             <View
               className={`py-2 px-4 rounded-lg mt-4 flex justify-center ${
-                theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
+                theme === "dark" ? "bg-[#23262F]" : "bg-[#F6F8FA]"
               }`}
               style={{ height: 70 }}
             >
               <Text
                 className={`font-UrbanistBold ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                  theme === "dark" ? "text-white" : "text-primary"
                 }`}
                 style={{ fontSize: 28 }}
               >{`₵ ${formatBalance(
@@ -212,7 +212,7 @@ const RequestNow = () => {
             >
               <Text
                 className={`font-UrbanistSemiBold text-xl ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                  theme === "dark" ? "text-white" : "text-primary"
                 }`}
               >
                 Cancel
