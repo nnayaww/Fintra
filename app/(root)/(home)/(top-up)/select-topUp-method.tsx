@@ -1,11 +1,11 @@
 import PaymentMethodCard from "@/components/paymentMethodCard";
-import { PaymentMethods, images } from "@/constants";
+import { PaymentMethods } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 
 const SelectTopUpMethod = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -13,40 +13,25 @@ const SelectTopUpMethod = () => {
   const { amount } = useLocalSearchParams();
   const { theme } = useTheme();
 
-  const renderItem = ({ item }: { item: any }) => (
-    <PaymentMethodCard
-      id={item.id}
-      name={item.name}
-      status={null}
-      image={item.image}
-      number={item.number}
-      selected={selectedId === item.id}
-      onPress={() => {
-        setSelectedId(item.id);
-        setTopUpError("");
-      }}
-    />
-  );
+  const renderItem = ({ item }: { item: any }) => {
+    console.log('renderItem image:', item.image);
+    return (
+      <PaymentMethodCard
+        id={item.id}
+        name={item.name}
+        status={null}
+        image={item.image}
+        number={item.number}
+        selected={selectedId === item.id}
+        onPress={() => {
+          setSelectedId(item.id);
+          setTopUpError("");
+        }}
+      />
+    );
+  };
 
-  const methods = [
-    {
-      id: "1",
-      name: "Paypal",
-      image: images.paypal,
-    },
-    { id: "2", name: "Google Pay", image: images.googlepay },
-
-    { id: "3", name: "Apple Pay", image: images.applepay },
-    {
-      id: "4",
-      name: "Mastercard",
-      number: "**** **** **** 4679",
-      image: images.mastercard,
-    },
-    { id: "5", name: "Visa", number: "**** **** **** 5567", image: images.visa },
-  ];
-
-  const selectedMethod = methods.find((method) => method.id === selectedId);
+  const selectedMethod = PaymentMethods.find((method) => method.id === selectedId);
 
   const handleContinue = () => {
     if (!selectedId) {
@@ -55,13 +40,13 @@ const SelectTopUpMethod = () => {
       setTopUpError("Selected method not found");
     } else {
       setTopUpError("");
-      router.replace({
+      router.push({
         pathname: "/(root)/(home)/(top-up)/topUp-now",
         params: {
           amount,
           methodName: selectedMethod.name,
           methodNumber: selectedMethod.number,
-          methodImage: selectedMethod.image,
+          methodImageKey: selectedMethod.name.toLowerCase(),
         },
       });
     }
@@ -76,38 +61,38 @@ const SelectTopUpMethod = () => {
       <View className="flex-row justify-between items-center mt-3">
         <TouchableOpacity
           onPress={() => {
-            if (router.canGoBack()) {
+            // if (router.canGoBack()) {
               router.back();
-            } else {
-              router.replace("/(root)/(tabs)/home");
-            }
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons
             name="arrow-back"
             size={28}
             color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ padding: 6, marginTop: 22 }}
+            style={{ padding: 6, marginTop: 35 }}
           />
         </TouchableOpacity>
         <Text
-          className={`font-UrbanistBold mt-5 ${
+          className={`font-UrbanistBold justify-center cmt-5 ${
             theme === "dark" ? "text-dark-primary" : "text-primary"
           }`}
-          style={{ fontSize: 22 }}
+          style={{ fontSize: 22, marginTop:30 }}
         >
           Select Top Up Method
         </Text>
         <TouchableOpacity
           onPress={() => {
-            router.replace("/(root)/(home)/(top-up)/topUp-addNewPayment");
+            router.push("/(root)/(home)/(top-up)/topUp-addNewPayment");
           }}
         >
           <Feather
             name="plus"
             size={30}
             color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 30 }}
           />
         </TouchableOpacity>
       </View>

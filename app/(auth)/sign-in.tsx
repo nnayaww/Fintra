@@ -1,22 +1,22 @@
 import { useTheme } from "@/lib/ThemeContext";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
+  ActivityIndicator,
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
 } from "react-native";
 
 const SignIn = () => {
@@ -49,6 +49,7 @@ const SignIn = () => {
   }, [showModal]);
 
 const handleSignIn = async () => {
+  console.log('Sign In Attempt:', { email, password });
   let valid = true;
 
   // --- Form validation logic (same as before) ---
@@ -90,11 +91,16 @@ const handleSignIn = async () => {
     });
 
     const data = await response.json();
+    console.log('Backend login response:', data); // <-- Log backend response
 
     if (!response.ok) {
-      setPasswordError(data?.message || "Invalid credentials");
-      return;
+      throw new Error(data.message || "Login failed");
     }
+
+    // Store userId and email for top-up
+    await AsyncStorage.setItem("userId", String(data.user.id));
+    await AsyncStorage.setItem("email", data.user.email);
+    await AsyncStorage.setItem("token", data.token); // optional, for auth
 
     // ✅ Save to AsyncStorage if "Remember Me" is checked
     if (rememberMe) {

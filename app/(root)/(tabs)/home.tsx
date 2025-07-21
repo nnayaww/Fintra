@@ -181,7 +181,7 @@ const Home = () => {
             >
               {isNewUserBool
                 ? formatBalance(0)
-                : formatBalance(9645.5 /* or user.balance */)}
+                : formatBalance(9645000000000.5 /* or user.balance */)}
             </Text>
             <FontAwesome6
               name="cedi-sign"

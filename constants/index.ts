@@ -21,13 +21,12 @@ import GreenLogo from "@/assets/images/GreenLogo.png";
 import QRCode from "@/assets/images/QRCode.png";
 import applepay from "@/assets/images/applepay.jpg";
 import clipboard from "@/assets/images/clipboard.png";
-import googlepay from "@/assets/images/googlepay.jpg";
 import mastercard from "@/assets/images/mastercard.jpg";
+import momo from "@/assets/images/momo.png";
 import nature from "@/assets/images/nature.jpg";
 import onboarding1 from "@/assets/images/onboarding1.png";
 import onboarding2 from "@/assets/images/onboarding2.png";
 import onboarding3 from "@/assets/images/onboarding3.png";
-import paypal from "@/assets/images/paypal.jpg";
 import visa from "@/assets/images/visa.jpg";
 import countries from "world-countries";
 
@@ -38,8 +37,7 @@ export const images = {
   onboarding2,
   onboarding3,
   visa,
-  googlepay,
-  paypal,
+  momo,
   applepay,
   mastercard,
   QRCode,
@@ -106,26 +104,24 @@ export const formattedCountries = countries.map((country) => ({
 export const PaymentMethods = [
   {
     id: "1",
-    name: "Paypal",
+    name: "Momo",
     status: "Connected",
-    image: images.paypal,
+    image: momo,
   },
-  { id: "2", name: "Google Pay", status: "Connected", image: images.googlepay },
-
-  { id: "3", name: "Apple Pay", status: "Connected", image: images.applepay },
+  { id: "2", name: "Apple Pay", status: "Connected", image: applepay },
   {
-    id: "4",
+    id: "3",
     name: "Mastercard",
     number: "**** **** **** 4679",
     status: "Connected",
-    image: images.mastercard,
+    image: mastercard,
   },
   {
-    id: "5",
+    id: "4",
     name: "Visa",
     number: "**** **** **** 5567",
     status: "Connected",
-    image: images.visa,
+    image: visa,
   },
 ];
 

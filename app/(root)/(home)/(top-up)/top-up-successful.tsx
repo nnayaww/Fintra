@@ -9,280 +9,76 @@ import { captureScreen } from "react-native-view-shot";
 import { useTheme } from "@/lib/ThemeContext";
 
 const TopUpSuccessful = () => {
-  const { amount, methodName, methodNumber, notes } = useLocalSearchParams();
+  const { amount, methodName, methodNumber, reference, status, date } = useLocalSearchParams();
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
-  const displayMethodName = Array.isArray(methodName)
-    ? methodName[0]
-    : methodName;
-  const displayNotes = Array.isArray(notes) ? notes[0] : notes;
-  const displayMethodNumber = Array.isArray(methodNumber)
-    ? methodNumber[0]
-    : methodNumber;
+  const displayMethodName = Array.isArray(methodName) ? methodName[0] : methodName;
+  const displayMethodNumber = Array.isArray(methodNumber) ? methodNumber[0] : methodNumber;
+  const displayReference = Array.isArray(reference) ? reference[0] : reference;
+  const displayStatus = Array.isArray(status) ? status[0] : status;
+  const displayDate = Array.isArray(date) ? date[0] : date;
   const { theme } = useTheme();
 
   const handleShare = async () => {
     try {
-      await Share.share({
-        message: "Transaction Receipt",
-        // If you want to share an image, you can use the 'url' property:
-        url: "",
-      });
-    } catch (error) {
-      // Optionally handle error
-    }
+      await Share.share({ message: `Top-up Receipt\ nRef: ${displayReference}` });
+    } catch {}
   };
 
   const handleDownload = async () => {
-    try {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
-        alert("Permission to access media library is required!");
-        return;
-      }
-
-      // Capture the screen (without status bar)
-      const uri = await captureScreen({
-        format: "png",
-        quality: 1,
-        result: "tmpfile",
-        // Optionally, you can add snapshotContentContainer: false
-      });
-
-      await MediaLibrary.saveToLibraryAsync(uri);
-      alert("Receipt saved to your photos!");
-    } catch (error) {
-      alert("Failed to save receipt.");
-    }
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status !== "granted") return alert("Permission required!");
+    const uri = await captureScreen({ format: "png", quality: 1, result: "tmpfile" });
+    await MediaLibrary.saveToLibraryAsync(uri);
+    alert("Saved!");
   };
 
-  function formatBalance(amount: number): string {
-    if (amount >= 1_000_000_000) {
-      return (amount / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "B";
-    }
-    if (amount >= 1_000_000) {
-      return (amount / 1_000_000).toFixed(2).replace(/\.00$/, "") + "M";
-    }
-    // Format with commas for thousands
-    return amount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-
   return (
-    <View
-      className={`flex-1 p-2 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
-      style={{ paddingTop: 30 }}
-    >
-      <View
-        className="flex-row justify-between items-center"
-        style={{ marginTop: 20 }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            router.push("/(root)/(tabs)/home");
-          }}
-        >
-          <AntDesign
-            name="close"
-            size={30}
-            color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ paddingHorizontal: 14 }}
-          />
-        </TouchableOpacity>
-      </View>
+    <View className={`flex-1 p-2 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`} style={{ paddingTop: 30 }}>
+      {/* Close */}
+      <TouchableOpacity onPress={() => router.push("/(root)/(tabs)/home")}>
+        <AntDesign name="close" size={30} color={theme === "dark" ? "#fff" : "#000"} />
+      </TouchableOpacity>
+
+      {/* Success */}
       <View className="flex items-center gap-5 mt-6">
-        <View
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "#82E394",
-            borderStyle: "solid",
-            borderWidth: 2,
-            borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
-          }}
-          className="rounded-full border flex items-center justify-center"
-        >
-          <FontAwesome6
-            name="check"
-            size={34}
-            color={theme === "dark" ? "#fff" : "#0D0D0D"}
-          />
+        <View className="rounded-full w-20 h-20 bg-general items-center justify-center border-2">
+          <FontAwesome6 name="check" size={34} color={theme === "dark" ? "#fff" : "#000"} />
         </View>
-        <View className="flex-row gap-2 justify-center">
-          <Text
-            className={`font-UrbanistBold ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-            style={{ fontSize: 40 }}
-          >
-            {`₵ ${formatBalance(
-              Number(Array.isArray(amount) ? amount[0] : amount)
-            )}`}
-          </Text>
-        </View>
-        <View className="flex gap-3 items-center">
-          <Text
-            className={`font-UrbanistMedium ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-            style={{ fontSize: 17 }}
-          >
-            You topped up to FinTra Balance
-          </Text>
-          <Text
-            className={`font-UrbanistMedium ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-            style={{ fontSize: 17 }}
-          >
-            Oppong Agyeman
-          </Text>
-        </View>
-        {/* //username here */}
+        <Text className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"} text-4xl`}>
+          ₵ {Number(displayAmount).toFixed(2)}
+        </Text>
+        <Text className={`font-UrbanistMedium ${theme === "dark" ? "text-dark-secondary" : "text-secondary"} text-lg`}>
+          Top-up successful
+        </Text>
       </View>
-      <View className="p-4 mt-2">
-        <View
-          className={`flex rounded-lg ${
-            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
-          }`}
-          style={{
-            borderWidth: 2,
-            borderColor: theme === "dark" ? "#444" : "#ebedf0",
-          }}
-        >
-          <Row
-            label="You topped up"
-            value={`₵ ${formatBalance(Number(displayAmount))}`}
-            theme={theme}
-          />
-          <Row
-            label="From"
-            value={
-              methodName === "Mastercard" || methodName === "Visa"
-                ? displayMethodNumber
-                : displayMethodName
-            }
-            theme={theme}
-          />
-          <Row
-            label="Payment Method"
-            value={
-              methodName === "Visa"
-                ? displayMethodName.toUpperCase()
-                : displayMethodName
-            }
-            theme={theme}
-          />
-          <Row label="Date" value={formatDate(new Date())} theme={theme} />
-          <Row label="Transaction ID" value={""} theme={theme} />
-          <Row label="Reference ID" value={""} theme={theme} />
-          <View
-            className="h-[1px] self-center mt-2"
-            style={{
-              width: "90%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-            }}
-          />
-          <View className="flex-col px-6 my-4">
-            <Text
-              className={`font-UrbanistMedium text-xl ${
-                theme === "dark" ? "text-dark-secondary" : "text-secondary"
-              }`}
-            >
-              Notes
-            </Text>
-            <Text
-              className={`font-UrbanistBold text-xl mt-3 ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-            >
-              {displayNotes}
-            </Text>
-          </View>
-        </View>
+
+      {/* Transaction Info */}
+      <View className="p-4 mt-4 bg-[#F6F8FA] dark:bg-dark-secondary rounded-lg border border-[#ebedf0] dark:border-[#444]">
+        <InfoRow label="Amount" value={`₵ ${Number(displayAmount).toFixed(2)}`} theme={theme} />
+        <InfoRow label="Method" value={`${displayMethodName} ${displayMethodNumber || ""}`} theme={theme} />
+        <InfoRow label="Reference" value={displayReference} theme={theme} />
+        <InfoRow label="Status" value={displayStatus} theme={theme} />
+        <InfoRow label="Date" value={formatDate(new Date(displayDate))} theme={theme} />
       </View>
-      <View
-        className="flex-row gap-4 items-center"
-        style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
-      >
-        <TouchableOpacity
-          onPress={handleDownload}
-          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
-            theme === "dark" ? "bg-dark-background" : "bg-white"
-          }`}
-        >
-          <Text
-            className={`font-UrbanistSemiBold text-xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Download
-          </Text>
+
+      {/* Actions */}
+      <View className="flex-row gap-4 absolute bottom-10 left-5 right-5">
+        <TouchableOpacity onPress={handleDownload} className="flex-1 items-center p-4 border rounded-full bg-white dark:bg-dark-background">
+          <Text className="font-UrbanistSemiBold">Download</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleShare}
-          className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
-        >
-          <Text
-            className={`font-UrbanistSemiBold text-xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Share
-          </Text>
+        <TouchableOpacity onPress={handleShare} className="flex-1 items-center p-4 rounded-full bg-general">
+          <Text className="font-UrbanistSemiBold text-white">Share</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
+const InfoRow = ({ label, value, theme }: { label: string; value: string; theme: string }) => (
+  <View className="flex-row justify-between my-2">
+    <Text className={`font-UrbanistMedium ${theme === "dark" ? "text-dark-secondary" : "text-secondary"}`}>{label}</Text>
+    <Text className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}>{value}</Text>
+  </View>
+);
+
 export default TopUpSuccessful;
-
-function Row({
-  label,
-  value,
-  theme,
-}: {
-  label: string;
-  value: string | number | undefined;
-  theme: string;
-}) {
-  return (
-    <View className="flex-row justify-between items-center px-6 my-3">
-      <Text
-        className={`font-UrbanistMedium text-xl ${
-          theme === "dark" ? "text-dark-secondary" : "text-secondary"
-        }`}
-      >
-        {label}
-      </Text>
-      {label === "Status" && value === "Paid" ? (
-        <View className="p-3 bg-general rounded-md">
-          <Text
-            className={`font-UrbanistBold text-xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            {value}
-          </Text>
-        </View>
-      ) : label === "Status" && value === "Declined" ? (
-        <View className="p-3 bg-[#f54f4f] rounded-md">
-          <Text className="font-UrbanistBold text-xl text-white">{value}</Text>
-        </View>
-      ) : (
-        <Text
-          className={`font-UrbanistBold text-xl ${
-            theme === "dark" ? "text-dark-primary" : "text-primary"
-          }`}
-        >
-          {value}
-        </Text>
-      )}
-    </View>
-  );
-}
-

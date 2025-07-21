@@ -4,12 +4,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const TopUpEnterAmount = () => {
@@ -34,7 +34,7 @@ const TopUpEnterAmount = () => {
       router.push({
         pathname: "/(root)/(home)/(top-up)/select-topUp-method",
         params: {
-          amount: topUp, // or whatever your amount state is called
+          amount: parseFloat(topUp), // or whatever your amount state is called
           name, // pass other params as needed
           email,
           avatar,
@@ -65,17 +65,17 @@ const TopUpEnterAmount = () => {
         }`}
       >
         <View
-          style={{ height: "55%", paddingTop: 40 }}
+          style={{ height: "55%", paddingTop: 60 }}
           className="bg-general w-full p-5"
         >
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                if (router.canGoBack()) {
+                // if (router.canGoBack()) {
                   router.back();
-                } else {
-                  router.replace("/(root)/(tabs)/home");
-                }
+                // } else {
+                //   router.replace("/(root)/(tabs)/home");
+                // }
               }}
             >
               <Ionicons
@@ -97,7 +97,7 @@ const TopUpEnterAmount = () => {
             </View>
           </View>
           <View>
-            <View className="flex items-center" style={{ marginTop: 120 }}>
+            <View className="flex items-center" style={{ marginTop: 170 }}>
               <View className="flex-row">
                 <TextInput
                   className={`font-UrbanistBold ${
