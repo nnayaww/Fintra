@@ -120,7 +120,7 @@ const notification = () => {
       >
         <TouchableOpacity
           onPress={() => {
-            router.back();
+              router.back();
           }}
         >
           <Ionicons
