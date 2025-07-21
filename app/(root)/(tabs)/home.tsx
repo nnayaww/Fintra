@@ -1,21 +1,19 @@
 /* eslint-disable react/no-unescaped-entities */
 import {
-  FormattedTransaction,
-  formatTransactions,
-  icons,
-  images,
+    FormattedTransaction,
+    formatTransactions,
+    icons,
+    images,
 } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Constants from "expo-constants";
-import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
-import { useTheme } from "@/lib/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -36,9 +34,11 @@ const Home = () => {
     setUserBalance(userBalance1)
   }
   
-  useEffect(()=>{
-    getBalance()
-  }, [userBalance])
+  useFocusEffect(
+    React.useCallback(() => {
+      getBalance();
+    }, [])
+  );
 
   const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
     <View className="flex-row py-4 items-center">

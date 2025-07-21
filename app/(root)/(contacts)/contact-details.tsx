@@ -51,7 +51,7 @@ export default function Contacts() {
         <View>
           <Image
             source={favorite === "true" ? icons.star : icons.starOutline}
-            tintColor={theme === "dark" ? "#fff" : undefined}
+            tintColor={favorite === "true" ? "#FFA500" : (theme === "dark" ? "#fff" : "#0D0D0D")}
             style={{ height: 28, width: 28 }}
           />
         </View>

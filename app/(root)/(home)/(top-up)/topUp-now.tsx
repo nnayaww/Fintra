@@ -11,14 +11,14 @@ import { router, useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Keyboard,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  Keyboard,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const imageMap: Record<string, any> = {
@@ -45,7 +45,7 @@ const TopUpNow = () => {
       console.log('Deep link event:', event.url);
       const parsed = Linking.parse(event.url);
       const ref = parsed.queryParams?.reference as string | undefined;
-      if (ref && reference) {
+      if (ref) {
         router.push({
           pathname: "/(root)/(home)/(top-up)/top-up-successful",
           params: {
@@ -57,7 +57,18 @@ const TopUpNow = () => {
 
     const subs = Linking.addEventListener("url", handleDeepLink);
     return () => subs.remove();
-  }, [reference]);
+  }, []);
+
+  const handleManualVerify = () => {
+    if (reference) {
+      router.push({
+        pathname: "/(root)/(home)/(top-up)/top-up-successful",
+        params: { reference },
+      });
+    } else {
+      Alert.alert("No reference", "No payment reference to verify.");
+    }
+  };
 
   const handleConfirm = async () => {
     try {
@@ -193,6 +204,22 @@ const TopUpNow = () => {
             )}
           </TouchableOpacity>
         </View>
+        {reference && (
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
+            <Text style={{ marginBottom: 10, textAlign: 'center', color: theme === 'dark' ? '#fff' : '#222', fontFamily: 'Urbanist-Medium' }}>
+              If you’ve completed payment, verify below.
+            </Text>
+            <TouchableOpacity
+              onPress={handleManualVerify}
+              className="bg-general flex items-center justify-center p-4 border-none rounded-full"
+              style={{ width: '80%' }}
+            >
+              <Text className="font-UrbanistSemiBold text-buttontext text-white">
+                Verify Payment Manually
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

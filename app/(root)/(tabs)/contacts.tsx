@@ -122,7 +122,7 @@ export default function Contacts() {
         >
           <Image
             source={item.favorite ? icons.star : icons.starOutline}
-            tintColor={theme === "dark" ? "#fff" : undefined}
+            tintColor={item.favorite ? "#FFA500" : (theme === "dark" ? "#fff" : "#0D0D0D")}
             style={{ height: 28, width: 28 }}
           />
         </TouchableOpacity>

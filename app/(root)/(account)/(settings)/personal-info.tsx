@@ -167,7 +167,7 @@ const PersonalInfo = () => {
       const response = await fetch(
         `https://fintra-1.onrender.com/users/${userId}`,
         {
-          method: "Post",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
