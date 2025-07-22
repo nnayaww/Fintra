@@ -1,3 +1,4 @@
+import { useTheme } from "@/lib/ThemeContext";
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -89,6 +90,22 @@ const styles = StyleSheet.create({
   menuItem: { padding: 12 },
 });
 
+// --- Theme Colors ---
+const getPalette = (theme: "light" | "dark") => ({
+  background: theme === "dark" ? "#181A20" : "#f8f9fa",
+  card: theme === "dark" ? "#23262F" : "#fff",
+  border: theme === "dark" ? "#23262F" : "#eee",
+  text: theme === "dark" ? "#fff" : "#000",
+  subtext: theme === "dark" ? "#aaa" : "#666",
+  pill: theme === "dark" ? "#23262F" : "#f0f0f0",
+  pillActive: theme === "dark" ? "#fff" : "#000",
+  pillText: theme === "dark" ? "#fff" : "#000",
+  pillActiveText: theme === "dark" ? "#23262F" : "#fff",
+  iconBg: theme === "dark" ? "#23262F" : "#f0f0f0",
+  menu: theme === "dark" ? "#23262F" : "#fff",
+  shadow: theme === "dark" ? "#000" : "#000",
+});
+
 // --- Chart Config ---
 const chartConfig = {
   backgroundGradientFrom: '#fff',
@@ -136,6 +153,8 @@ const Analytics = () => {
   const [activePeriod, setActivePeriod] = useState<keyof typeof chartDataOptions>('Last 30 days');
   const [showMenu, setShowMenu] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0, visible: false, value: 0 });
+  const { theme } = useTheme();
+  const palette = getPalette(theme);
 
   const handlePeriodChange = (period: keyof typeof chartDataOptions) => {
     setActivePeriod(period);
@@ -150,38 +169,38 @@ const Analytics = () => {
   const currentChartData = chartDataOptions[activePeriod];
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={[styles.header, showMenu && { zIndex: 10 }]}> 
+    <ScrollView style={[styles.container, { backgroundColor: palette.background }]}>
+      <View style={[styles.header, { backgroundColor: palette.card, borderBottomColor: palette.border }]}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color="#000" />
+          <Feather name="arrow-left" size={24} color={palette.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Insights</Text>
+        <Text style={[styles.headerTitle, { color: palette.text }]}>Insights</Text>
         <TouchableOpacity onPress={toggleMenu}>
-          <Feather name="more-vertical" size={24} color="#000" />
+          <Feather name="more-vertical" size={24} color={palette.text} />
         </TouchableOpacity>
         {showMenu && (
-          <View style={styles.menu}>
+          <View style={[styles.menu, { backgroundColor: palette.menu, shadowColor: palette.shadow }]}>
             <TouchableOpacity style={styles.menuItem} onPress={toggleMenu}>
-              <Text>Refresh</Text>
+              <Text style={{ color: palette.text }}>Refresh</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={toggleMenu}>
-              <Text>Export Data</Text>
+              <Text style={{ color: palette.text }}>Export Data</Text>
             </TouchableOpacity>
           </View>
         )}
       </View>
 
-      <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>Total Spending</Text>
-        <Text style={styles.summaryAmount}>$5,286.50</Text>
+      <View style={[styles.summaryContainer, { backgroundColor: palette.card, shadowColor: palette.shadow }]}>
+        <Text style={[styles.summaryTitle, { color: palette.subtext }]}>Total Spending</Text>
+        <Text style={[styles.summaryAmount, { color: palette.text }]}>$5,286.50</Text>
         <View style={styles.pillsContainer}>
           {(Object.keys(chartDataOptions) as (keyof typeof chartDataOptions)[]).map((period) => (
             <TouchableOpacity
               key={period}
-              style={[styles.pill, activePeriod === period && styles.activePill]}
+              style={[styles.pill, { backgroundColor: activePeriod === period ? palette.pillActive : palette.pill }]}
               onPress={() => handlePeriodChange(period)}
             >
-              <Text style={[styles.pillText, activePeriod === period && styles.activePillText]}>
+              <Text style={[styles.pillText, { color: activePeriod === period ? palette.pillActiveText : palette.pillText }]}>
                 {period}
               </Text>
             </TouchableOpacity>
@@ -189,7 +208,7 @@ const Analytics = () => {
         </View>
       </View>
 
-      <View style={styles.chartContainer}>
+      <View style={[styles.chartContainer, { backgroundColor: palette.card, shadowColor: palette.shadow }]}>
         <LineChart
           data={currentChartData}
           width={screenWidth - 16}
@@ -205,8 +224,8 @@ const Analytics = () => {
             if (!tooltipPos.visible) return null;
             return (
               <Svg>
-                <Rect x={tooltipPos.x - 30} y={tooltipPos.y - 40} width="65" height="30" rx={8} fill="#2c3e50" />
-                <SvgText x={tooltipPos.x} y={tooltipPos.y - 20} fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">
+                <Rect x={tooltipPos.x - 30} y={tooltipPos.y - 40} width="65" height="30" rx={8} fill={theme === 'dark' ? '#23262F' : '#2c3e50'} />
+                <SvgText x={tooltipPos.x} y={tooltipPos.y - 20} fill={theme === 'dark' ? '#fff' : 'white'} fontSize="14" fontWeight="bold" textAnchor="middle">
                   {`${tooltipPos.value.toFixed(2)}`}
                 </SvgText>
               </Svg>
@@ -215,18 +234,18 @@ const Analytics = () => {
         />
       </View>
 
-      <View style={styles.transactionsContainer}>
-        <Text style={styles.transactionsTitle}>Recent Transactions</Text>
+      <View style={[styles.transactionsContainer, { backgroundColor: palette.card }]}>
+        <Text style={[styles.transactionsTitle, { color: palette.text }]}>Recent Transactions</Text>
         {transactionData.map((transaction) => (
           <View key={transaction.id} style={styles.transactionItem}>
-            <View style={styles.transactionIcon}>
-              <Feather name={transaction.icon as any} size={24} color="#000" />
+            <View style={[styles.transactionIcon, { backgroundColor: palette.iconBg }]}>
+              <Feather name={transaction.icon as any} size={24} color={palette.text} />
             </View>
             <View style={styles.transactionDetails}>
-              <Text style={styles.transactionName}>{transaction.name}</Text>
-              <Text style={styles.transactionDate}>{transaction.date}</Text>
+              <Text style={[styles.transactionName, { color: palette.text }]}>{transaction.name}</Text>
+              <Text style={[styles.transactionDate, { color: palette.subtext }]}>{transaction.date}</Text>
             </View>
-            <Text style={styles.transactionAmount}>{transaction.amount}</Text>
+            <Text style={[styles.transactionAmount, { color: palette.text }]}>{transaction.amount}</Text>
           </View>
         ))}
       </View>

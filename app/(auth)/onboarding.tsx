@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { useTheme } from "@/lib/ThemeContext";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
@@ -59,53 +60,51 @@ const Onboarding = () => {
               <Text className={`text-onboardingsubtext font-UrbanistMedium text-center leading-8 -mt-10 ${theme === 'dark' ? 'text-dark-secondary' : 'text-secondary'}`}>
                 {item.description}
               </Text>
-              <View
-                className="flex-row gap-4 items-center"
-                style={{
-                  position: "absolute",
-                  right: 20,
-                  left: 20,
-                  bottom: -112,
-                }}>
-                {isLastSlide ? (
-                  <TouchableOpacity
-                    className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
-                    onPress={() => {
-                      router.replace("/(auth)/welcome-GetStarted");
-                    }}>
-                    <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
-                      Get Started
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => {
-                        router.replace("/(auth)/welcome-GetStarted");
-                      }}
-                      className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${theme === 'dark' ? 'bg-dark-background' : 'bg-white'}`}>
-                      <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
-                        Skip
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        isLastSlide
-                          ? router.replace("/(auth)/welcome-GetStarted")
-                          : goToNext();
-                      }}
-                      className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full">
-                      <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
-                        Continue
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </View>
             </View>
           </View>
         ))}
       </Swiper>
+      {/* Buttons below the progress indicator */}
+      <View
+        className="flex-row gap-4 items-center mb-10"
+        style={{
+          marginHorizontal: 20,
+        }}>
+        {isLastSlide ? (
+          <TouchableOpacity
+            className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
+            onPress={() => {
+              router.replace("/(auth)/welcome-GetStarted");
+            }}>
+            <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
+              Get Started
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              onPress={() => {
+                router.replace("/(auth)/welcome-GetStarted");
+              }}
+              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${theme === 'dark' ? 'bg-dark-background' : 'bg-white'}`}>
+              <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
+                Skip
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                isLastSlide
+                  ? router.replace("/(auth)/welcome-GetStarted")
+                  : goToNext();
+              }}
+              className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full">
+              <Text className={`font-UrbanistSemiBold text-buttontext ${theme === 'dark' ? 'text-dark-primary' : 'text-primary'}`}>
+                Continue
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </View>
   );
 };

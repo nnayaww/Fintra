@@ -13,13 +13,13 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Image,
-    Keyboard,
-    ScrollView,
-    Share,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Keyboard,
+  ScrollView,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Modal from "react-native-modal";
 
@@ -605,6 +605,7 @@ const Account = () => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
+                setshowLogoutModal(false);
                 router.push("/(auth)/sign-in");
               }}
               className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"

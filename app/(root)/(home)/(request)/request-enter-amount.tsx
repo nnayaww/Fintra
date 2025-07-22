@@ -1,15 +1,16 @@
 import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const RequestEnterAmount = () => {
@@ -21,6 +22,17 @@ const RequestEnterAmount = () => {
   const [inputFocused, setInputFocused] = useState(false);
   const [request, setRequest] = useState("");
   const [requestError, setRequestError] = useState("");
+  const [balance, setBalance] = useState<number>(0);
+
+  React.useEffect(() => {
+    const fetchBalance = async () => {
+      const storedBalance = await AsyncStorage.getItem("balance");
+      if (storedBalance !== null) {
+        setBalance(parseFloat(storedBalance));
+      }
+    };
+    fetchBalance();
+  }, []);
 
   const handleContinue = () => {
     let valid = true;
@@ -141,7 +153,7 @@ const RequestEnterAmount = () => {
                     theme === "dark" ? "text-dark-primary" : "text-primary"
                   }`}
                   style={{ fontSize: 18 }}
-                >{`₵${formatBalance(9645.5 /* or user.balance */)}`}</Text>
+                >{`₵${formatBalance(balance)}`}</Text>
               </View>
               {requestError ? (
                 <Text
