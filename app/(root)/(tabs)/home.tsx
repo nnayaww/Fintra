@@ -12,7 +12,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 const Home = () => {
@@ -20,6 +20,7 @@ const Home = () => {
   const transactionSections = formatTransactions();
   const [contactImage, setContactImage] = useState<string | null>(null);
   const [userBalance, setUserBalance] = useState('');
+  const [transactions, setTrasactions] = useState([]);
 
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
@@ -28,17 +29,43 @@ const Home = () => {
     isNewUser: isNewUserBool,
     transactions: transactionSections,
   };  
-
-  const getBalance = async() => {
-    let userBalance1: any = await AsyncStorage.getItem('balance');
-    setUserBalance(userBalance1)
-  }
   
   useFocusEffect(
-    React.useCallback(() => {
-      getBalance();
-    }, [])
-  );
+  useCallback(() => {
+    const getBalance = async () => {
+      const storedBalance = await AsyncStorage.getItem("balance");
+      setUserBalance(storedBalance); // or parseInt(storedBalance) if it's a number
+    };
+
+    getBalance();
+  }, [])
+); 
+
+
+useEffect(() => {
+  // Fetching the user-specific transactions
+  const fetchTransactionDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const userId = await AsyncStorage.getItem('userId');
+
+      const response = await fetch(`https://fintra-1.onrender.com/api/transactions/user/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json(); // Await this!
+      console.log("Transaction data in home:", data);
+    } catch (error) {
+      console.log("Fetch error:", error);
+    }
+  };
+
+  fetchTransactionDetails(); // ❗CALL the function here
+
+}, []);
+
 
   const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
     <View className="flex-row py-4 items-center">

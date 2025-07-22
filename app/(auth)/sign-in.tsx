@@ -104,6 +104,7 @@ const handleSignIn = async () => {
     await AsyncStorage.setItem("fullName", `${data.user.first_name} ${data.user.last_name}`);
     await AsyncStorage.setItem("phone", data.user.phone); // Store phone number
     const convertedBalance = (data.user.balance)/100
+    console.log("converted balance::", convertedBalance)
     await AsyncStorage.setItem("balance", JSON.stringify(convertedBalance)); // Store balance as string
     
     console.log('user balance from async storage:', await AsyncStorage.getItem('balance'))

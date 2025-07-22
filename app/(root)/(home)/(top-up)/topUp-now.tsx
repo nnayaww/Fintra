@@ -61,6 +61,7 @@ const TopUpNow = () => {
 
   const handleManualVerify = () => {
     if (reference) {
+      console.log("reference",reference)
       router.push({
         pathname: "/(root)/(home)/(top-up)/top-up-successful",
         params: { reference },
