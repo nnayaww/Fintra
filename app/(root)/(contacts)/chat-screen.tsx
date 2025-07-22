@@ -2,6 +2,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '@/lib/ThemeContext';
 
 
 interface Message {
@@ -22,6 +23,7 @@ interface User {
 
 export default function ChatScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -123,27 +125,23 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme === 'dark' ? '#181A20' : '#f9fafb' }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={80}
       >
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#181A20' : '#f9fafb' }]}> 
           {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, { backgroundColor: theme === 'dark' ? '#23262F' : '#fff', borderBottomColor: theme === 'dark' ? '#23262F' : '#e5e7eb', shadowColor: theme === 'dark' ? '#000' : '#000' }]}> 
             <TouchableOpacity style={styles.headerButton} accessibilityLabel="Back" onPress={() => {
-              // if (router.canGoBack()) {
-                router.back();
-              // } else {
-              //   router.replace("/(root)/(tabs)/home");
-              // }
+              router.back();
             }}>
-              <Ionicons name="arrow-back" size={24} color="#666" />
+              <Ionicons name="arrow-back" size={24} color={theme === 'dark' ? '#fff' : '#666'} />
             </TouchableOpacity>
             <View style={styles.headerUserInfo}>
               <View style={styles.avatarWrapper}>
-                <View style={styles.avatarCircle}>
+                <View style={[styles.avatarCircle, { backgroundColor: theme === 'dark' ? '#6366f1' : '#6366f1' }]}> 
                   <Text style={styles.avatarText}>
                     {chatUser.name.split(' ').map(n => n[0]).join('')}
                   </Text>
@@ -153,28 +151,28 @@ export default function ChatScreen() {
                 )}
               </View>
               <View>
-                <Text style={styles.headerName}>{chatUser.name}</Text>
-                <Text style={styles.headerStatus}>
+                <Text style={[styles.headerName, { color: theme === 'dark' ? '#fff' : '#111827' }]}>{chatUser.name}</Text>
+                <Text style={[styles.headerStatus, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}> 
                   {chatUser.isOnline ? 'Online' : `Last seen ${formatTime(chatUser.lastSeen!)}`}
                 </Text>
               </View>
             </View>
             <View style={styles.headerActions}>
-              <TouchableOpacity style={styles.headerButton} accessibilityLabel="Video call">
-                <Feather name="video" size={20} color="#666" />
+              <TouchableOpacity style={[styles.headerButton, { marginRight: 16 }]} accessibilityLabel="Video call">
+                <Feather name="video" size={20} color={theme === 'dark' ? '#fff' : '#666'} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerButton} accessibilityLabel="Phone call">
-                <Feather name="phone" size={20} color="#666" />
+                <Feather name="phone" size={20} color={theme === 'dark' ? '#fff' : '#666'} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerButton} accessibilityLabel="More options">
-                <Feather name="more-vertical" size={20} color="#666" />
+                <Feather name="more-vertical" size={20} color={theme === 'dark' ? '#fff' : '#666'} />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Messages */}
           <ScrollView
-            style={styles.messagesContainer}
+            style={[styles.messagesContainer, { backgroundColor: theme === 'dark' ? '#181A20' : '#f9fafb' }]}
             contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
             ref={scrollViewRef}
           >
@@ -183,10 +181,20 @@ export default function ChatScreen() {
                 key={message.id}
                 style={[styles.messageRow, message.isOwn ? styles.messageRowOwn : styles.messageRowOther]}
               >
-                <View style={[styles.messageBubble, message.isOwn ? styles.messageBubbleOwn : styles.messageBubbleOther]}>
-                  <Text style={styles.messageText}>{message.text}</Text>
+                <View style={[
+                  styles.messageBubble,
+                  message.isOwn
+                    ? [styles.messageBubbleOwn, { backgroundColor: theme === 'dark' ? '#2563eb' : '#3b82f6' }]
+                    : [styles.messageBubbleOther, { backgroundColor: theme === 'dark' ? '#23262F' : '#fff', borderColor: theme === 'dark' ? '#23262F' : '#e5e7eb', shadowColor: theme === 'dark' ? '#000' : '#000' }],
+                ]}>
+                  <Text style={[styles.messageText, { color: message.isOwn ? '#fff' : (theme === 'dark' ? '#fff' : '#111827') }]}>{message.text}</Text>
                   <View style={styles.messageMeta}>
-                    <Text style={[styles.messageTime, message.isOwn ? { color: '#dbeafe' } : { color: '#64748b' }]}>
+                    <Text style={[
+                      styles.messageTime,
+                      message.isOwn
+                        ? { color: theme === 'dark' ? '#dbeafe' : '#dbeafe' }
+                        : { color: theme === 'dark' ? '#a3a3a3' : '#64748b' },
+                    ]}>
                       {formatTime(message.timestamp)}
                     </Text>
                     {message.isOwn && getStatusIcon(message.status)}
@@ -197,23 +205,33 @@ export default function ChatScreen() {
           </ScrollView>
 
           {/* Input */}
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { backgroundColor: theme === 'dark' ? '#23262F' : '#fff', borderTopColor: theme === 'dark' ? '#23262F' : '#e5e7eb' }]}> 
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme === 'dark' ? '#181A20' : '#f1f5f9',
+                  color: theme === 'dark' ? '#fff' : '#111827',
+                },
+              ]}
               value={newMessage}
               onChangeText={setNewMessage}
               placeholder="Type a message..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={theme === 'dark' ? '#a3a3a3' : '#9CA3AF'}
               onSubmitEditing={handleSendMessage}
               returnKeyType="send"
             />
             <TouchableOpacity
               onPress={handleSendMessage}
               disabled={newMessage.trim() === ''}
-              style={[styles.sendButton, newMessage.trim() === '' ? styles.sendButtonDisabled : {}]}
+              style={[
+                styles.sendButton,
+                newMessage.trim() === '' ? styles.sendButtonDisabled : {},
+                { backgroundColor: newMessage.trim() === '' ? (theme === 'dark' ? '#23262F' : '#e5e7eb') : (theme === 'dark' ? '#2563eb' : '#3b82f6') },
+              ]}
               accessibilityLabel="Send message"
             >
-              <Feather name="send" size={20} color={newMessage.trim() === '' ? '#a3a3a3' : '#fff'} />
+              <Feather name="send" size={20} color={newMessage.trim() === '' ? (theme === 'dark' ? '#a3a3a3' : '#a3a3a3') : '#fff'} />
             </TouchableOpacity>
           </View>
         </View>

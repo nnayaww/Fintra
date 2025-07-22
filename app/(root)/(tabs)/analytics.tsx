@@ -170,12 +170,9 @@ const Analytics = () => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: palette.background }]}>
-      <View style={[styles.header, { backgroundColor: palette.card, borderBottomColor: palette.border }]}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color={palette.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: palette.text }]}>Insights</Text>
-        <TouchableOpacity onPress={toggleMenu}>
+      <View style={[styles.header, { backgroundColor: palette.card, borderBottomColor: palette.border, justifyContent: 'center' }]}>
+        <Text style={[styles.headerTitle, { color: palette.text, textAlign: 'center', flex: 1 }]}>Insights</Text>
+        <TouchableOpacity onPress={toggleMenu} style={{ position: 'absolute', right: 20, top: 70 }}>
           <Feather name="more-vertical" size={24} color={palette.text} />
         </TouchableOpacity>
         {showMenu && (
