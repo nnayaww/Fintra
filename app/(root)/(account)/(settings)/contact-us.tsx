@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useTheme } from "@/lib/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";

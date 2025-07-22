@@ -13,13 +13,13 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
-  Keyboard,
-  ScrollView,
-  Share,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    Keyboard,
+    ScrollView,
+    Share,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import Modal from "react-native-modal";
 
@@ -416,30 +416,6 @@ const Account = () => {
               style={{ fontSize: 18, marginLeft: -138 }}
             >
               About FinTra
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/analytics")
-            }
-          >
-            <Feather
-              name="bar-chart-2"
-              size={26}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 10 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -160 }}
-            >
-              Analytics
             </Text>
             <MaterialCommunityIcons
               name="greater-than"
