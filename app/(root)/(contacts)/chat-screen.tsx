@@ -1,7 +1,7 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 
 interface Message {
@@ -123,100 +123,102 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={80}
-    >
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.headerButton} accessibilityLabel="Back" onPress={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace("/(root)/(tabs)/home");
-            }
-          }}>
-            <Ionicons name="arrow-back" size={24} color="#666" />
-          </TouchableOpacity>
-          <View style={styles.headerUserInfo}>
-            <View style={styles.avatarWrapper}>
-              <View style={styles.avatarCircle}>
-                <Text style={styles.avatarText}>
-                  {chatUser.name.split(' ').map(n => n[0]).join('')}
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={80}
+      >
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.headerButton} accessibilityLabel="Back" onPress={() => {
+              // if (router.canGoBack()) {
+                router.back();
+              // } else {
+              //   router.replace("/(root)/(tabs)/home");
+              // }
+            }}>
+              <Ionicons name="arrow-back" size={24} color="#666" />
+            </TouchableOpacity>
+            <View style={styles.headerUserInfo}>
+              <View style={styles.avatarWrapper}>
+                <View style={styles.avatarCircle}>
+                  <Text style={styles.avatarText}>
+                    {chatUser.name.split(' ').map(n => n[0]).join('')}
+                  </Text>
+                </View>
+                {chatUser.isOnline && (
+                  <View style={styles.onlineDot} />
+                )}
+              </View>
+              <View>
+                <Text style={styles.headerName}>{chatUser.name}</Text>
+                <Text style={styles.headerStatus}>
+                  {chatUser.isOnline ? 'Online' : `Last seen ${formatTime(chatUser.lastSeen!)}`}
                 </Text>
               </View>
-              {chatUser.isOnline && (
-                <View style={styles.onlineDot} />
-              )}
             </View>
-            <View>
-              <Text style={styles.headerName}>{chatUser.name}</Text>
-              <Text style={styles.headerStatus}>
-                {chatUser.isOnline ? 'Online' : `Last seen ${formatTime(chatUser.lastSeen!)}`}
-              </Text>
+            <View style={styles.headerActions}>
+              <TouchableOpacity style={styles.headerButton} accessibilityLabel="Video call">
+                <Feather name="video" size={20} color="#666" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.headerButton} accessibilityLabel="Phone call">
+                <Feather name="phone" size={20} color="#666" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.headerButton} accessibilityLabel="More options">
+                <Feather name="more-vertical" size={20} color="#666" />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity style={styles.headerButton} accessibilityLabel="Video call">
-              <Feather name="video" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton} accessibilityLabel="Phone call">
-              <Feather name="phone" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton} accessibilityLabel="More options">
-              <Feather name="more-vertical" size={20} color="#666" />
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Messages */}
-        <ScrollView
-          style={styles.messagesContainer}
-          contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
-          ref={scrollViewRef}
-        >
-          {messages.map((message) => (
-            <View
-              key={message.id}
-              style={[styles.messageRow, message.isOwn ? styles.messageRowOwn : styles.messageRowOther]}
-            >
-              <View style={[styles.messageBubble, message.isOwn ? styles.messageBubbleOwn : styles.messageBubbleOther]}>
-                <Text style={styles.messageText}>{message.text}</Text>
-                <View style={styles.messageMeta}>
-                  <Text style={[styles.messageTime, message.isOwn ? { color: '#dbeafe' } : { color: '#64748b' }]}>
-                    {formatTime(message.timestamp)}
-                  </Text>
-                  {message.isOwn && getStatusIcon(message.status)}
+          {/* Messages */}
+          <ScrollView
+            style={styles.messagesContainer}
+            contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
+            ref={scrollViewRef}
+          >
+            {messages.map((message) => (
+              <View
+                key={message.id}
+                style={[styles.messageRow, message.isOwn ? styles.messageRowOwn : styles.messageRowOther]}
+              >
+                <View style={[styles.messageBubble, message.isOwn ? styles.messageBubbleOwn : styles.messageBubbleOther]}>
+                  <Text style={styles.messageText}>{message.text}</Text>
+                  <View style={styles.messageMeta}>
+                    <Text style={[styles.messageTime, message.isOwn ? { color: '#dbeafe' } : { color: '#64748b' }]}>
+                      {formatTime(message.timestamp)}
+                    </Text>
+                    {message.isOwn && getStatusIcon(message.status)}
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
 
-        {/* Input */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={newMessage}
-            onChangeText={setNewMessage}
-            placeholder="Type a message..."
-            placeholderTextColor="#9CA3AF"
-            onSubmitEditing={handleSendMessage}
-            returnKeyType="send"
-          />
-          <TouchableOpacity
-            onPress={handleSendMessage}
-            disabled={newMessage.trim() === ''}
-            style={[styles.sendButton, newMessage.trim() === '' ? styles.sendButtonDisabled : {}]}
-            accessibilityLabel="Send message"
-          >
-            <Feather name="send" size={20} color={newMessage.trim() === '' ? '#a3a3a3' : '#fff'} />
-          </TouchableOpacity>
+          {/* Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={newMessage}
+              onChangeText={setNewMessage}
+              placeholder="Type a message..."
+              placeholderTextColor="#9CA3AF"
+              onSubmitEditing={handleSendMessage}
+              returnKeyType="send"
+            />
+            <TouchableOpacity
+              onPress={handleSendMessage}
+              disabled={newMessage.trim() === ''}
+              style={[styles.sendButton, newMessage.trim() === '' ? styles.sendButtonDisabled : {}]}
+              accessibilityLabel="Send message"
+            >
+              <Feather name="send" size={20} color={newMessage.trim() === '' ? '#a3a3a3' : '#fff'} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -241,7 +243,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   headerButton: {
-    padding: 8,
+    padding: 1,
     borderRadius: 999,
   },
   headerUserInfo: {

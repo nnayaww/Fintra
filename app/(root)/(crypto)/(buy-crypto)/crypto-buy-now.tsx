@@ -185,9 +185,9 @@ const BuyNow = () => {
           <TouchableOpacity
             onPress={() => {
               // if (router.canGoBack()) {
-                router.back();
-              // } else {
-              //   router.replace("/(root)/(tabs)/home");
+              //   router.back();
+              // // } else {
+                router.replace("/(root)/(tabs)/home");
               // }
             }}
             className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${

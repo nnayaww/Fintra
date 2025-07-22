@@ -1,15 +1,16 @@
 import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 
 const AmountToBuy = () => {
@@ -19,6 +20,17 @@ const AmountToBuy = () => {
   const [buy, setBuy] = useState("");
   const [buyError, setBuyError] = useState("");
   const { theme } = useTheme();
+  const [balance, setBalance] = useState<number>(0);
+
+  React.useEffect(() => {
+    const fetchBalance = async () => {
+      const storedBalance = await AsyncStorage.getItem("balance");
+      if (storedBalance !== null) {
+        setBalance(parseFloat(storedBalance));
+      }
+    };
+    fetchBalance();
+  }, []);
 
   const handleContinue = () => {
     let valid = true;
@@ -70,11 +82,11 @@ const AmountToBuy = () => {
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                if (router.canGoBack()) {
+                // if (router.canGoBack()) {
                   router.back();
-                } else {
-                  router.replace("/(root)/(tabs)/home");
-                }
+                // } else {
+                //   router.replace("/(root)/(tabs)/home");
+                // }
               }}
             >
               <Ionicons
@@ -98,11 +110,17 @@ const AmountToBuy = () => {
           <View>
             <View className="flex items-center" style={{ marginTop: 120 }}>
               <View className="flex-row">
+                <FontAwesome6
+                  name="cedi-sign"
+                  size={30}
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  style={{ marginTop: 10 }}
+                />
                 <TextInput
                   className={`font-UrbanistBold ${
                     theme === "dark" ? "text-dark-primary" : "text-primary"
                   }`}
-                  placeholder="---"
+                  placeholder="___"
                   keyboardType="numeric"
                   value={buy}
                   onChangeText={(text) => {
@@ -115,12 +133,7 @@ const AmountToBuy = () => {
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
                 />
-                <FontAwesome6
-                  name="cedi-sign"
-                  size={20}
-                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  style={{ marginTop: 20 }}
-                />
+                
               </View>
               <View className="flex-row gap-1">
                 <Text
@@ -136,7 +149,7 @@ const AmountToBuy = () => {
                     theme === "dark" ? "text-dark-primary" : "text-primary"
                   }`}
                   style={{ fontSize: 18 }}
-                >{`₵${formatBalance(9645.5 /* or user.balance */)}`}</Text>
+                >{`₵${formatBalance(balance)}`}</Text>
               </View>
               {buyError ? (
                 <Text

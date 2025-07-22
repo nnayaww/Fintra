@@ -171,15 +171,15 @@ const RequestNow = () => {
               )}`}</Text>
             </View>
           </View>
-          <Text
+          {/* <Text
             className={`font-UrbanistSemiBold mt-10 ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
             }`}
             style={{ fontSize: 20 }}
           >
             Add Notes
-          </Text>
-          <View
+          </Text> */}
+          {/* <View
             className={`rounded-lg mt-2 ${
               theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
             }`}
@@ -195,7 +195,7 @@ const RequestNow = () => {
               multiline
               numberOfLines={4}
             />
-          </View>
+          </View> */}
           <View
             className="flex-row gap-4 items-center"
             style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
@@ -203,9 +203,9 @@ const RequestNow = () => {
             <TouchableOpacity
               onPress={() => {
                 // if (router.canGoBack()) {
-                  router.back();
-                // } else {
-                //   router.replace("/(root)/(tabs)/home");
+                //   router.back();
+                // // } else {
+                  router.replace("/(root)/(tabs)/home");
                 // }
               }}
               className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
