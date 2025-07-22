@@ -1,6 +1,7 @@
+import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useTheme } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -21,6 +22,21 @@ const SendEnterAmount = () => {
   const [inputFocused, setInputFocused] = useState(false);
   const [send, setSend] = useState("");
   const [sendError, setSendError] = useState("");
+  const [balance, setBalance] = useState<number>(0);
+
+  React.useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const storedBalance = await AsyncStorage.getItem("balance");
+        if (storedBalance !== null) {
+          setBalance(parseFloat(storedBalance));
+        }
+      } catch (error) {
+        // Optionally handle error
+      }
+    };
+    fetchBalance();
+  }, []);
 
   const handleContinue = () => {
     let valid = true;
@@ -73,11 +89,11 @@ const SendEnterAmount = () => {
           <View className="flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                if (router.canGoBack()) {
+                // if (router.canGoBack()) {
                   router.back();
-                } else {
-                  router.replace("/(root)/(tabs)/home");
-                }
+                // } else {
+                //   router.replace("/(root)/(tabs)/home");
+                // }
               }}
             >
               <Ionicons
@@ -101,11 +117,17 @@ const SendEnterAmount = () => {
           <View>
             <View className="flex items-center" style={{ marginTop: 120 }}>
               <View className="flex-row">
+                <FontAwesome6
+                  name="cedi-sign"
+                  size={30}
+                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                  style={{ marginTop: 10 }}
+                />
                 <TextInput
                   className={`font-UrbanistBold ${
                     theme === "dark" ? "text-white" : "text-primary"
                   }`}
-                  placeholder="---"
+                  placeholder="___"
                   keyboardType="numeric"
                   value={send}
                   onChangeText={(text) => {
@@ -115,19 +137,14 @@ const SendEnterAmount = () => {
                   style={{
                     fontSize: 40,
                     backgroundColor: theme === "dark" ? "#23262F" : "#F6F8FA",
-                    borderRadius: 12,
-                    paddingHorizontal: 16,
+                    borderRadius: 5,
+                    paddingHorizontal: 19,
                   }}
                   placeholderTextColor={theme === 'dark' ? '#B0B0B0' : '#9CA3AF'}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
                 />
-                <FontAwesome6
-                  name="cedi-sign"
-                  size={20}
-                  color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  style={{ marginTop: 20 }}
-                />
+                
               </View>
               <View className="flex-row gap-1">
                 <Text
@@ -143,7 +160,7 @@ const SendEnterAmount = () => {
                     theme === "dark" ? "text-white" : "text-primary"
                   }`}
                   style={{ fontSize: 18 }}
-                >{`₵${formatBalance(9645.5 /* or user.balance */)}`}</Text>
+                >{`₵${formatBalance(balance)}`}</Text>
               </View>
               {sendError ? (
                 <Text

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { formatTransactions } from "@/constants";
+import { formatDate, formatTransactions } from "@/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as MediaLibrary from "expo-media-library";
@@ -7,14 +7,15 @@ import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Share, Text, TouchableOpacity, View } from "react-native";
 import { captureScreen } from "react-native-view-shot";
-import { formatDate } from "@/constants";
 
 const SendMoneySent = () => {
-  const { id, type } = useLocalSearchParams(); // Get the id from the URL
+const { id, amount, name, email, notes, reference, createdAt, status, avatar } = useLocalSearchParams();
+
+  // const { id, type } = useLocalSearchParams(); // Get the id from the URL
   const transactions = formatTransactions().flatMap((section) => section.data);
   const transaction = transactions.find((t) => t.id === id);
 
-  const { amount, name, email, avatar, notes } = useLocalSearchParams();
+  // const { amount, name, email, avatar, notes } = useLocalSearchParams();
   const displayName = Array.isArray(name) ? name[0] : name;
   const displayEmail = Array.isArray(email) ? email[0] : email;
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
@@ -140,14 +141,10 @@ const SendMoneySent = () => {
             label="You sent"
             value={`₵ ${formatBalance(Number(displayAmount))}`}
           />
-          <Row label="To" value={displayName} />
-          <Row label="Email" value={displayEmail} />
-          {transaction?.category === "Incoming Request" && (
-            <Row label="Status" value={transaction?.status} />
-          )}
-          <Row label="Date" value={formatDate(new Date())} />
-          <Row label="Transaction ID" value={transaction?.transactionId} />
-          <Row label="Reference ID" value={transaction?.referenceId} />
+          <Row label="Date" value={formatDate(new Date(Array.isArray(createdAt) ? createdAt[0] : createdAt))} />
+          <Row label="Transaction ID" value={Array.isArray(id) ? id[0] : id} />
+          <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} />
+          <Row label="Status" value={Array.isArray(status) ? status[0] : status} />
           <View
             className="h-[1px] self-center mt-2"
             style={{ width: "90%", backgroundColor: "#e6e6e6" }}

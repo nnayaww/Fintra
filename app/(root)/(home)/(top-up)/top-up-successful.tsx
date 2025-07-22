@@ -84,9 +84,10 @@ const TopUpSuccessful = () => {
 
       <TouchableOpacity
         onPress={() => router.push("/(root)/(tabs)/home")}
+
         className="bg-green-600 px-6 py-3 rounded-xl"
       >
-        <Text className="text-white font-semibold">Go to Dashboard</Text>
+        <Text className="text-white font-semibold">Go to Home</Text>
       </TouchableOpacity>
     </View>
   );

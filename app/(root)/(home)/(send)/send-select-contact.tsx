@@ -128,11 +128,11 @@ export default function SendSelectContact() {
           >
             <TouchableOpacity
               onPress={() => {
-                if (router.canGoBack()) {
+                // if (router.canGoBack()) {
                   router.back();
-                } else {
-                  router.replace("/(root)/(tabs)/home");
-                }
+                // } else {
+                //   router.replace("/(root)/(tabs)/home");
+                // }
               }}
             >
               <Ionicons
