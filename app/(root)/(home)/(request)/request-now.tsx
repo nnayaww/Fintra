@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+    ActivityIndicator,
     Image,
     Keyboard,
     KeyboardAvoidingView,
@@ -21,6 +22,7 @@ const RequestNow = () => {
   const [contactImage, setContactImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const { theme } = useTheme();
+  const [loading, setLoading] = useState(false);
 
   const { amount, name, email, avatar } = useLocalSearchParams();
   const displayName = Array.isArray(name) ? name[0] : name;
@@ -219,27 +221,37 @@ const RequestNow = () => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/(root)/(home)/(request)/request-money-requested",
-                  params: {
-                    amount,
-                    name,
-                    email,
-                    avatar,
-                    notes,
-                  },
-                })
-              }
+              onPress={async () => {
+                setLoading(true);
+                try {
+                  await router.push({
+                    pathname: "/(root)/(home)/(request)/request-money-requested",
+                    params: {
+                      amount,
+                      name,
+                      email,
+                      avatar,
+                      notes,
+                    },
+                  });
+                } finally {
+                  setLoading(false);
+                }
+              }}
               className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
+              disabled={loading}
             >
-              <Text
-                className={`font-UrbanistSemiBold text-xl ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
-                }`}
-              >
-                Request Money
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text
+                  className={`font-UrbanistSemiBold text-xl ${
+                    theme === "dark" ? "text-dark-primary" : "text-primary"
+                  }`}
+                >
+                  Request Money
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

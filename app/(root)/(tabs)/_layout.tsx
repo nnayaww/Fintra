@@ -73,9 +73,9 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="qr-code"
           options={{
-            title: "QR-Code",
+            title: "Analytics",
             tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} source={icons.qrcode} />
+              <TabIcon focused={focused} source={icons.info} />
             ),
           }}
         />

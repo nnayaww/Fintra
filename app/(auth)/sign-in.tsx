@@ -29,6 +29,7 @@ const SignIn = () => {
   const [showModal, setShowModal] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
 
   const { isNewUser } = useLocalSearchParams();
@@ -78,6 +79,7 @@ const handleSignIn = async () => {
 
   if (!valid) return;
 
+  setLoading(true);
   try {
     const response = await fetch("https://fintra-1.onrender.com/login", {
       method: "POST",
@@ -122,6 +124,8 @@ const handleSignIn = async () => {
   } catch (error) {
     console.error("Login error:", error);
     setPasswordError("Network error. Please try again.");
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -332,14 +336,19 @@ const handleSignIn = async () => {
               <TouchableOpacity
                 className="bg-general flex items-center justify-center p-5 border-none rounded-full"
                 onPress={handleSignIn}
+                disabled={loading}
               >
-                <Text
-                  className={`font-UrbanistSemiBold text-buttontext ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
-                  }`}
-                >
-                  Sign in
-                </Text>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text
+                    className={`font-UrbanistSemiBold text-buttontext ${
+                      theme === "dark" ? "text-dark-primary" : "text-primary"
+                    }`}
+                  >
+                    Sign in
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>

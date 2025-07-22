@@ -1,15 +1,16 @@
+import { useTheme } from "@/lib/ThemeContext";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
 import { onboarding } from "../../constants";
 import "../global.css";
-import { useTheme } from "@/lib/ThemeContext";
 
 const Onboarding = () => {
   const swiperRef = useRef<Swiper>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const { theme } = useTheme();
+  const { width, height } = Dimensions.get("window");
 
   const goToNext = () => {
     if (swiperRef.current) {
@@ -32,11 +33,18 @@ const Onboarding = () => {
         {onboarding.map((item) => (
           <View key={item.id} className="flex-1 items-center overflow-hidden">
             <View
-              className="w-[170%] h-[54%] bg-general border-none shadow rounded-b-[300px] flex justify-center items-center"
-              style={{ zIndex: 1 }}>
+              className="flex justify-center items-center"
+              style={{
+                width: width,
+                height: height * 0.4,
+                backgroundColor: '#82E394',
+                borderBottomLeftRadius: width,
+                borderBottomRightRadius: width,
+                zIndex: 1,
+              }}>
               <Image
                 source={item.image}
-                style={{ width: 385, height: 380, marginLeft: -14 }}
+                style={{ width: width * 0.8, height: height * 0.35, resizeMode: 'contain' }}
               />
             </View>
             <View

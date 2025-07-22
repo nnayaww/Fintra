@@ -7,16 +7,16 @@ import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   Text,
-  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
 
 const SendNow = () => {
@@ -24,6 +24,7 @@ const SendNow = () => {
   const { amount, name, avatar } = useLocalSearchParams();
   const [contactImage, setContactImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const displayName = Array.isArray(name) ? name[0] : name;
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
@@ -42,6 +43,7 @@ const SendNow = () => {
 
   const handleSendMoney = async () => {
     try {
+      setLoading(true);
       const senderEmail = await AsyncStorage.getItem("email");
       const token = await AsyncStorage.getItem("token");
       console.log("Sender Email:", senderEmail);
@@ -98,6 +100,8 @@ const SendNow = () => {
         "Transfer Failed",
         error?.response?.data?.message || "Please try again later."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -235,7 +239,7 @@ const SendNow = () => {
             style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
           >
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push("/(root)/(tabs)/home")}
               className="flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full bg-white"
             >
               <Text className="font-UrbanistSemiBold text-xl text-primary">
@@ -245,10 +249,15 @@ const SendNow = () => {
             <TouchableOpacity
               onPress={handleSendMoney}
               className="bg-general flex-1 items-center justify-center p-5 rounded-full"
+              disabled={loading}
             >
-              <Text className="font-UrbanistSemiBold text-xl text-primary">
-                Send Money
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="font-UrbanistSemiBold text-xl text-primary">
+                  Send Money
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>

@@ -87,7 +87,7 @@ const TopUpSuccessful = () => {
 
         className="bg-green-600 px-6 py-3 rounded-xl"
       >
-        <Text className="text-white font-semibold">Go to Home</Text>
+        <Text className="text-white font-semibold">Done</Text>
       </TouchableOpacity>
     </View>
   );
