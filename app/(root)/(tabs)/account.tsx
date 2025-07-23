@@ -115,7 +115,7 @@ const Account = () => {
         <BodyText
           style={{
             fontWeight: 'bold',
-            color: isLogout ? "#f54f4f" : undefined,
+            color: isLogout ? "#f54f4f" : (theme === "dark" ? "#fff" : "#000"),
           }}
         >
           {title}
