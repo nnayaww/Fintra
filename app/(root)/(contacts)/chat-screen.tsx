@@ -3,10 +3,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen, getIconSize } from "@/lib/responsive";
 
 export default function ChatScreen() {
   const router = useRouter();
   const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme === 'dark' ? '#181A20' : '#f9fafb' }]}>
@@ -22,7 +25,7 @@ export default function ChatScreen() {
         >
           <Ionicons 
             name="arrow-back" 
-            size={24} 
+            size={iconSizes.medium} 
             color={theme === 'dark' ? '#fff' : '#666'} 
           />
         </TouchableOpacity>
@@ -38,7 +41,7 @@ export default function ChatScreen() {
           <View style={[styles.iconContainer, { backgroundColor: theme === 'dark' ? '#2563eb' : '#3b82f6' }]}>
             <Ionicons 
               name="chatbubbles" 
-              size={48} 
+              size={wp(isSmallScreen() ? 12 : 14)} 
               color="#fff" 
             />
           </View>
@@ -60,7 +63,7 @@ export default function ChatScreen() {
             <View style={styles.feature}>
               <Ionicons 
                 name="checkmark-circle" 
-                size={20} 
+                size={iconSizes.small} 
                 color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
               />
               <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
@@ -71,7 +74,7 @@ export default function ChatScreen() {
             <View style={styles.feature}>
               <Ionicons 
                 name="checkmark-circle" 
-                size={20} 
+                size={iconSizes.small} 
                 color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
               />
               <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
@@ -82,7 +85,7 @@ export default function ChatScreen() {
             <View style={styles.feature}>
               <Ionicons 
                 name="checkmark-circle" 
-                size={20} 
+                size={iconSizes.small} 
                 color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
               />
               <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
@@ -103,8 +106,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: wp(4),
+    paddingVertical: hp(1.5),
     borderBottomWidth: 1,
     elevation: 2,
     shadowColor: '#000',
@@ -113,53 +116,53 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   backButton: {
-    padding: 4,
+    padding: rs(4),
   },
   headerTitle: {
     flex: 1,
-    fontSize: 20,
+    fontSize: rf(20),
     fontWeight: 'bold',
     textAlign: 'center',
-    marginRight: 32, // Compensate for back button
+    marginRight: wp(8), // Compensate for back button
   },
   placeholder: {
-    width: 32, // Same as back button width
+    width: wp(8), // Same as back button width
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: wp(8),
   },
   comingSoonContainer: {
     alignItems: 'center',
-    maxWidth: 320,
+    maxWidth: wp(85),
   },
   iconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: wp(isSmallScreen() ? 20 : 24),
+    height: wp(isSmallScreen() ? 20 : 24),
+    borderRadius: wp(isSmallScreen() ? 10 : 12),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: hp(3),
   },
   title: {
-    fontSize: 28,
+    fontSize: rf(isSmallScreen() ? 24 : 28),
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: hp(1),
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: rf(isSmallScreen() ? 18 : 20),
     fontWeight: '600',
-    marginBottom: 16,
+    marginBottom: hp(2),
     textAlign: 'center',
   },
   description: {
-    fontSize: 16,
+    fontSize: rf(15),
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
+    lineHeight: rf(22),
+    marginBottom: hp(4),
   },
   featuresContainer: {
     alignSelf: 'stretch',
@@ -167,10 +170,10 @@ const styles = StyleSheet.create({
   feature: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: hp(1.5),
   },
   featureText: {
-    fontSize: 16,
-    marginLeft: 12,
+    fontSize: rf(15),
+    marginLeft: wp(3),
   },
 });
