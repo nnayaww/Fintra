@@ -81,6 +81,9 @@ const handleSignIn = async () => {
 
   setLoading(true);
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     const response = await fetch("https://fintra-1.onrender.com/login", {
       method: "POST",
       headers: {
@@ -90,14 +93,18 @@ const handleSignIn = async () => {
         email: email.trim(),
         password,
       }),
+      signal: controller.signal,
     });
 
-    const data = await response.json();
-    console.log('Backend login response:', data); // <-- Log backend response
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(data.message || "Login failed");
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Server error: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log('Backend login response:', data);
 
     // Store userId and email for top-up
     await AsyncStorage.setItem("userId", String(data.user.id));
@@ -121,9 +128,18 @@ const handleSignIn = async () => {
     // Proceed to modal and redirect
     setShowModal(true);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
-    setPasswordError("Network error. Please try again.");
+    
+    if (error.name === 'AbortError') {
+      setPasswordError("Request timed out. Please check your connection and try again.");
+    } else if (error.message?.includes('Network')) {
+      setPasswordError("Network error. Please check your connection and try again.");
+    } else if (error.message?.includes('credentials') || error.message?.includes('password') || error.message?.includes('email')) {
+      setPasswordError("Invalid email or password. Please try again.");
+    } else {
+      setPasswordError(error.message || "Login failed. Please try again.");
+    }
   } finally {
     setLoading(false);
   }
@@ -251,7 +267,7 @@ const handleSignIn = async () => {
                 }}
                 placeholder="         Password"
                 placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
-                secureTextEntry={showPassword}
+                secureTextEntry={!showPassword}
                 className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 mt-3 focus:outline-none focus:border-blue-400 ${
                   theme === "dark"
                     ? "bg-[#23262F] text-white"
