@@ -635,7 +635,8 @@ const Home = () => {
               </View>
             )}
           />
-        </View>
+        )}
+      </View>
       </ScrollView>
     </SafeAreaView>
   );
