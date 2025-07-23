@@ -4,6 +4,7 @@ import mastercard from "@/assets/images/mastercard.jpg";
 import momo from "@/assets/images/momo.png";
 import visa from "@/assets/images/visa.jpg";
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from "expo-linking";
@@ -31,6 +32,8 @@ const imageMap: Record<string, any> = {
 const TopUpNow = () => {
   const { amount, methodName, methodImageKey, methodNumber } = useLocalSearchParams();
   const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
   const [loading, setLoading] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
 
@@ -116,7 +119,7 @@ const TopUpNow = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className={`flex-1 p-5 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`} style={{ paddingTop: 40 }}>
+      <View className={`flex-1 ${theme === "dark" ? "bg-dark-background" : "bg-white"}`} style={{ paddingTop: safeArea.top + hp(2), paddingHorizontal: wp(5) }}>
         {/* Header */}
         <View className="flex-row items-center">
           <TouchableOpacity onPress={() => router.back()}>
