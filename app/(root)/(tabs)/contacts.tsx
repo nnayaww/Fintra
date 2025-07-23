@@ -1,45 +1,60 @@
-import allContacts, { icons, images } from "@/constants";
+import { icons, images } from "@/constants";
 import { useTheme } from "@/lib/ThemeContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import React, { useState, useCallback } from "react";
 import {
-    FlatList,
-    Image,
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  FlatList,
+  Image,
+  Keyboard,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
+import { getContacts } from "../../../utils/contactStorage";
 
 type Contact = {
-  id: string;
   name: string;
   email: string;
-  avatar: any;
-  favorite: boolean;
+  avatar?: string;
+  favorite?: boolean;
 };
 
 export default function Contacts() {
   const { type } = useLocalSearchParams();
-  const [contacts, setContacts] = useState(allContacts);
   const { theme } = useTheme();
 
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
     "All Contacts"
   );
-
   const tabs: ("All Contacts" | "Favorites")[] = ["All Contacts", "Favorites"];
   const [searchFocused, setSearchFocused] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  const [contactImage, setContactImage] = useState<string | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      const loadContacts = async () => {
+        const stored = await getContacts();
+        setContacts(stored);
+      };
+      loadContacts();
+    }, [])
+  );
+
+  const toggleFavorite = (email: string) => {
+    setContacts((prev) =>
+      prev.map((c) =>
+        c.email === email ? { ...c, favorite: !c.favorite } : c
+      )
+    );
+  };
 
   const filteredContacts = contacts.filter((contact) => {
     if (selectedTab === "Favorites" && !contact.favorite) return false;
@@ -50,6 +65,7 @@ export default function Contacts() {
       contact.email.toLowerCase().includes(lower)
     );
   });
+
   const renderContact = ({ item }: { item: Contact }) => (
     <View className="flex-row items-center px-5">
       <TouchableOpacity
@@ -59,10 +75,9 @@ export default function Contacts() {
             pathname: "/(root)/(contacts)/contact-details",
             params: {
               type,
-              name: item?.name,
-              email: item?.email,
-              avatar: item?.avatar,
-              favorite: item.favorite.toString(),
+              name: item.name,
+              email: item.email,
+              favorite: item.favorite?.toString() || "false",
             },
           });
         }}
@@ -73,14 +88,12 @@ export default function Contacts() {
           }`}
           style={{ width: 60, height: 60 }}
         >
-          {contactImage ? (
-            <>
-              <Image
-                source={{ uri: contactImage }}
-                style={{ width: 60, height: 60 }}
-                resizeMode="cover"
-              />
-            </>
+          {item.avatar ? (
+            <Image
+              source={{ uri: item.avatar }}
+              style={{ width: 60, height: 60, borderRadius: 30 }}
+              resizeMode="cover"
+            />
           ) : (
             <FontAwesome5
               name="user-alt"
@@ -109,20 +122,16 @@ export default function Contacts() {
         </View>
       </TouchableOpacity>
       <View style={{ position: "absolute", right: 20 }}>
-        <TouchableOpacity
-          onPress={() => {
-            setContacts((prev) =>
-              prev.map((contact) =>
-                contact.id === item.id
-                  ? { ...contact, favorite: !contact.favorite }
-                  : contact
-              )
-            );
-          }}
-        >
+        <TouchableOpacity onPress={() => toggleFavorite(item.email)}>
           <Image
             source={item.favorite ? icons.star : icons.starOutline}
-            tintColor={item.favorite ? "#FFA500" : (theme === "dark" ? "#fff" : "#0D0D0D")}
+            tintColor={
+              item.favorite
+                ? "#FFA500"
+                : theme === "dark"
+                ? "#fff"
+                : "#0D0D0D"
+            }
             style={{ height: 28, width: 28 }}
           />
         </TouchableOpacity>
@@ -166,11 +175,8 @@ export default function Contacts() {
               />
             </TouchableOpacity>
           </View>
-          <View
-            className={`relative mt-6 ${
-              theme === "dark" ? "bg-[#23262F]" : "bg-white"
-            }`}
-          >
+
+          <View className="relative mt-6">
             {!isTyping && (
               <AntDesign
                 name="search1"
@@ -205,12 +211,8 @@ export default function Contacts() {
           </View>
         </View>
 
-        <View
-          className={`flex-row justify-around pt-6 pb-4 ${
-            theme === "dark" ? "bg-dark-background" : "bg-white"
-          }`}
-        >
-          {tabs.map((tab: "All Contacts" | "Favorites") => (
+        <View className="flex-row justify-around pt-6 pb-4">
+          {tabs.map((tab) => (
             <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
               <Text
                 className={`font-UrbanistSemiBold text-xl ${
@@ -229,6 +231,7 @@ export default function Contacts() {
             </TouchableOpacity>
           ))}
         </View>
+
         <View className="flex-row self-center">
           <View
             style={{
@@ -257,13 +260,15 @@ export default function Contacts() {
             }}
           />
         </View>
+
         <FlatList
           data={filteredContacts}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.email}
           renderItem={renderContact}
           contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
           showsVerticalScrollIndicator={false}
         />
+
         <TouchableOpacity
           className="flex items-center justify-center bg-general rounded-full"
           style={{
@@ -287,4 +292,3 @@ export default function Contacts() {
     </TouchableWithoutFeedback>
   );
 }
-

@@ -1,270 +1,169 @@
-import { FormattedTransaction, formatTransactions } from "@/constants";
+// Transactionhistory.tsx
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  ScrollView,
+} from "react-native";
 import { useTheme } from "@/lib/ThemeContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTransactionStore } from "@/hooks/useTransactionStore";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import {
-    FlatList,
-    Image,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
 
-const FILTERS = ["All", "Income", "Sent", "Request", "Top-up", "Withdraw"];
+const FILTERS = ["All", "Income", "Sent","Top-up", "Withdraw"];
 
 const Transactionhistory = () => {
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
-  const transactionSections = formatTransactions();
-  const [contactImage, setContactImage] = useState<string | null>(null);
+  const { transactions, fetchTransactions, loading } = useTransactionStore();
   const [selectedFilter, setSelectedFilter] = useState("All");
   const { theme } = useTheme();
 
-  const allTransactions: FormattedTransaction[] = transactionSections.flatMap(
-    (section) => section.data
-  );
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+  console.log(transactions)
+  const filteredTransactions = useMemo(() => {
+    if (selectedFilter === "All") return transactions;
 
-  const filteredTransactions =
-    selectedFilter === "All"
-      ? allTransactions
-      : allTransactions.filter((txn) => {
-          if (selectedFilter === "Request") {
-            return txn.category === "Incoming Request";
-          }
-          return txn.category === selectedFilter;
-        });
+    // if (selectedFilter === "Request") {
+    //   return transactions.filter((tx) => tx.type === "REQUEST");
+    // }
 
-  const user = {
-    transactions: transactionSections,
-  };
+    if (selectedFilter === "Income") {
+      return transactions.filter((tx) => tx.type === "INCOME");
+    }
 
-  const hasTransactions =
-    user.transactions &&
-    Array.isArray(user.transactions) &&
-    user.transactions.some(
-      (section) => section.data && section.data.length > 0
-    );
+    if (selectedFilter === "Sent") {
+      return transactions.filter((tx) => tx.type === "TRANSFER");
+    }
+    if (selectedFilter === "Top-up") {
+      return transactions.filter((tx) => tx.type === "TOPUP");
+    }
+    if (selectedFilter === "Withdraw") {
+      return transactions.filter((tx) => tx.type === "WITHDRAWAL");
+    }
 
-  const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
-    <View>
-      <TouchableOpacity
-        className="flex-row py-4 items-center"
-        onPress={() =>
-          router.push({
-            pathname: "/(root)/(home)/(transaction-history)/[id]",
-            params: { id: item.id },
-          })
-        }
-      >
-        <View
-          className={`rounded-full flex items-center justify-center ${
-            theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
-          }`}
-          style={{ width: 60, height: 60 }}
-        >
-          {contactImage ? (
-            <>
-              <Image
-                source={{ uri: contactImage }}
-                style={{ width: 60, height: 60 }}
-                resizeMode="cover"
-              />
-            </>
-          ) : (
-            <FontAwesome5
-              name="user-alt"
-              size={21}
-              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-            />
-          )}
-        </View>
-        <View className="flex-1 flex-col ml-5 gap-3">
-          <View className="flex-row justify-between items-center">
-            <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 19 }}
-            >
-              {item.name}
-            </Text>
-            <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 19 }}
-            >
-              {item.category === "Income"
-                ? `+₵ ${Number(item.amount).toFixed(2)}`
-                : item.category === "Sent"
-                ? `-₵ ${Number(item.amount).toFixed(2)}`
-                : item.category === "Incoming Request"
-                ? `₵ ${Number(item.amount).toFixed(2)}`
-                : `₵ ${Number(item.amount).toFixed(2)}`}
-            </Text>
-          </View>
-          <View className="flex-row justify-between items-center">
-            <Text
-              className={`font-UrbanistMedium ${
-                theme === "dark" ? "text-dark-secondary" : "text-secondary"
-              }`}
-              style={{ fontSize: 15 }}
-            >
-              {item.time}
-            </Text>
-            <Text
-              className={`font-UrbanistMedium ${
-                theme === "dark" ? "text-dark-secondary" : "text-secondary"
-              }`}
-              style={{ fontSize: 14 }}
-            >
-              {item.category}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-  return (
-    <View
-      className={`flex-1 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
+    return transactions.filter((tx) => tx.type.toLowerCase() === selectedFilter.toLowerCase());
+  }, [transactions, selectedFilter]);
+
+  const renderTransactionItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/(root)/(home)/(transaction-history)/[id]",
+          params: { id: item.id },
+        })
+      }
+      style={{
+        flexDirection: "row",
+        paddingVertical: 16,
+        alignItems: "center",
+        borderBottomColor: "#e6e6e6",
+        borderBottomWidth: 1,
+      }}
     >
-      <View
-        className="flex-row justify-between items-center pt-5 pl-5 pr-5"
-        style={{ marginTop: 32 }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            // if (router.canGoBack()) {
-              router.back();
-            // } else {
-            //   router.replace("/(root)/(tabs)/home");
-            // }
-          }}
-        >
-          <Ionicons
-            name="arrow-back"
-            size={28}
-            color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ padding: 6 }}
-          />
-        </TouchableOpacity>
-        <Text
-          className={`font-UrbanistBold ${
-            theme === "dark" ? "text-dark-primary" : "text-primary"
-          }`}
-          style={{ fontSize: 22 }}
-        >
-          Transaction History
-        </Text>
-        <TouchableOpacity onPress={() => {}}>
-          <AntDesign
-            name="search1"
-            size={24}
-            color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            style={{ padding: 6 }}
-          />
-        </TouchableOpacity>
+      <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: "#F6F8FA", justifyContent: "center", alignItems: "center" }}>
+        <FontAwesome5 name="user-alt" size={21} color="#9CA3AF" />
       </View>
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            gap: 12,
-            marginTop: 28,
-          }}
-        >
-          {FILTERS.map((label) => (
-            <TouchableOpacity
-              key={label}
-              onPress={() => setSelectedFilter(label)}
-              className="px-5 py-2 border rounded-full justify-center items-center  min-h-[40px]"
-              style={{
-                backgroundColor:
-                  selectedFilter === label
-                    ? "#82E394"
-                    : theme === "dark"
-                    ? "transparent"
-                    : "transparent",
-                borderColor:
-                  selectedFilter === label
-                    ? "#82E394"
-                    : theme === "dark"
-                    ? "#444"
-                    : "#e6e6e6",
-              }}
-            >
-              <Text
-                className={`text-lg font-UrbanistBold ${
-                  selectedFilter === label
-                    ? theme === "dark"
-                      ? "text-dark-primary"
-                      : "text-primary"
-                    : theme === "dark"
-                    ? "text-dark-secondary"
-                    : "text-primary"
-                }`}
-              >
-                {label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      {isNewUserBool || !hasTransactions ? (
-        <View>
-          <Text
-            className={`text-center font-UrbanistSemiBold text-2xl ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-            style={{ marginTop: 50 }}
-          >
-            No transactions found
+      <View style={{ flex: 1, marginLeft: 20 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <Text style={{ fontWeight: "600", fontSize: 18 }}>{item.type}</Text>
+          <Text style={{ fontWeight: "600", fontSize: 18, color: item.type === "TOPUP" ? "green" : "red" }}>
+            {item.type === "TOPUP" ? "+" : "-"}₵ {item.amount.toFixed(2)}
           </Text>
         </View>
-      ) : (
-        <View className="px-4 mt-5">
-          <FlatList
-            data={filteredTransactions}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 190 }}
-            renderItem={renderTransactionItem}
-            ItemSeparatorComponent={() => (
-              <View className="flex items-end">
-                <View
-                  className="h-[1px]"
-                  style={{
-                    width: "80%",
-                    backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-                  }}
-                />
-              </View>
-            )}
-            ListEmptyComponent={
-              <Text
-                className={`text-center font-UrbanistSemiBold text-2xl ${
-                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
-                }`}
-                style={{ marginTop: 50 }}
-              >
-                No transactions found
-              </Text>
-            }
-          />
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
+          <Text style={{ fontSize: 14, color: "#666" }}>{new Date(item.createdAt).toLocaleTimeString()}</Text>
+          <Text style={{ fontSize: 14, color: "#666" }}>{item.status}</Text>
         </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 16, marginTop: 30 }}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={28} color="#000" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 22, fontWeight: "700" }}>Transaction History</Text>
+        <TouchableOpacity>
+          <AntDesign name="search1" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12, marginTop: 12 }}>
+        {FILTERS.map((label) => (
+          <TouchableOpacity
+            key={label}
+            onPress={() => setSelectedFilter(label)}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 16,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: selectedFilter === label ? "#82E394" : "#e6e6e6",
+              backgroundColor: selectedFilter === label ? "#82E394" : "transparent",
+            }}
+          >
+            <Text style={{ fontWeight: "600", color: selectedFilter === label ? "#000" : "#888" }}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView> */} 
+      <View style={{ marginTop: 12, paddingHorizontal: 16 }}>
+  <FlatList
+    data={FILTERS}
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={(item) => item}
+    ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+    renderItem={({ item: label }) => (
+      <TouchableOpacity
+        onPress={() => setSelectedFilter(label)}
+        style={{
+          paddingVertical: 8,
+          paddingHorizontal: 16,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: selectedFilter === label ? "#82E394" : "#e6e6e6",
+          backgroundColor: selectedFilter === label ? "#82E394" : "transparent",
+        }}
+      >
+        <Text
+          style={{
+            fontWeight: "600",
+            color: selectedFilter === label ? "#000" : "#888",
+            fontSize: 14,
+          }}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    )}
+  />
+</View>
+
+
+      {filteredTransactions.length === 0 ? (
+        <Text style={{ textAlign: "center", marginTop: 50, fontSize: 18, color: "#888" }}>
+          No transactions found
+        </Text>
+      ) : (
+        <FlatList
+          data={filteredTransactions}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100, marginTop: 20 }}
+          renderItem={renderTransactionItem}
+        />
       )}
     </View>
   );
 };
 
 export default Transactionhistory;
-
