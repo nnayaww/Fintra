@@ -101,6 +101,10 @@ const Home = () => {
         // Filter to only successful transactions
         const successTransactions = data
           .filter((tx) => tx.status === "SUCCESS")
+          .map((tx) => ({
+              ...tx,
+              amount: tx.amount / 100, // Convert pesewas to cedis
+            }))
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .slice(0, 10); 
         setTransactions(successTransactions);
@@ -346,7 +350,7 @@ const Home = () => {
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity
               onPress={() =>
-                router.push("/(root)/(home)/(request)/request-select-contact")
+                router.push("/(root)/(contact)/(request)/request-select-contact")
               }
               style={{
                 width: 65,
