@@ -8,8 +8,12 @@ import {
   Text,
   ScrollView,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
+import { BarChart, LineChart } from "react-native-chart-kit";
 import { useTransactionStore } from "../../../hooks/useTransactionStore";
+
+const screenData = Dimensions.get("window");
 
 const filterByRange = (transactions: any[], range: string) => {
   const now = new Date();
@@ -28,6 +32,33 @@ const filterByRange = (transactions: any[], range: string) => {
       );
     return true;
   });
+};
+
+const groupByDate = (transactions: any[], typeFilter: string[]) => {
+  const map = new Map();
+  transactions
+    .filter(
+      (t) =>
+        t.status?.toUpperCase() === "SUCCESS" &&
+        typeFilter.includes(t.type?.toUpperCase())
+    )
+    .forEach((t) => {
+      const key = new Date(t.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      const prev = map.get(key) || 0;
+      map.set(key, prev + (t.amount / 100));
+    });
+
+  const sorted = Array.from(map.entries()).sort(
+    ([a], [b]) => new Date(a) - new Date(b)
+  );
+
+  return {
+    labels: sorted.map(([label]) => label),
+    data: sorted.map(([, value]) => value),
+  };
 };
 
 const Analytics = () => {
@@ -72,6 +103,29 @@ const Analytics = () => {
   const totalExpenses = filteredTx
     .filter(t => ["WITHDRAWAL", "TRANSFER"].includes(t.type?.toUpperCase()))
     .reduce((sum, t) => sum + (t.amount / 100), 0);
+
+  // Chart data
+  const incomeData = groupByDate(filteredTx, ["INCOME", "TOPUP"]);
+  const expenseData = groupByDate(filteredTx, ["WITHDRAWAL", "TRANSFER"]);
+  
+  const hasChartData = incomeData.data.length > 0 || expenseData.data.length > 0;
+  
+  const chartConfig = {
+    backgroundColor: theme === "dark" ? "#23262F" : "#ffffff",
+    backgroundGradientFrom: theme === "dark" ? "#23262F" : "#ffffff",
+    backgroundGradientTo: theme === "dark" ? "#23262F" : "#ffffff",
+    decimalPlaces: 0,
+    color: (opacity = 1) => theme === "dark" ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => theme === "dark" ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForBackgroundLines: {
+      strokeDasharray: "",
+      stroke: theme === "dark" ? "#374151" : "#e5e7eb",
+      strokeWidth: 1,
+    },
+  };
 
   return (
     <SafeAreaView 
@@ -236,7 +290,75 @@ const Analytics = () => {
             </Text>
           </View>
 
-          {filteredTx.length === 0 && (
+          {hasChartData ? (
+            <>
+              {/* Income Chart */}
+              {incomeData.data.length > 0 && (
+                <View style={styles.chartSection}>
+                  <Text style={[
+                    styles.chartTitle,
+                    { color: theme === "dark" ? "#22c55e" : "#16a34a" }
+                  ]}>
+                    Income - ₵{incomeData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+                  </Text>
+                  <BarChart
+                    data={{
+                      labels: incomeData.labels.length > 0 ? incomeData.labels : ['No Data'],
+                      datasets: [{
+                        data: incomeData.data.length > 0 ? incomeData.data : [0],
+                        color: () => "#22c55e",
+                      }],
+                    }}
+                    width={wp(85)}
+                    height={hp(25)}
+                    chartConfig={{
+                      ...chartConfig,
+                      color: () => "#22c55e",
+                      barPercentage: 0.7,
+                    }}
+                    style={{
+                      marginVertical: hp(1),
+                      borderRadius: wp(4),
+                    }}
+                    fromZero
+                  />
+                </View>
+              )}
+
+              {/* Expense Chart */}
+              {expenseData.data.length > 0 && (
+                <View style={styles.chartSection}>
+                  <Text style={[
+                    styles.chartTitle,
+                    { color: theme === "dark" ? "#ef4444" : "#dc2626" }
+                  ]}>
+                    Expenses - ₵{expenseData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+                  </Text>
+                  <BarChart
+                    data={{
+                      labels: expenseData.labels.length > 0 ? expenseData.labels : ['No Data'],
+                      datasets: [{
+                        data: expenseData.data.length > 0 ? expenseData.data : [0],
+                        color: () => "#ef4444",
+                      }],
+                    }}
+                    width={wp(85)}
+                    height={hp(25)}
+                    chartConfig={{
+                      ...chartConfig,
+                      color: () => "#ef4444",
+                      barPercentage: 0.7,
+                    }}
+                    style={{
+                      marginVertical: hp(1),
+                      borderRadius: wp(4),
+                    }}
+                    fromZero
+                  />
+                </View>
+              )}
+            </>
+          ) : (
             <View style={styles.emptyState}>
               <Text style={[
                 styles.emptyText,
@@ -381,6 +503,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: rf(16),
+    textAlign: "center",
+  },
+  chartSection: {
+    marginVertical: hp(2),
+    alignItems: "center",
+  },
+  chartTitle: {
+    fontSize: rf(16),
+    fontWeight: "600",
+    marginBottom: hp(1),
     textAlign: "center",
   },
 });
