@@ -222,9 +222,10 @@ const Home = () => {
       <ScrollView
         style={{
           flex: 1,
+          width: '100%',
           backgroundColor: theme === "dark" ? "#121212" : "#fff",
         }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, width: '100%' }}
         showsVerticalScrollIndicator={false}
       >
         {/* Top Section with balance and actions */}
@@ -499,6 +500,8 @@ const Home = () => {
             backgroundColor: theme === "dark" ? "#121212" : "#fff",
             paddingTop: hp(3),
             paddingBottom: hp(2),
+            width: '100%',
+            alignSelf: 'stretch',
           }}
         >
           <View
@@ -599,6 +602,8 @@ const Home = () => {
             data={sections}
             keyExtractor={(item) => item.sectionTitle}
             showsVerticalScrollIndicator={false}
+            style={{ width: '100%' }}
+            contentContainerStyle={{ width: '100%' }}
             renderItem={({ item: section }) => (
               <View key={section.sectionTitle}>
                 <View
@@ -632,6 +637,7 @@ const Home = () => {
                   data={section.data}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={renderTransactionItem}
+                  style={{ width: '100%' }}
                   ItemSeparatorComponent={() => (
                     <View
                       style={{
