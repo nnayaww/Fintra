@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen } from "@/lib/responsive";
 
 export default function CryptoListScreen() {
   const { theme } = useTheme();
   const [cryptoList, setCryptoList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const safeArea = getSafeAreaPadding();
 
   const fetchAllCryptoPages = async () => {
     try {
@@ -121,20 +123,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: wp(4),
   },
   listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
+    paddingHorizontal: wp(4),
+    paddingTop: hp(1),
+    paddingBottom: hp(2),
   },
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    marginBottom: 10,
+    borderRadius: rs(12),
+    paddingVertical: hp(1.8),
+    paddingHorizontal: wp(3),
+    marginBottom: hp(1.2),
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 5,
@@ -143,35 +146,38 @@ const styles = StyleSheet.create({
   leftContainer: {
     flexDirection: "row",
     alignItems: "center",
+    flex: 1,
   },
   coinImage: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    marginRight: 12,
+    width: wp(isSmallScreen() ? 9 : 10),
+    height: wp(isSmallScreen() ? 9 : 10),
+    borderRadius: wp(isSmallScreen() ? 4.5 : 5),
+    marginRight: wp(3),
   },
   nameContainer: {
     justifyContent: "center",
+    flex: 1,
   },
   coinName: {
-    fontSize: 16,
+    fontSize: rf(15),
     fontWeight: "600",
   },
   coinSymbol: {
-    fontSize: 13,
-    marginTop: 2,
+    fontSize: rf(12),
+    marginTop: hp(0.3),
     textTransform: "uppercase",
   },
   rightContainer: {
     alignItems: "flex-end",
+    minWidth: wp(25),
   },
   coinPrice: {
-    fontSize: 15,
+    fontSize: rf(14),
     fontWeight: "500",
   },
   coinChange: {
-    fontSize: 13,
-    marginTop: 2,
+    fontSize: rf(12),
+    marginTop: hp(0.3),
     fontWeight: "500",
   },
 });

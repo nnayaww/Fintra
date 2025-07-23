@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
@@ -17,6 +18,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen, isLargeScreen, getIconSize } from "@/lib/responsive";
 
 // --- Minimal icons/images placeholders (replace with your actual assets) ---
 const icons = {
@@ -57,6 +59,8 @@ const Home = () => {
   const { theme } = useTheme();
   const [userBalance, setUserBalance] = useState<string>("");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
 
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
@@ -209,336 +213,377 @@ const Home = () => {
   );
 
   return (
-    <ScrollView
-      style={{
-        flex: 1,
-        backgroundColor: theme === "dark" ? "#121212" : "#fff",
-      }}
-    >
-      {/* Top Section with balance and actions */}
-      <View
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme === "dark" ? "#23262F" : "#82E394" }}>
+      <ScrollView
         style={{
-          paddingTop: 70,
-          backgroundColor: theme === "dark" ? "#23262F" : "#82E394",
-          paddingHorizontal: 20,
-          paddingBottom: 30
+          flex: 1,
+          backgroundColor: theme === "dark" ? "#121212" : "#fff",
         }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
       >
+        {/* Top Section with balance and actions */}
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            paddingTop: safeArea.top,
+            backgroundColor: theme === "dark" ? "#23262F" : "#82E394",
+            paddingHorizontal: wp(5),
+            paddingBottom: hp(4),
+            minHeight: hp(55),
           }}
         >
-          <Image
-            source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
-            style={{ width: 60, height: 40 }}
-          />
-          <Text
+          <View
             style={{
-              fontWeight: "700",
-              fontSize: 30,
-              color: theme === "dark" ? "#fff" : "#000",
-              marginLeft: -14,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: hp(3),
             }}
           >
-            FinTra
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/(root)/(home)/notification")}
-          >
             <Image
-              source={icons.bell}
-              style={{
-                width: 28,
-                height: 31,
-                tintColor: theme === "dark" ? "#fff" : "#000",
-                marginLeft: 7,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            marginTop: 50,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <FontAwesome6
-              name="cedi-sign"
-              size={20}
-              color={theme === "dark" ? "#fff" : "#000"}
+              source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+              style={{ width: wp(16), height: hp(5) }}
+              resizeMode="contain"
             />
             <Text
               style={{
                 fontWeight: "700",
-                fontSize: 50,
+                fontSize: rf(28),
                 color: theme === "dark" ? "#fff" : "#000",
+                flex: 1,
+                textAlign: "center",
               }}
             >
-              {userBalance || "₵ 0.00"}
+              FinTra
             </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(root)/(home)/notification")}
+              style={{
+                padding: rs(8),
+                borderRadius: rs(20),
+              }}
+            >
+              <Image
+                source={icons.bell}
+                style={{
+                  width: iconSizes.medium,
+                  height: iconSizes.medium,
+                  tintColor: theme === "dark" ? "#fff" : "#000",
+                }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
           </View>
 
-          <Text
+          <View
             style={{
-              marginTop: 10,
-              fontWeight: "500",
-              fontSize: 18,
-              color: theme === "dark" ? "#ccc" : "#222",
+              alignItems: "center",
+              justifyContent: "center",
+              marginVertical: hp(2),
             }}
           >
-            Available balance
-          </Text>
-        </View>
-
-        {/* Quick actions */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: 40,
-          }}
-        >
-          {/* Send */}
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() =>
-                router.push("/(root)/(home)/(send)/send-select-contact")
-              }
-              style={{
-                width: 65,
-                height: 65,
-                borderRadius: 32.5,
-                borderWidth: 1,
-                borderColor: theme === "dark" ? "#fff" : "#000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={icons.send}
-                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{
-                marginTop: 6,
-                fontWeight: "600",
-                color: theme === "dark" ? "#fff" : "#000",
-                fontSize: 16,
-              }}
-            >
-              Send
-            </Text>
-          </View>
-
-          {/* Request */}
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() =>
-                router.push("/(root)/(contacts)/chat-screen")
-              }
-              style={{
-                width: 65,
-                height: 65,
-                borderRadius: 32.5,
-                borderWidth: 1,
-                borderColor: theme === "dark" ? "#fff" : "#000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={icons.down}
-                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{
-                marginTop: 6,
-                fontWeight: "600",
-                color: theme === "dark" ? "#fff" : "#000",
-                fontSize: 16,
-              }}
-            >
-              Request
-            </Text>
-          </View>
-
-          {/* Top Up */}
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() =>
-                router.push("/(root)/(home)/(top-up)/topUp-enter-amount")
-              }
-              style={{
-                width: 65,
-                height: 65,
-                borderRadius: 32.5,
-                borderWidth: 1,
-                borderColor: theme === "dark" ? "#fff" : "#000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={icons.topUp}
-                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{
-                marginTop: 6,
-                fontWeight: "600",
-                color: theme === "dark" ? "#fff" : "#000",
-                fontSize: 16,
-              }}
-            >
-              Top Up
-            </Text>
-          </View>
-
-          {/* Withdraw */}
-          <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() =>
-                router.push("/(root)/(home)/(withdraw)/withdraw-enter-amount")
-              }
-              style={{
-                width: 65,
-                height: 65,
-                borderRadius: 32.5,
-                borderWidth: 1,
-                borderColor: theme === "dark" ? "#fff" : "#000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Ionicons
-                name="log-out-outline"
-                size={32}
+            <View style={{ 
+              flexDirection: "row", 
+              alignItems: "center", 
+              gap: rs(6),
+              marginBottom: hp(1),
+            }}>
+              <FontAwesome6
+                name="cedi-sign"
+                size={rf(isSmallScreen() ? 18 : 22)}
                 color={theme === "dark" ? "#fff" : "#000"}
-                style={{ marginLeft: 5 }}
               />
-            </TouchableOpacity>
+              <Text
+                style={{
+                  fontWeight: "700",
+                  fontSize: rf(isSmallScreen() ? 36 : isLargeScreen() ? 54 : 48),
+                  color: theme === "dark" ? "#fff" : "#000",
+                }}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
+                {userBalance || "₵ 0.00"}
+              </Text>
+            </View>
+
             <Text
               style={{
-                marginTop: 6,
-                fontWeight: "600",
-                color: theme === "dark" ? "#fff" : "#000",
-                fontSize: 16,
+                fontWeight: "500",
+                fontSize: rf(16),
+                color: theme === "dark" ? "#ccc" : "#222",
+                textAlign: "center",
               }}
             >
-              Withdraw
+              Available balance
             </Text>
+          </View>
+
+          {/* Quick actions */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: hp(3),
+              paddingHorizontal: wp(2),
+            }}
+          >
+            {/* Send */}
+            <View style={{ alignItems: "center", flex: 1 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/(root)/(home)/(send)/send-select-contact")
+                }
+                style={{
+                  width: wp(isSmallScreen() ? 14 : 16),
+                  height: wp(isSmallScreen() ? 14 : 16),
+                  borderRadius: wp(isSmallScreen() ? 7 : 8),
+                  borderWidth: rs(1),
+                  borderColor: theme === "dark" ? "#fff" : "#000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={icons.send}
+                  style={{ 
+                    width: iconSizes.medium, 
+                    height: iconSizes.medium, 
+                    tintColor: theme === "dark" ? "#fff" : "#000" 
+                  }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  marginTop: hp(0.8),
+                  fontWeight: "600",
+                  color: theme === "dark" ? "#fff" : "#000",
+                  fontSize: rf(14),
+                  textAlign: "center",
+                }}
+              >
+                Send
+              </Text>
+            </View>
+
+            {/* Request */}
+            <View style={{ alignItems: "center", flex: 1 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/(root)/(contacts)/chat-screen")
+                }
+                style={{
+                  width: wp(isSmallScreen() ? 14 : 16),
+                  height: wp(isSmallScreen() ? 14 : 16),
+                  borderRadius: wp(isSmallScreen() ? 7 : 8),
+                  borderWidth: rs(1),
+                  borderColor: theme === "dark" ? "#fff" : "#000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={icons.down}
+                  style={{ 
+                    width: iconSizes.medium, 
+                    height: iconSizes.medium, 
+                    tintColor: theme === "dark" ? "#fff" : "#000" 
+                  }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  marginTop: hp(0.8),
+                  fontWeight: "600",
+                  color: theme === "dark" ? "#fff" : "#000",
+                  fontSize: rf(14),
+                  textAlign: "center",
+                }}
+              >
+                Request
+              </Text>
+            </View>
+
+            {/* Top Up */}
+            <View style={{ alignItems: "center", flex: 1 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/(root)/(home)/(top-up)/topUp-enter-amount")
+                }
+                style={{
+                  width: wp(isSmallScreen() ? 14 : 16),
+                  height: wp(isSmallScreen() ? 14 : 16),
+                  borderRadius: wp(isSmallScreen() ? 7 : 8),
+                  borderWidth: rs(1),
+                  borderColor: theme === "dark" ? "#fff" : "#000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={icons.topUp}
+                  style={{ 
+                    width: iconSizes.medium, 
+                    height: iconSizes.medium, 
+                    tintColor: theme === "dark" ? "#fff" : "#000" 
+                  }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  marginTop: hp(0.8),
+                  fontWeight: "600",
+                  color: theme === "dark" ? "#fff" : "#000",
+                  fontSize: rf(14),
+                  textAlign: "center",
+                }}
+              >
+                Top Up
+              </Text>
+            </View>
+
+            {/* Withdraw */}
+            <View style={{ alignItems: "center", flex: 1 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push("/(root)/(home)/(withdraw)/withdraw-enter-amount")
+                }
+                style={{
+                  width: wp(isSmallScreen() ? 14 : 16),
+                  height: wp(isSmallScreen() ? 14 : 16),
+                  borderRadius: wp(isSmallScreen() ? 7 : 8),
+                  borderWidth: rs(1),
+                  borderColor: theme === "dark" ? "#fff" : "#000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Ionicons
+                  name="log-out-outline"
+                  size={iconSizes.large}
+                  color={theme === "dark" ? "#fff" : "#000"}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  marginTop: hp(0.8),
+                  fontWeight: "600",
+                  color: theme === "dark" ? "#fff" : "#000",
+                  fontSize: rf(14),
+                  textAlign: "center",
+                }}
+              >
+                Withdraw
+              </Text>
+            </View>
           </View>
         </View>
       </View>
 
-      {/* Transaction History */}
-      <View
-        style={{
-          backgroundColor: theme === "dark" ? "#121212" : "#fff",
-          paddingTop: 24,
-          paddingHorizontal: 16,
-        }}
-      >
+        {/* Transaction History */}
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 12,
+            backgroundColor: theme === "dark" ? "#121212" : "#fff",
+            paddingTop: hp(3),
+            paddingHorizontal: wp(4),
+            flex: 1,
+            minHeight: hp(45),
           }}
         >
-          <Text
+          <View
             style={{
-              fontWeight: "700",
-              fontSize: 24,
-              color: theme === "dark" ? "#fff" : "#000",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: hp(1.5),
             }}
-          >
-            Transaction History
-          </Text>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/(root)/(home)/(transaction-history)/transaction-history",
-                params: { isNewUser: isNewUserBool ? "true" : "false" },
-              })
-            }
-            style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
           >
             <Text
               style={{
-                fontWeight: "600",
-                fontSize: 18,
-                color: theme === "dark" ? "#AAA" : "#888",
+                fontWeight: "700",
+                fontSize: rf(22),
+                color: theme === "dark" ? "#fff" : "#000",
               }}
             >
-              View All
+              Transaction History
             </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={20}
-              color={theme === "dark" ? "#AAA" : "#888"}
-            />
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/(root)/(home)/(transaction-history)/transaction-history",
+                  params: { isNewUser: isNewUserBool ? "true" : "false" },
+                })
+              }
+              style={{ 
+                flexDirection: "row", 
+                alignItems: "center", 
+                gap: rs(6),
+                padding: rs(8),
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "600",
+                  fontSize: rf(16),
+                  color: theme === "dark" ? "#AAA" : "#888",
+                }}
+              >
+                View All
+              </Text>
+              <MaterialCommunityIcons
+                name="greater-than"
+                size={iconSizes.small}
+                color={theme === "dark" ? "#AAA" : "#888"}
+              />
+            </TouchableOpacity>
+          </View>
 
         {!hasTransactions || isNewUserBool ? (
-          <View
-            style={{
-              marginTop: 50,
-              marginRight: 50,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              source={images.clipboard}
+            <View
               style={{
-                width: 170,
-                height: 170,
-                marginTop: -30,
-                transform: [{ rotate: "-20deg" }],
+                marginTop: hp(5),
+                justifyContent: "center",
+                alignItems: "center",
+                paddingHorizontal: wp(5),
               }}
-            />
-            <Image
-              source={images.clipboard}
-              style={{
-                width: 170,
-                height: 170,
-                position: "absolute",
-                right: 20,
-              }}
-            />
-            <View style={{ marginTop: 24, alignItems: "center" }}>
-              <Text
+            >
+              <Image
+                source={images.clipboard}
                 style={{
-                  fontWeight: "700",
-                  fontSize: 24,
-                  color: theme === "dark" ? "#fff" : "#000",
+                  width: wp(isSmallScreen() ? 35 : 40),
+                  height: wp(isSmallScreen() ? 35 : 40),
+                  marginBottom: hp(2),
+                  transform: [{ rotate: "-20deg" }],
                 }}
-              >
-                No Transactions
-              </Text>
-              <Text
-                style={{
-                  fontWeight: "500",
-                  fontSize: 18,
-                  color: theme === "dark" ? "#AAA" : "#666",
-                }}
-              >
-                You haven't made any transactions.
-              </Text>
+                resizeMode="contain"
+              />
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontWeight: "700",
+                    fontSize: rf(22),
+                    color: theme === "dark" ? "#fff" : "#000",
+                    textAlign: "center",
+                    marginBottom: hp(1),
+                  }}
+                >
+                  No Transactions
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: "500",
+                    fontSize: rf(16),
+                    color: theme === "dark" ? "#AAA" : "#666",
+                    textAlign: "center",
+                    lineHeight: rf(22),
+                  }}
+                >
+                  You haven't made any transactions.
+                </Text>
+              </View>
             </View>
-          </View>
         ) : (
           <FlatList
             data={sections}
@@ -591,9 +636,10 @@ const Home = () => {
               </View>
             )}
           />
-        )}
-      </View>
-    </ScrollView>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

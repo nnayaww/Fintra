@@ -3,17 +3,25 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { BarChart } from "react-native-chart-kit";
+import {
+  ResponsiveSafeArea,
+  ScreenContainer,
+  ResponsiveHeader,
+  ResponsiveCard,
+  ResponsiveButton,
+  Heading1,
+  Heading2,
+  Heading3,
+  BodyText,
+  SmallText,
+} from "@/components/ResponsiveComponents";
+import { globalStyles } from "@/lib/globalStyles";
+import { wp, hp, getIconSize } from "@/lib/responsive";
 import { useTransactionStore } from "../../../hooks/useTransactionStore";
-
-const screenWidth = Dimensions.get("window").width - 32;
 
 const filterByRange = (transactions, range) => {
   const now = new Date();
@@ -111,148 +119,148 @@ const Analytics = () => {
     incomeData.data.length > 0 || expenseData.data.length > 0;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: palette.background }}>
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: palette.card, borderBottomColor: palette.border },
-        ]}
-      >
-        <TouchableOpacity onPress={() => router.back()}>
-          <Feather name="arrow-left" size={24} color={palette.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: palette.text }]}>
-          Analytics
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <ResponsiveSafeArea>
+      <ScreenContainer scrollable>
+        <ResponsiveHeader
+          title="Analytics"
+          onBack={() => router.back()}
+        />
 
-      <View style={[styles.summaryContainer, { backgroundColor: palette.card }]}>
-        <Text style={[styles.sectionTitle, { color: palette.subtext }]}>Summary</Text>
-        <View style={styles.totalsGrid}>
-          {Object.entries(totals).map(([label, amount]) => (
-            <View key={label} style={styles.totalBox}>
-              <Text style={[styles.totalLabel, { color: palette.subtext }]}>
-                {label}
-              </Text>
-              <Text style={[styles.totalAmount, { color: palette.text }]}>
-                ${amount.toFixed(2)}
-              </Text>
-            </View>
+        {/* Summary Section */}
+        <ResponsiveCard style={globalStyles.marginVerticalMedium}>
+          <Heading3 style={{ marginBottom: hp(2) }}>Summary</Heading3>
+          <View style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: wp(3),
+          }}>
+            {Object.entries(totals).map(([label, amount]) => (
+              <View key={label} style={{
+                width: "48%",
+                paddingVertical: hp(1.5),
+                backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)',
+                borderRadius: wp(3),
+                alignItems: 'center',
+              }}>
+                <SmallText style={{ opacity: 0.75, marginBottom: hp(0.5) }}>
+                  {label}
+                </SmallText>
+                <Heading3>
+                  ${amount.toFixed(2)}
+                </Heading3>
+              </View>
+            ))}
+          </View>
+        </ResponsiveCard>
+
+        {/* Range Selector */}
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          gap: wp(3),
+          marginVertical: hp(2),
+        }}>
+          {["day", "week", "month"].map((option) => (
+            <ResponsiveButton
+              key={option}
+              title={option.toUpperCase()}
+              variant={range === option ? 'primary' : 'secondary'}
+              size="small"
+              onPress={() => setRange(option)}
+              style={{
+                paddingHorizontal: wp(5),
+                backgroundColor: range === option ? "#196126" : (theme === 'dark' ? '#374151' : '#f3f4f6'),
+              }}
+              textStyle={{
+                fontSize: wp(3.2),
+                color: range === option ? "#fff" : (theme === 'dark' ? '#fff' : '#111827'),
+              }}
+            />
           ))}
         </View>
-      </View>
 
-      <View style={styles.rangeContainer}>
-        {["day", "week", "month"].map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.rangeButton,
-              {
-                backgroundColor:
-                  range === option ? "#1E90FF" : palette.border,
-              },
-            ]}
-            onPress={() => setRange(option)}
-          >
-            <Text
-              style={{
-                color: range === option ? "#fff" : palette.text,
-                fontWeight: "600",
-                fontSize: 13,
-              }}
-            >
-              {option.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Charts Section */}
+        <ResponsiveCard>
+          {hasChartData ? (
+            <>
+              <Heading3 style={{ marginBottom: hp(1) }}>
+                Income – ${incomeData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+              </Heading3>
+              <BarChart
+                data={{
+                  labels: incomeData.labels,
+                  datasets: [{ data: incomeData.data }],
+                }}
+                width={wp(85)}
+                height={hp(30)}
+                fromZero={true}
+                chartConfig={{
+                  backgroundColor: palette.card,
+                  backgroundGradientFrom: palette.card,
+                  backgroundGradientTo: palette.card,
+                  decimalPlaces: 0,
+                  barRadius: wp(1.5),
+                  color: () => "#22c55e",
+                  labelColor: () => palette.text,
+                  propsForBackgroundLines: {
+                    stroke: palette.border,
+                  },
+                  propsForLabels: {
+                    fontSize: wp(3),
+                  },
+                }}
+                withInnerLines
+                withHorizontalLabels
+                style={{
+                  borderRadius: wp(3),
+                  marginBottom: hp(3),
+                }}
+              />
 
-      <View style={[styles.chartContainer, { backgroundColor: palette.card }]}>
-        {hasChartData ? (
-          <>
-            <Text style={[styles.chartTitle, { color: palette.subtext }]}>
-              Income – ${incomeData.data.reduce((a, b) => a + b, 0).toFixed(2)}
-            </Text>
-            <BarChart
-              data={{
-                labels: incomeData.labels,
-                datasets: [{ data: incomeData.data }],
-              }}
-              width={screenWidth + 16}
-              height={240}
-              fromZero={true}
-              chartConfig={{
-                backgroundColor: palette.card,
-                backgroundGradientFrom: palette.card,
-                backgroundGradientTo: palette.card,
-                decimalPlaces: 0,
-                barRadius: 6,
-                color: () => "#22c55e",
-                labelColor: () => palette.text,
-                propsForBackgroundLines: {
-                  stroke: palette.border,
-                },
-                propsForLabels: {
-                  fontSize: 12,
-                },
-              }}
-              withInnerLines
-              withHorizontalLabels
-              style={{
-                borderRadius: 12,
-                marginBottom: 24,
-              }}
-            />
-
-            <Text style={[styles.chartTitle, { color: palette.subtext }]}>
-              Expenses – ${expenseData.data.reduce((a, b) => a + b, 0).toFixed(2)}
-            </Text>
-            <BarChart
-              data={{
-                labels: expenseData.labels,
-                datasets: [{ data: expenseData.data }],
-              }}
-              width={screenWidth + 16}
-              height={240}
-              fromZero={true}
-              chartConfig={{
-                backgroundColor: palette.card,
-                backgroundGradientFrom: palette.card,
-                backgroundGradientTo: palette.card,
-                decimalPlaces: 0,
-                barRadius: 6,
-                color: () => "#ef4444",
-                labelColor: () => palette.text,
-                propsForBackgroundLines: {
-                  stroke: palette.border,
-                },
-                propsForLabels: {
-                  fontSize: 12,
-                },
-              }}
-              withInnerLines
-              withHorizontalLabels
-              style={{
-                borderRadius: 12,
-              }}
-            />
-          </>
-        ) : (
-          <Text
-            style={{
-              color: palette.subtext,
-              fontSize: 16,
-              textAlign: "center",
-              paddingVertical: 40,
-            }}
-          >
-            No transaction data available for {range.toUpperCase()}
-          </Text>
-        )}
-      </View>
-    </ScrollView>
+              <Heading3 style={{ marginBottom: hp(1) }}>
+                Expenses – ${expenseData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+              </Heading3>
+              <BarChart
+                data={{
+                  labels: expenseData.labels,
+                  datasets: [{ data: expenseData.data }],
+                }}
+                width={wp(85)}
+                height={hp(30)}
+                fromZero={true}
+                chartConfig={{
+                  backgroundColor: palette.card,
+                  backgroundGradientFrom: palette.card,
+                  backgroundGradientTo: palette.card,
+                  decimalPlaces: 0,
+                  barRadius: wp(1.5),
+                  color: () => "#ef4444",
+                  labelColor: () => palette.text,
+                  propsForBackgroundLines: {
+                    stroke: palette.border,
+                  },
+                  propsForLabels: {
+                    fontSize: wp(3),
+                  },
+                }}
+                withInnerLines
+                withHorizontalLabels
+                style={{
+                  borderRadius: wp(3),
+                }}
+              />
+            </>
+          ) : (
+            <View style={[globalStyles.centerContainer, { paddingVertical: hp(5) }]}>
+              <BodyText style={{ textAlign: "center", opacity: 0.7 }}>
+                No transaction data available for {range.toUpperCase()}
+              </BodyText>
+            </View>
+          )}
+        </ResponsiveCard>
+      </ScreenContainer>
+    </ResponsiveSafeArea>
   );
 };
 

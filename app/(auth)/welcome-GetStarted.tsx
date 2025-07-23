@@ -1,88 +1,86 @@
 import { images } from "@/constants";
 import { router } from "expo-router";
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, View } from "react-native";
+import {
+  ResponsiveSafeArea,
+  ScreenContainer,
+  ResponsiveButton,
+  Heading1,
+  BodyText,
+} from "@/components/ResponsiveComponents";
 import { useTheme } from "@/lib/ThemeContext";
+import { globalStyles } from "@/lib/globalStyles";
+import { wp, hp } from "@/lib/responsive";
 
 const welcome = () => {
   const { theme } = useTheme();
   return (
-    <SafeAreaView
-      className={`flex-1 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
-    >
-      <View
-        className="flex-1 justify-center items-center gap-10"
-        style={{ marginBottom: 130 }}
-      >
-        <Image
-          source={theme === 'dark' ? images.BlackLogo : images.GreenLogo}
-          className="w-[80%] h-[28%] max-w-[300px]"
-        />
-        <View>
-          <Text
-            className={`font-UrbanistBold text-heading ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Let's Get Started!
-          </Text>
-        </View>
-        <View className="flex justify-center items-center p-5 -mt-7">
-          <Text
-            className={`font-UrbanistMedium text-subtext ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-          >
-            With FinTra, sending and receiving money is
-          </Text>
-          <Text
-            className={`font-UrbanistMedium text-subtext ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-          >
-            easier than ever before.
-          </Text>
-        </View>
-      </View>
-      <View
-        className="flex-row gap-4 items-center"
-        style={{ position: "absolute", right: 20, left: 20, bottom: 48 }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            router.push("/(auth)/sign-up");
-          }}
-          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
-            theme === "dark" ? "bg-dark-background" : "bg-white"
-          }`}
+    <ResponsiveSafeArea>
+      <ScreenContainer>
+        <View
+          style={[
+            globalStyles.centerContainer,
+            { marginBottom: hp(16) }
+          ]}
         >
-          <Text
-            className={`font-UrbanistSemiBold text-buttontext ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Sign up
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            router.push("/(auth)/sign-in");
-          }}
-          className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
+          <Image
+            source={theme === 'dark' ? images.BlackLogo : images.GreenLogo}
+            style={{
+              width: wp(80),
+              height: hp(28),
+              maxWidth: wp(75),
+              resizeMode: 'contain'
+            }}
+          />
+          
+          <View style={globalStyles.marginVerticalLarge}>
+            <Heading1 style={{ textAlign: 'center' }}>
+              Let's Get Started!
+            </Heading1>
+          </View>
+          
+          <View style={[
+            globalStyles.screenPadding,
+            { alignItems: 'center', marginTop: -hp(3) }
+          ]}>
+            <BodyText style={{ textAlign: 'center' }}>
+              With FinTra, sending and receiving money is
+            </BodyText>
+            <BodyText style={{ textAlign: 'center' }}>
+              easier than ever before.
+            </BodyText>
+          </View>
+        </View>
+        
+        <View
+          style={[
+            globalStyles.screenPadding,
+            {
+              position: "absolute",
+              bottom: hp(6),
+              left: 0,
+              right: 0,
+              flexDirection: 'row',
+              gap: wp(4),
+              alignItems: 'center'
+            }
+          ]}
         >
-          <Text
-            className={`font-UrbanistSemiBold text-buttontext ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Sign in
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <ResponsiveButton
+            title="Sign up"
+            variant="secondary"
+            onPress={() => router.push("/(auth)/sign-up")}
+            style={{ flex: 1 }}
+          />
+          <ResponsiveButton
+            title="Sign in"
+            onPress={() => router.push("/(auth)/sign-in")}
+            style={{ flex: 1 }}
+          />
+        </View>
+      </ScreenContainer>
+    </ResponsiveSafeArea>
   );
 };
 

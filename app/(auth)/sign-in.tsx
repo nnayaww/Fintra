@@ -16,8 +16,11 @@ import {
     TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View
+    View,
+    SafeAreaView,
+    Platform
 } from "react-native";
+import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen, getButtonSize, getIconSize } from "@/lib/responsive";
 
 const SignIn = () => {
   const [rememberMe, setRememberMe] = useState(false);
@@ -31,6 +34,9 @@ const SignIn = () => {
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const buttonSize = getButtonSize();
+  const iconSizes = getIconSize();
 
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
@@ -147,21 +153,27 @@ const handleSignIn = async () => {
 
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior="padding"
-        keyboardVerticalOffset={100}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
-          keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme === "dark" ? "#181A20" : "#fff" }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior="padding"
+          keyboardVerticalOffset={Platform.OS === 'ios' ? hp(5) : 0}
         >
-          <View
-            className={`flex-1 p-5 gap-10 ${
-              theme === "dark" ? "bg-dark-background" : "bg-white"
-            }`}
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: hp(3) }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
+            <View
+              style={{
+                flex: 1,
+                paddingHorizontal: wp(5),
+                paddingTop: safeArea.top,
+                gap: hp(3),
+                backgroundColor: theme === "dark" ? "#181A20" : "#fff",
+              }}
+            >
             <TouchableOpacity
               onPress={() => {
                 // if (router.canGoBack()) {
@@ -173,23 +185,29 @@ const handleSignIn = async () => {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={iconSizes.large}
                 color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ padding: 6, marginTop: 22 }}
+                style={{ padding: rs(6), marginTop: hp(2) }}
               />
             </TouchableOpacity>
             <View>
               <Text
-                className={`font-UrbanistBold text-3xl ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
-                }`}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: rf(isSmallScreen() ? 26 : 30),
+                  color: theme === "dark" ? "#fff" : "#0D0D0D",
+                  marginBottom: hp(1),
+                }}
               >
                 Welcome back 👋
               </Text>
               <Text
-                className={`font-UrbanistMedium text-lg mt-5 ${
-                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
-                }`}
+                style={{
+                  fontWeight: "500",
+                  fontSize: rf(16),
+                  color: theme === "dark" ? "#A0A0A0" : "#666",
+                  lineHeight: rf(22),
+                }}
               >
                 Please enter your email & password to sign in.
               </Text>
@@ -348,27 +366,38 @@ const handleSignIn = async () => {
               </Link>
             </View>
             {/* Sign In Button INSIDE the form, moves with keyboard */}
-            <View style={{ marginTop: 24 }}>
+            <View style={{ marginTop: hp(3) }}>
               <TouchableOpacity
-                className="bg-general flex items-center justify-center p-5 border-none rounded-full"
+                style={{
+                  backgroundColor: "#196126",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingVertical: hp(2),
+                  borderRadius: rs(25),
+                  minHeight: buttonSize.height,
+                }}
                 onPress={handleSignIn}
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color="#fff" size="small" />
                 ) : (
                   <Text
-                    className={`font-UrbanistSemiBold text-buttontext ${
-                      theme === "dark" ? "text-dark-primary" : "text-primary"
-                    }`}
+                    style={{
+                      fontWeight: "600",
+                      fontSize: buttonSize.fontSize,
+                      color: "#fff",
+                    }}
                   >
                     Sign in
                   </Text>
                 )}
               </TouchableOpacity>
             </View>
-          </View>
-        </ScrollView>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
         {/* Overlay Modal */}
         <Modal visible={showModal} transparent animationType="fade">
           <View
@@ -510,8 +539,7 @@ const handleSignIn = async () => {
             </View>
           </View>
         </Modal>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 };
 

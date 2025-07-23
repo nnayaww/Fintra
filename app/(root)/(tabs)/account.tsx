@@ -15,13 +15,24 @@ import React, { useEffect, useState } from "react";
 import {
   Image,
   Keyboard,
-  ScrollView,
   Share,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import Modal from "react-native-modal";
+import {
+  ResponsiveSafeArea,
+  ScreenContainer,
+  ResponsiveButton,
+  ResponsiveModal,
+  Heading1,
+  Heading2,
+  Heading3,
+  BodyText,
+  SmallText,
+} from "@/components/ResponsiveComponents";
+import { globalStyles } from "@/lib/globalStyles";
+import { wp, hp, getIconSize } from "@/lib/responsive";
 
 const Account = () => {
   const { theme } = useTheme();
@@ -74,375 +85,265 @@ const Account = () => {
     }
   };
 
-  return (
-    <View
-      className={`flex-1 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
-    >
-      <View
-        className={`pt-12 pb-6 px-5 ${
-          theme === "dark" ? "bg-[#23262F]" : "bg-white"
-        }`}
-    >
-        <View className="flex-row px-5 mt-3">
-        <Image
-          source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
-          style={{ width: 50, height: 40, marginTop: 15, marginLeft: -14 }}
-        />
-        <Text
-            className={`font-UrbanistBold text-3xl mt-5 ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          style={{ marginHorizontal: 80 }}
-        >
-          Account
-        </Text>
-      </View>
-        <View
-          className="flex-row justify-between p-3"
-          style={{ marginTop: 22 }}
-        >
-        <View
-          style={{
-            width: 78,
-            height: 78,
-            backgroundColor: theme === "dark" ? "#333" : "#F6F8FA",
-          }}
-          className="rounded-full flex items-center justify-center"
-        >
-          {profileImage ? (
-            <>
-              <Image
-                source={{ uri: profileImage }}
-                style={{ width: 78, height: 78, borderRadius: 60 }}
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -6,
-                  backgroundColor: theme === "dark" ? "#000" : "#fff",
-                  borderRadius: 12,
-                  padding: 2,
-                  elevation: 2,
-                }}
-              >
-                <MaterialCommunityIcons
-                  name="close-circle"
-                  size={24}
-                  color="#E53E3E"
-                />
-              </TouchableOpacity>
-            </>
-          ) : (
-            <FontAwesome5
-              name="user-alt"
-              size={24}
-              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-            />
-          )}
-        </View>
-        <View className="flex-row items-center" style={{ paddingLeft: 20 }}>
-          <View style={{ width: "80%" }}>
-            <Text
-                className={`font-UrbanistBold text-xl ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
-                }`}
-              style={{ fontSize: 19 }}
-            >
-                {fullName}
-            </Text>
-            <Text
-                className={`font-UrbanistMedium text-lg ${
-                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
-                }`}
-              style={{ marginTop: 6, lineHeight: 26, width: "80%" }}
-            >
-                {email}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => setshowQRCodeModal(true)}
-            style={{ marginLeft: -10 }}
-          >
-            <MaterialCommunityIcons
-              name="qrcode"
-              size={32}
-              color={theme === "dark" ? "#fff" : "black"}
-            />
-          </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        onScrollBeginDrag={Keyboard.dismiss}
-      >
-        <View
-          className="flex-row px-5 items-center gap-4"
-          style={{ marginTop: 14 }}
-        >
-          <Text
-            className={`font-UrbanistSemiBold text-xl ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
-          >
-            General
-          </Text>
-          <View
-            className="h-[1px]"
-            style={{
-              width: "80%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-            }}
-          ></View>
-        </View>
-        <View className="flex gap-4" style={{ marginTop: 16 }}>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push(
-                "/(root)/(account)/(payment-methods)/payment-methods"
-              )
-            }
-          >
-            <FontAwesome
-              name="credit-card"
-              size={24}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 10 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -94 }}
-            >
-              Payment Methods
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/personal-info")
-            }
-          >
-            <FontAwesome5
-              name="user"
-              size={24}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 11 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -132 }}
-            >
-              Personal Info
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{}}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/notification-settings")
-            }
-          >
-            <Image
-              source={icons.bell}
-              style={{ width: 28, height: 31, marginLeft: 7 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -146 }}
-            >
-              Notification
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{}}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/security")
-            }
-          >
-            <Octicons
-              name="shield-check"
-              size={25}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 11 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -172 }}
-            >
-              Security
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{}}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/language")
-            }
-          >
-            <MaterialCommunityIcons
-              name="text-box-outline"
-              size={28}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 8 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -48 }}
-            >
-              Language
-            </Text>
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
-              style={{ fontSize: 18, marginRight: -60 }}
-            >
-              English (US)
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{}}
-            />
-          </TouchableOpacity>
-          <ThemeToggleButton />
-        </View>
-        <View
-          className="flex-row px-5 items-center gap-4"
-          style={{ marginTop: 14 }}
-        >
-          <Text
-            className={`font-UrbanistSemiBold text-xl ${theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"}`}
-          >
-            About
-          </Text>
-          <View
-            className="h-[1px]"
-            style={{
-              width: "84%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-            }}
-          ></View>
-        </View>
-        <View className="flex gap-4" style={{ marginTop: 16 }}>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/help-center")
-            }
-          >
-            <Feather
-              name="file-text"
-              size={26}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 11 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -140 }}
-            >
-              Help Center
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/privacy-policy")
-            }
-          >
-            <MaterialCommunityIcons
-              name="lock-outline"
-              size={26}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 11 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -130 }}
-            >
-              Privacy Policy
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row justify-between items-center p-3 w-full"
-            onPress={() =>
-              router.push("/(root)/(account)/(settings)/about-FinTra")
-            }
-          >
-            <Entypo
-              name="info"
-              size={24}
-              color={theme === "dark" ? "#A0A0A0" : "#616161"}
-              style={{ marginTop: 2, marginLeft: 11 }}
-            />
-            <Text
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 18, marginLeft: -138 }}
-            >
-              About FinTra
-            </Text>
-            <MaterialCommunityIcons
-              name="greater-than"
-              size={25}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setshowLogoutModal(true)}
-            className="flex-row items-center p-3 w-full"
-          >
-            <Ionicons
-              name="log-out-outline"
-              size={34}
-              color="#f54f4f"
-              style={{ marginTop: 2, marginLeft: 10 }}
-            />
-            <Text
-              className="font-UrbanistBold text-[#f54f4f]"
-              style={{ fontSize: 19, marginLeft: 18 }}
-            >
-              Logout
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+  const iconSizes = getIconSize();
 
+  const MenuItem = ({ icon, title, onPress, rightText, isLogout = false }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        globalStyles.listItem,
+        {
+          paddingHorizontal: wp(5),
+          paddingVertical: hp(2),
+          backgroundColor: 'transparent',
+          borderBottomWidth: 0,
+        }
+      ]}
+    >
+      <View style={{ marginRight: wp(4) }}>
+        {typeof icon === 'string' ? (
+          <MaterialCommunityIcons
+            name={icon}
+            size={iconSizes.medium}
+            color={isLogout ? "#f54f4f" : (theme === "dark" ? "#a3a3a3" : "#64748b")}
+          />
+        ) : (
+          icon
+        )}
+      </View>
+      <View style={{ flex: 1 }}>
+        <BodyText
+          style={{
+            fontWeight: 'bold',
+            color: isLogout ? "#f54f4f" : undefined,
+          }}
+        >
+          {title}
+        </BodyText>
+      </View>
+      {rightText && (
+        <SmallText style={{ marginRight: wp(2) }}>
+          {rightText}
+        </SmallText>
+      )}
+      {!isLogout && (
+        <MaterialCommunityIcons
+          name="chevron-right"
+          size={iconSizes.medium}
+          color={theme === "dark" ? "#fff" : "#0D0D0D"}
+        />
+      )}
+    </TouchableOpacity>
+  );
+
+  return (
+    <ResponsiveSafeArea>
+      <ScreenContainer scrollable scrollProps={{
+        keyboardShouldPersistTaps: "handled",
+        onScrollBeginDrag: Keyboard.dismiss,
+        contentContainerStyle: { paddingBottom: hp(3) }
+      }}>
+        {/* Header */}
+        <View
+          style={[
+            globalStyles.screenPadding,
+            {
+              paddingTop: hp(6),
+              paddingBottom: hp(3),
+              backgroundColor: theme === "dark" ? "#23262F" : "#ffffff",
+              marginHorizontal: -wp(5),
+            }
+          ]}
+        >
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: hp(2),
+            paddingHorizontal: wp(5),
+          }}>
+            <Image
+              source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+              style={{ width: wp(12), height: hp(5) }}
+              resizeMode="contain"
+            />
+            <Heading1>Account</Heading1>
+            <View style={{ width: wp(12) }} />
+          </View>
+
+          {/* Profile Section */}
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: hp(4),
+            paddingHorizontal: wp(5),
+          }}>
+            <View
+              style={{
+                width: wp(20),
+                height: wp(20),
+                borderRadius: wp(10),
+                backgroundColor: theme === "dark" ? "#374151" : "#F6F8FA",
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
+              {profileImage ? (
+                <>
+                  <Image
+                    source={{ uri: profileImage }}
+                    style={{ 
+                      width: wp(20), 
+                      height: wp(20), 
+                      borderRadius: wp(10) 
+                    }}
+                    resizeMode="cover"
+                  />
+                  <TouchableOpacity
+                    style={{
+                      position: "absolute",
+                      top: -wp(2),
+                      right: -wp(1.5),
+                      backgroundColor: theme === "dark" ? "#000" : "#fff",
+                      borderRadius: wp(3),
+                      padding: wp(0.5),
+                      elevation: 2,
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="close-circle"
+                      size={iconSizes.medium}
+                      color="#E53E3E"
+                    />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <FontAwesome5
+                  name="user-alt"
+                  size={iconSizes.large}
+                  color={theme === "dark" ? "#a3a3a3" : "#9ca3af"}
+                />
+              )}
+            </View>
+            
+            <View style={{ flex: 1, marginLeft: wp(5) }}>
+              <Heading3>{fullName || 'User Name'}</Heading3>
+              <SmallText style={{ marginTop: hp(0.5) }}>
+                {email || 'user@example.com'}
+              </SmallText>
+            </View>
+            
+            <TouchableOpacity
+              onPress={() => setshowQRCodeModal(true)}
+              style={{ padding: wp(2) }}
+            >
+              <MaterialCommunityIcons
+                name="qrcode"
+                size={iconSizes.large}
+                color={theme === "dark" ? "#fff" : "#000"}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* Menu Sections */}
+        <View style={{ marginTop: hp(2) }}>
+          {/* General Section */}
+          <View style={[
+            globalStyles.screenPadding,
+            {
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: hp(2),
+            }
+          ]}>
+            <Heading3 style={{ color: theme === "dark" ? "#a3a3a3" : "#8f949b" }}>
+              General
+            </Heading3>
+            <View style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginLeft: wp(4),
+            }} />
+          </View>
+          
+          <MenuItem
+            icon={<FontAwesome name="credit-card" size={iconSizes.medium} color={theme === "dark" ? "#a3a3a3" : "#64748b"} />}
+            title="Payment Methods"
+            onPress={() => router.push("/(root)/(account)/(payment-methods)/payment-methods")}
+          />
+          <MenuItem
+            icon="account"
+            title="Personal Info"
+            onPress={() => router.push("/(root)/(account)/(settings)/personal-info")}
+          />
+          <MenuItem
+            icon={<Image source={icons.bell} style={{ width: wp(7), height: wp(7) }} />}
+            title="Notification"
+            onPress={() => router.push("/(root)/(account)/(settings)/notification-settings")}
+          />
+          <MenuItem
+            icon={<Octicons name="shield-check" size={iconSizes.medium} color={theme === "dark" ? "#a3a3a3" : "#64748b"} />}
+            title="Security"
+            onPress={() => router.push("/(root)/(account)/(settings)/security")}
+          />
+          <MenuItem
+            icon="text-box-outline"
+            title="Language"
+            rightText="English (US)"
+            onPress={() => router.push("/(root)/(account)/(settings)/language")}
+          />
+          <View style={globalStyles.screenPadding}>
+            <ThemeToggleButton />
+          </View>
+          
+          {/* About Section */}
+          <View style={[
+            globalStyles.screenPadding,
+            {
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: hp(2),
+              marginBottom: hp(2),
+            }
+          ]}>
+            <Heading3 style={{ color: theme === "dark" ? "#a3a3a3" : "#8f949b" }}>
+              About
+            </Heading3>
+            <View style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+              marginLeft: wp(4),
+            }} />
+          </View>
+          
+          <MenuItem
+            icon={<Feather name="file-text" size={iconSizes.medium} color={theme === "dark" ? "#a3a3a3" : "#64748b"} />}
+            title="Help Center"
+            onPress={() => router.push("/(root)/(account)/(settings)/help-center")}
+          />
+          <MenuItem
+            icon="lock-outline"
+            title="Privacy Policy"
+            onPress={() => router.push("/(root)/(account)/(settings)/privacy-policy")}
+          />
+          <MenuItem
+            icon={<Entypo name="info" size={iconSizes.medium} color={theme === "dark" ? "#a3a3a3" : "#64748b"} />}
+            title="About FinTra"
+            onPress={() => router.push("/(root)/(account)/(settings)/about-FinTra")}
+          />
+          <MenuItem
+            icon={<Ionicons name="log-out-outline" size={iconSizes.large} color="#f54f4f" />}
+            title="Logout"
+            onPress={() => setshowLogoutModal(true)}
+            isLogout
+          />
+        </View>
+      </ScreenContainer>
+
+      {/* QR Code Modal */}
       <Modal
         isVisible={showQRCodeModal}
         onBackdropPress={() => setshowQRCodeModal(false)}
@@ -453,84 +354,81 @@ const Account = () => {
       >
         <View
           style={{
-            height: "64%",
+            height: hp(64),
             width: "100%",
-            backgroundColor: theme === "dark" ? "#333" : "white",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
+            backgroundColor: theme === "dark" ? "#374151" : "white",
+            borderTopLeftRadius: wp(5),
+            borderTopRightRadius: wp(5),
+            paddingVertical: hp(1),
+            paddingHorizontal: wp(5),
             alignItems: "center",
-            gap: 10,
           }}
         >
-          {/* Optional: Add a swipe indicator */}
           <View
             style={{
-              width: 40,
-              height: 3,
-              backgroundColor: theme === "dark" ? "#666" : "#ccc",
-              borderRadius: 3,
+              width: wp(10),
+              height: hp(0.4),
+              backgroundColor: theme === "dark" ? "#6b7280" : "#d1d5db",
+              borderRadius: wp(0.8),
               alignSelf: "center",
+              marginTop: hp(1),
             }}
           />
-          {/* Your modal content */}
-          <View style={{ marginTop: 10 }}>
-            <Text
-              style={{ fontSize: 24 }}
-              className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-            >
-              My QR Code
-            </Text>
+          
+          <View style={{ marginTop: hp(2) }}>
+            <Heading2>My QR Code</Heading2>
           </View>
+          
+          <View style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: theme === "dark" ? "#4b5563" : "#e5e7eb",
+            marginTop: hp(2),
+          }} />
+          
           <View
-            className="h-[1px]"
             style={{
               width: "100%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-              marginTop: 14,
-            }}
-          ></View>
-          <View
-            style={{
-              width: "100%",
-              height: "60%",
-              borderStyle: "solid",
-              borderColor: theme === "dark" ? "#444" : "#e6e6e6",
+              height: hp(36),
               borderWidth: 1,
-              marginTop: 10,
+              borderColor: theme === "dark" ? "#4b5563" : "#e5e7eb",
+              marginTop: hp(2),
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            className="flex justify-center items-center"
           >
-            <Image source={images.QRCode} style={{ width: 370, height: 290 }} />
+            <Image 
+              source={images.QRCode} 
+              style={{ 
+                width: wp(80), 
+                height: hp(30) 
+              }} 
+              resizeMode="contain"
+            />
           </View>
-          <View className="flex-row w-full items-center gap-4 mt-4">
-            <TouchableOpacity
+          
+          <View style={{
+            flexDirection: 'row',
+            width: '100%',
+            gap: wp(4),
+            marginTop: hp(2),
+          }}>
+            <ResponsiveButton
+              title="Save"
+              variant="secondary"
               onPress={() => setshowQRCodeModal(false)}
-              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${
-                theme === "dark" ? "bg-dark-background" : "bg-white"
-              }`}
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              >
-                Save
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              style={{ flex: 1 }}
+            />
+            <ResponsiveButton
+              title="Share"
               onPress={handleShare}
-              className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              >
-                Share
-              </Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           </View>
         </View>
       </Modal>
 
+      {/* Logout Modal */}
       <Modal
         isVisible={showLogoutModal}
         onBackdropPress={() => setshowLogoutModal(false)}
@@ -541,85 +439,70 @@ const Account = () => {
       >
         <View
           style={{
-            height: "35%",
+            height: hp(35),
             width: "100%",
-            backgroundColor: theme === "dark" ? "#333" : "white",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
+            backgroundColor: theme === "dark" ? "#374151" : "white",
+            borderTopLeftRadius: wp(5),
+            borderTopRightRadius: wp(5),
+            paddingVertical: hp(1),
+            paddingHorizontal: wp(5),
             alignItems: "center",
-            gap: 10,
           }}
         >
-          {/* Optional: Add a swipe indicator */}
           <View
             style={{
-              width: 40,
-              height: 3,
-              backgroundColor: theme === "dark" ? "#666" : "#ccc",
-              borderRadius: 3,
+              width: wp(10),
+              height: hp(0.4),
+              backgroundColor: theme === "dark" ? "#6b7280" : "#d1d5db",
+              borderRadius: wp(0.8),
               alignSelf: "center",
+              marginTop: hp(1),
             }}
           />
-          {/* Your modal content */}
-          <View style={{ marginTop: 10 }}>
-            <Text
-              style={{ fontSize: 24 }}
-              className="font-UrbanistBold text-[#f54f4f]"
-            >
-              Logout
-            </Text>
+          
+          <View style={{ marginTop: hp(2) }}>
+            <Heading2 style={{ color: "#f54f4f" }}>Logout</Heading2>
           </View>
-          <View
-            className="h-[1px]"
-            style={{
-              width: "100%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-              marginTop: 14,
-            }}
-          />
-          <View style={{ marginTop: 26 }}>
-            <Text
-              className={`font-UrbanistSemiBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              style={{ fontSize: 20 }}
-            >
+          
+          <View style={{
+            width: "100%",
+            height: 1,
+            backgroundColor: theme === "dark" ? "#4b5563" : "#e5e7eb",
+            marginTop: hp(2),
+          }} />
+          
+          <View style={{ marginTop: hp(4) }}>
+            <BodyText style={{ textAlign: 'center' }}>
               Are you sure you want to log out?
-            </Text>
+            </BodyText>
           </View>
-          <View
-            className="flex-row w-full gap-4 mt-4"
-            style={{ position: "absolute", bottom: 30 }}
-          >
-            <TouchableOpacity
+          
+          <View style={{
+            flexDirection: 'row',
+            width: '100%',
+            gap: wp(4),
+            position: "absolute",
+            bottom: hp(4),
+            paddingHorizontal: wp(5),
+          }}>
+            <ResponsiveButton
+              title="Cancel"
+              variant="secondary"
               onPress={() => setshowLogoutModal(false)}
-              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${
-                theme === "dark" ? "bg-dark-background" : "bg-white"
-              }`}
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              >
-                Cancel
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              style={{ flex: 1 }}
+            />
+            <ResponsiveButton
+              title="Yes, Logout"
               onPress={() => {
                 setshowLogoutModal(false);
                 router.push("/(auth)/sign-in");
               }}
-              className="bg-general flex-1 items-center justify-center py-5 border-none rounded-full"
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-              >
-                Yes, Logout
-              </Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           </View>
         </View>
       </Modal>
-    </View>
+    </ResponsiveSafeArea>
   );
 };
 
