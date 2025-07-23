@@ -112,7 +112,6 @@ const Analytics = () => {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: palette.background }}>
-      {/* Header */}
       <View
         style={[
           styles.header,
@@ -128,7 +127,6 @@ const Analytics = () => {
         <View style={{ width: 24 }} />
       </View>
 
-      {/* Totals */}
       <View style={[styles.summaryContainer, { backgroundColor: palette.card }]}>
         <Text style={[styles.sectionTitle, { color: palette.subtext }]}>Summary</Text>
         <View style={styles.totalsGrid}>
@@ -145,7 +143,6 @@ const Analytics = () => {
         </View>
       </View>
 
-      {/* Range Selector */}
       <View style={styles.rangeContainer}>
         {["day", "week", "month"].map((option) => (
           <TouchableOpacity
@@ -155,11 +152,6 @@ const Analytics = () => {
               {
                 backgroundColor:
                   range === option ? "#1E90FF" : palette.border,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.1,
-                shadowRadius: 2,
-                elevation: 2,
               },
             ]}
             onPress={() => setRange(option)}
@@ -177,7 +169,6 @@ const Analytics = () => {
         ))}
       </View>
 
-      {/* Charts */}
       <View style={[styles.chartContainer, { backgroundColor: palette.card }]}>
         {hasChartData ? (
           <>
@@ -273,70 +264,80 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 70,
-    paddingBottom: 12,
+    paddingTop: 60,
+    paddingBottom: 16,
     borderBottomWidth: 1,
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
   },
   summaryContainer: {
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 8,
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 3,
   },
   totalsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: 16,
+    gap: 12,
   },
   totalBox: {
     width: "48%",
-    paddingVertical: 10,
+    paddingVertical: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    borderRadius: 12,
     alignItems: "center",
   },
   totalLabel: {
-    fontSize: 14,
-    marginBottom: 4,
+    fontSize: 13,
+    fontWeight: "500",
+    opacity: 0.75,
+    marginBottom: 6,
   },
   totalAmount: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
   rangeContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 20,
+    marginTop: 20,
+    marginBottom: 8,
     gap: 12,
   },
   rangeButton: {
     paddingVertical: 8,
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     borderRadius: 20,
   },
   chartContainer: {
     marginHorizontal: 16,
-    marginBottom: 40,
+    marginTop: 20,
+    marginBottom: 60,
     paddingVertical: 24,
-    paddingHorizontal: 8,
-    borderRadius: 16,
+    paddingHorizontal: 12,
+    borderRadius: 20,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.07,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
     elevation: 3,
   },
   chartTitle: {
