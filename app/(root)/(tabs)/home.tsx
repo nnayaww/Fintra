@@ -16,12 +16,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ScrollView } from "react-native-gesture-handler";
 
-// --- Minimal placeholder for theme context ---
-const useTheme = () => {
-  // Replace with your actual ThemeContext logic
-  const [theme, setTheme] = React.useState("light"); // or "dark"
-  return { theme };
-};
+import { useTheme } from "@/lib/ThemeContext";
 
 // --- Minimal icons/images placeholders (replace with your actual assets) ---
 const icons = {
