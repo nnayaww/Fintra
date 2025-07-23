@@ -1,47 +1,53 @@
-import allContacts from "@/constants";
 import { useTheme } from "@/lib/ThemeContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams, useFocusEffect } from "expo-router";
+import React, { useState, useCallback } from "react";
 import {
-    FlatList,
-    Image,
-    Keyboard,
-    KeyboardAvoidingView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
+  FlatList,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
+import { getContacts } from "../../../../utils/contactStorage";
 
 type Contact = {
-  id: string;
   name: string;
   email: string;
-  avatar: any;
-  favorite: boolean;
+  avatar?: string;
+  favorite?: boolean;
 };
 
 export default function SendSelectContact() {
   const { type } = useLocalSearchParams();
   const { theme } = useTheme();
 
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
     "All Contacts"
   );
-
-  const tabs: ("All Contacts" | "Favorites")[] = ["All Contacts", "Favorites"];
   const [searchFocused, setSearchFocused] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  const [contactImage, setContactImage] = useState<string | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchContacts = async () => {
+        const stored = await getContacts();
+        setContacts(stored);
+      };
+      fetchContacts();
+    }, [])
+  );
 
-  const filteredContacts = allContacts.filter((contact) => {
+  const filteredContacts = contacts.filter((contact) => {
     if (selectedTab === "Favorites" && !contact.favorite) return false;
     if (searchText.trim() === "") return true;
     const lower = searchText.toLowerCase();
@@ -50,6 +56,7 @@ export default function SendSelectContact() {
       contact.email.toLowerCase().includes(lower)
     );
   });
+
   const renderContact = ({ item }: { item: Contact }) => (
     <View className="flex px-5">
       <TouchableOpacity
@@ -59,9 +66,9 @@ export default function SendSelectContact() {
             pathname: "/(root)/(home)/(send)/send-enter-amount",
             params: {
               type,
-              name: item?.name,
-              email: item?.email,
-              avatar: item?.avatar,
+              name: item.name,
+              email: item.email,
+              avatar: item.avatar,
             },
           });
         }}
@@ -72,14 +79,12 @@ export default function SendSelectContact() {
           }`}
           style={{ width: 60, height: 60 }}
         >
-          {contactImage ? (
-            <>
-              <Image
-                source={{ uri: contactImage }}
-                style={{ width: 60, height: 60 }}
-                resizeMode="cover"
-              />
-            </>
+          {item.avatar ? (
+            <Image
+              source={{ uri: item.avatar }}
+              style={{ width: 60, height: 60, borderRadius: 30 }}
+              resizeMode="cover"
+            />
           ) : (
             <FontAwesome5
               name="user-alt"
@@ -126,15 +131,7 @@ export default function SendSelectContact() {
             className="flex-row items-center pt-5 pl-5 pr-5"
             style={{ marginTop: 32 }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                // if (router.canGoBack()) {
-                  router.back();
-                // } else {
-                //   router.replace("/(root)/(tabs)/home");
-                // }
-              }}
-            >
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons
                 name="arrow-back"
                 size={28}
@@ -151,6 +148,7 @@ export default function SendSelectContact() {
               Send to
             </Text>
           </View>
+
           {!isTyping && (
             <AntDesign
               name="search1"
@@ -159,6 +157,7 @@ export default function SendSelectContact() {
               style={{ position: "absolute", left: 36, top: 138, zIndex: 1 }}
             />
           )}
+
           <TextInput
             value={searchText}
             onChangeText={(text) => {
@@ -179,6 +178,7 @@ export default function SendSelectContact() {
               if (searchText.length === 0) setIsTyping(false);
             }}
           />
+
           <View className="flex-row self-center">
             <View
               style={{
@@ -207,14 +207,16 @@ export default function SendSelectContact() {
               }}
             />
           </View>
+
           <FlatList
             data={filteredContacts}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.email}
             renderItem={renderContact}
             contentContainerStyle={{ paddingBottom: 30, paddingTop: 10 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           />
+
           <TouchableOpacity
             className="flex items-center justify-center bg-general rounded-full"
             style={{

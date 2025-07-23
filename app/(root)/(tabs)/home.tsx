@@ -1,352 +1,443 @@
 /* eslint-disable react/no-unescaped-entities */
+import React, { useCallback, useEffect, useState } from "react";
 import {
-    FormattedTransaction,
-    formatTransactions,
-    icons,
-    images,
-} from "@/constants";
-import { useTheme } from "@/lib/ThemeContext";
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+
+// --- Minimal placeholder for theme context ---
+const useTheme = () => {
+  // Replace with your actual ThemeContext logic
+  const [theme, setTheme] = React.useState("light"); // or "dark"
+  return { theme };
+};
+
+// --- Minimal icons/images placeholders (replace with your actual assets) ---
+const icons = {
+  bell: require("../../../assets/icons/notification-bell.png"), // replace with your actual icon
+  send: require("../../../assets/icons/send.png"),
+  down: require("../../../assets/icons/down.png"),
+  topUp: require("../../../assets/icons/topUp.png"),
+};
+
+const images = {
+  GreenLogo: require("../../../assets/images/GreenLogo.png"),
+  BlackLogo: require("../../../assets/images/BlackLogo.png"),
+  clipboard: require("../../../assets/images/clipboard.png"),
+};
+
+type Transaction = {
+  id: number;
+  reference: string;
+  userId: number;
+  type: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+};
+
+// Format date or time as you want
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function formatTime(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+}
 
 const Home = () => {
   const { theme } = useTheme();
-  const transactionSections = formatTransactions();
-  const [contactImage, setContactImage] = useState<string | null>(null);
-  const [userBalance, setUserBalance] = useState('');
-  const [transactions, setTrasactions] = useState([]);
+  const [userBalance, setUserBalance] = useState<string>("");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
 
-  const user = {
-    isNewUser: isNewUserBool,
-    transactions: transactionSections,
-  };  
-  
+  // Load balance from AsyncStorage on screen focus
   useFocusEffect(
-  useCallback(() => {
-    const getBalance = async () => {
-      const storedBalance = await AsyncStorage.getItem("balance");
-      setUserBalance(storedBalance); // or parseInt(storedBalance) if it's a number
+    useCallback(() => {
+      const getBalance = async () => {
+        const storedBalance = await AsyncStorage.getItem("balance");
+        if (storedBalance) {
+          setUserBalance(storedBalance);
+        }
+      };
+      getBalance();
+    }, [])
+  );
+
+  // Fetch transactions on mount and filter to success only
+  useEffect(() => {
+    const fetchTransactionDetails = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const userId = await AsyncStorage.getItem("userId");
+
+        if (!token || !userId) return;
+
+        const response = await fetch(
+          `https://fintra-1.onrender.com/api/transactions/user/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data: Transaction[] = await response.json();
+
+        // Filter to only successful transactions
+        const successTransactions = data
+          .filter((tx) => tx.status === "SUCCESS")
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 10); 
+        setTransactions(successTransactions);
+      } catch (error) {
+        console.log("Fetch error:", error);
+      }
     };
 
-    getBalance();
-  }, [])
-); 
+    fetchTransactionDetails();
+  }, []);
 
+  // Group transactions by date (simple example)
+  const groupedTransactions = transactions.reduce<Record<string, Transaction[]>>(
+    (acc, tx) => {
+      const date = formatDate(tx.createdAt);
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(tx);
+      return acc;
+    },
+    {}
+  );
 
-useEffect(() => {
-  // Fetching the user-specific transactions
-  const fetchTransactionDetails = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const userId = await AsyncStorage.getItem('userId');
+  // Prepare sections for FlatList with section headers
+  const sections = Object.entries(groupedTransactions).map(([date, data]) => ({
+    sectionTitle: date,
+    data,
+  }));
 
-      const response = await fetch(`https://fintra-1.onrender.com/api/transactions/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+  const hasTransactions = transactions.length > 0;
 
-      const data = await response.json(); // Await this!
-      console.log("Transaction data in home:", data);
-    } catch (error) {
-      console.log("Fetch error:", error);
-    }
-  };
-
-  fetchTransactionDetails(); // ❗CALL the function here
-
-}, []);
-
-
-  const renderTransactionItem = ({ item }: { item: FormattedTransaction }) => (
-    <View className="flex-row py-4 items-center">
+  const renderTransactionItem = ({ item }: { item: Transaction }) => (
+    <View
+      style={{
+        flexDirection: "row",
+        paddingVertical: 16,
+        alignItems: "center",
+      }}
+    >
       <View
-        className={`rounded-full flex items-center justify-center ${
-          theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
-        }`}
-        style={{ width: 60, height: 60 }}
+        style={{
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          backgroundColor: theme === "dark" ? "#444" : "#F6F8FA",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        {contactImage ? (
-          <>
-            <Image
-              source={{ uri: contactImage }}
-              style={{ width: 60, height: 60 }}
-              resizeMode="cover"
-            />
-          </>
-        ) : (
-          <FontAwesome5
-            name="user-alt"
-            size={21}
-            color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-          />
-        )}
+        <FontAwesome5
+          name="user-alt"
+          size={21}
+          color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+        />
       </View>
-      <View className="flex-1 flex-col ml-5 gap-3">
-        <View className="flex-row justify-between items-center">
+
+      <View style={{ flex: 1, marginLeft: 20 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Text
-            className={`font-UrbanistSemiBold ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-            style={{ fontSize: 19 }}
+            style={{
+              fontWeight: "600",
+              color: theme === "dark" ? "#fff" : "#000",
+              fontSize: 18,
+            }}
           >
-            {item.name}
+            {item.type.charAt(0) + item.type.slice(1).toLowerCase()}
           </Text>
+
           <Text
-            className={`font-UrbanistSemiBold ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-            style={{ fontSize: 19 }}
+            style={{
+              fontWeight: "600",
+              color: item.type === "TOPUP" ? "green" : "red",
+              fontSize: 18,
+            }}
           >
-            {item.category === "Income"
-              ? `+₵ ${Number(item.amount).toFixed(2)}`
-              : item.category === "Sent"
-              ? `-₵ ${Number(item.amount).toFixed(2)}`
-              : item.category === "Incoming Request"
-              ? `₵ ${Number(item.amount).toFixed(2)}`
-              : `₵ ${Number(item.amount).toFixed(2)}`}
+            {item.type === "TOPUP" ? "+" : "-"}₵ {item.amount.toFixed(2)}
           </Text>
         </View>
-        <View className="flex-row justify-between items-center">
+
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 6,
+          }}
+        >
           <Text
-            className={`font-UrbanistMedium ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-            style={{ fontSize: 15 }}
+            style={{
+              color: theme === "dark" ? "#AAA" : "#666",
+              fontSize: 14,
+            }}
           >
-            {item.time}
+            {formatTime(item.createdAt)}
           </Text>
           <Text
-            className={`font-UrbanistMedium ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-            style={{ fontSize: 14 }}
+            style={{
+              color: theme === "dark" ? "#AAA" : "#666",
+              fontSize: 14,
+            }}
           >
-            {item.category}
+            {item.status}
           </Text>
         </View>
       </View>
     </View>
   );
 
-  const hasTransactions =
-    user.transactions &&
-    Array.isArray(user.transactions) &&
-    user.transactions.some(
-      (section) => section.data && section.data.length > 0
-    );
-
-  function formatBalance(amount: number): string {
-    if (amount >= 1_000_000_000) {
-      return (amount / 1_000_000_000).toFixed(2).replace(/\.00$/, "") + "B";
-    }
-    if (amount >= 1_000_000) {
-      return (amount / 1_000_000).toFixed(2).replace(/\.00$/, "") + "M";
-    }
-    // Format with commas for thousands
-    return amount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-
   return (
-    <View
-      className={`flex-1 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "#121212" : "#fff",
+      }}
     >
+      {/* Top Section with balance and actions */}
       <View
         style={{
-          height: "52%",
           paddingTop: 70,
           backgroundColor: theme === "dark" ? "#23262F" : "#82E394",
+          paddingHorizontal: 20,
+          paddingBottom: 30
         }}
-        className="w-full p-5"
       >
-        <View className="flex-row mt-2 justify-between">
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Image
             source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
             style={{ width: 60, height: 40 }}
           />
           <Text
-            className={`font-UrbanistBold text-3xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-            style={{ marginLeft: -14 }}
+            style={{
+              fontWeight: "700",
+              fontSize: 30,
+              color: theme === "dark" ? "#fff" : "#000",
+              marginLeft: -14,
+            }}
           >
             FinTra
           </Text>
           <TouchableOpacity
-            onPress={() => {
-              router.push("/(root)/(home)/notification");
-            }}
+            onPress={() => router.push("/(root)/(home)/notification")}
           >
             <Image
               source={icons.bell}
-              tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{ width: 28, height: 31, marginLeft: 7 }}
+              style={{
+                width: 28,
+                height: 31,
+                tintColor: theme === "dark" ? "#fff" : "#000",
+                marginLeft: 7,
+              }}
             />
           </TouchableOpacity>
         </View>
+
         <View
-          className="flex items-center justify-center"
-          style={{ marginTop: 50 }}
+          style={{
+            marginTop: 50,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <View className="flex-row gap-2 justify-center">
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <FontAwesome6
               name="cedi-sign"
               size={20}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{ marginTop: 16 }}
+              color={theme === "dark" ? "#fff" : "#000"}
             />
             <Text
-              className={`font-UrbanistBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 50 }}
+              style={{
+                fontWeight: "700",
+                fontSize: 50,
+                color: theme === "dark" ? "#fff" : "#000",
+              }}
             >
-              {userBalance}
+              {userBalance || "₵ 0.00"}
             </Text>
           </View>
+
           <Text
-            className={`font-UrbanistMedium text-xl mt-2 ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
+            style={{
+              marginTop: 10,
+              fontWeight: "500",
+              fontSize: 18,
+              color: theme === "dark" ? "#ccc" : "#222",
+            }}
           >
             Available balance
           </Text>
         </View>
+
+        {/* Quick actions */}
         <View
-          className="flex-row justify-between p-2"
-          style={{ marginTop: 40 }}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 40,
+          }}
         >
-          <View className="flex items-center gap-2">
+          {/* Send */}
+          <View style={{ alignItems: "center" }}>
             <TouchableOpacity
-              onPress={() => {
-                router.push("/(root)/(home)/(send)/send-select-contact");
-              }}
-              className={`rounded-full border flex justify-center items-center ${
-                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
-              }`}
+              onPress={() =>
+                router.push("/(root)/(home)/(send)/send-select-contact")
+              }
               style={{
                 width: 65,
                 height: 65,
+                borderRadius: 32.5,
                 borderWidth: 1,
+                borderColor: theme === "dark" ? "#fff" : "#000",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Image
                 source={icons.send}
-                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ width: 28, height: 28 }}
+                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
               />
             </TouchableOpacity>
             <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 16 }}
+              style={{
+                marginTop: 6,
+                fontWeight: "600",
+                color: theme === "dark" ? "#fff" : "#000",
+                fontSize: 16,
+              }}
             >
               Send
             </Text>
           </View>
-          <View className="flex items-center gap-2">
+
+          {/* Request */}
+          <View style={{ alignItems: "center" }}>
             <TouchableOpacity
-              onPress={() => {
-                router.push(
-                  "/(root)/(home)/(request)/request-select-contact"
-                );
-              }}
-              className={`rounded-full flex justify-center items-center ${
-                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
-              }`}
+              onPress={() =>
+                router.push("/(root)/(home)/(request)/request-select-contact")
+              }
               style={{
                 width: 65,
                 height: 65,
+                borderRadius: 32.5,
                 borderWidth: 1,
+                borderColor: theme === "dark" ? "#fff" : "#000",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Image
                 source={icons.down}
-                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ width: 28, height: 28 }}
+                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
               />
             </TouchableOpacity>
             <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 16 }}
+              style={{
+                marginTop: 6,
+                fontWeight: "600",
+                color: theme === "dark" ? "#fff" : "#000",
+                fontSize: 16,
+              }}
             >
               Request
             </Text>
           </View>
-          <View className="flex items-center gap-2">
+
+          {/* Top Up */}
+          <View style={{ alignItems: "center" }}>
             <TouchableOpacity
-              onPress={() => {
-                router.push("/(root)/(home)/(top-up)/topUp-enter-amount");
-              }}
-              className={`rounded-full border flex justify-center items-center ${
-                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
-              }`}
+              onPress={() =>
+                router.push("/(root)/(home)/(top-up)/topUp-enter-amount")
+              }
               style={{
                 width: 65,
                 height: 65,
+                borderRadius: 32.5,
                 borderWidth: 1,
+                borderColor: theme === "dark" ? "#fff" : "#000",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Image
                 source={icons.topUp}
-                tintColor={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ width: 28, height: 28 }}
+                style={{ width: 28, height: 28, tintColor: theme === "dark" ? "#fff" : "#000" }}
               />
             </TouchableOpacity>
             <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 16 }}
+              style={{
+                marginTop: 6,
+                fontWeight: "600",
+                color: theme === "dark" ? "#fff" : "#000",
+                fontSize: 16,
+              }}
             >
               Top Up
             </Text>
           </View>
-          <View className="flex items-center gap-2">
+
+          {/* Withdraw */}
+          <View style={{ alignItems: "center" }}>
             <TouchableOpacity
-              onPress={() => {
-                router.push(
-                  "/(root)/(home)/(withdraw)/withdraw-enter-amount"
-                );
-              }}
-              className={`rounded-full border flex justify-center items-center ${
-                theme === "dark" ? "border-dark-primary" : "border-[#0D0D0D]"
-              }`}
+              onPress={() =>
+                router.push("/(root)/(home)/(withdraw)/withdraw-enter-amount")
+              }
               style={{
                 width: 65,
                 height: 65,
+                borderRadius: 32.5,
                 borderWidth: 1,
+                borderColor: theme === "dark" ? "#fff" : "#000",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Ionicons
                 name="log-out-outline"
                 size={32}
-                color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                color={theme === "dark" ? "#fff" : "#000"}
                 style={{ marginLeft: 5 }}
               />
             </TouchableOpacity>
             <Text
-              className={`font-UrbanistSemiBold ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 16 }}
+              style={{
+                marginTop: 6,
+                fontWeight: "600",
+                color: theme === "dark" ? "#fff" : "#000",
+                fontSize: 16,
+              }}
             >
               Withdraw
             </Text>
@@ -354,138 +445,160 @@ useEffect(() => {
         </View>
       </View>
 
-      {/* Include conditional rendering for transactions */}
+      {/* Transaction History */}
       <View
-        className={`flex-1 ${
-          theme === "dark" ? "bg-dark-background" : "bg-white"
-        }`}
-        style={{ paddingTop: 24, paddingHorizontal: 16 }}
+        style={{
+          backgroundColor: theme === "dark" ? "#121212" : "#fff",
+          paddingTop: 24,
+          paddingHorizontal: 16,
+        }}
       >
-        <View className="flex-row justify-between items-center">
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
           <Text
-            className={`font-UrbanistBold text-2xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
+            style={{
+              fontWeight: "700",
+              fontSize: 24,
+              color: theme === "dark" ? "#fff" : "#000",
+            }}
           >
             Transaction History
           </Text>
           <TouchableOpacity
-            onPress={() => {
+            onPress={() =>
               router.push({
-                pathname:
-                  "/(root)/(home)/(transaction-history)/transaction-history",
+                pathname: "/(root)/(home)/(transaction-history)/transaction-history",
                 params: { isNewUser: isNewUserBool ? "true" : "false" },
-              });
-            }}
-            className="flex-row gap-2 items-center"
+              })
+            }
+            style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
           >
             <Text
-              className={`font-UrbanistSemiBold text-xl ${
-                theme === "dark" ? "text-dark-secondary" : "text-[#9CA3AF]"
-              }`}
+              style={{
+                fontWeight: "600",
+                fontSize: 18,
+                color: theme === "dark" ? "#AAA" : "#888",
+              }}
             >
               View All
             </Text>
             <MaterialCommunityIcons
               name="greater-than"
               size={20}
-              color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
+              color={theme === "dark" ? "#AAA" : "#888"}
             />
           </TouchableOpacity>
         </View>
-        {isNewUserBool || !hasTransactions ? (
-          <>
-            <View
-              style={{ marginTop: 50, marginRight: 50 }}
-              className="flex justify-center items-center"
-            >
-              <Image
-                source={images.clipboard}
-                style={{
-                  width: 170,
-                  height: 170,
-                  marginTop: -30,
-                  transform: [{ rotate: "-20deg" }],
-                }}
-              />
-              <Image
-                source={images.clipboard}
-                style={{
-                  width: 170,
-                  height: 170,
-                  position: "absolute",
-                  right: 20,
-                }}
-              />
-            </View>
-            <View className="flex items-center gap-4" style={{ marginTop: 24 }}>
+
+        {!hasTransactions || isNewUserBool ? (
+          <View
+            style={{
+              marginTop: 50,
+              marginRight: 50,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={images.clipboard}
+              style={{
+                width: 170,
+                height: 170,
+                marginTop: -30,
+                transform: [{ rotate: "-20deg" }],
+              }}
+            />
+            <Image
+              source={images.clipboard}
+              style={{
+                width: 170,
+                height: 170,
+                position: "absolute",
+                right: 20,
+              }}
+            />
+            <View style={{ marginTop: 24, alignItems: "center" }}>
               <Text
-                className={`font-UrbanistBold ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
-                }`}
-                style={{ fontSize: 24 }}
+                style={{
+                  fontWeight: "700",
+                  fontSize: 24,
+                  color: theme === "dark" ? "#fff" : "#000",
+                }}
               >
                 No Transactions
               </Text>
               <Text
-                className={`font-UrbanistMedium text-xl ${
-                  theme === "dark" ? "text-dark-secondary" : "text-secondary"
-                }`}
+                style={{
+                  fontWeight: "500",
+                  fontSize: 18,
+                  color: theme === "dark" ? "#AAA" : "#666",
+                }}
               >
                 You haven't made any transactions.
               </Text>
             </View>
-          </>
+          </View>
         ) : (
-          <View style={{ paddingBottom: 28 }}>
-            <FlatList
-              data={transactionSections}
-              keyExtractor={(item) => item.sectionTitle}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item: section }) => (
-                <View>
-                  <View
-                    className="flex-row px-2 items-center gap-4"
-                    style={{ marginTop: 20 }}
+          <FlatList
+            data={sections}
+            keyExtractor={(item) => item.sectionTitle}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item: section }) => (
+              <View key={section.sectionTitle}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 20,
+                    paddingHorizontal: 8,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 18,
+                      color: theme === "dark" ? "#AAA" : "#555",
+                    }}
                   >
-                    <Text
-                      className={`font-UrbanistSemiBold text-xl ${
-                        theme === "dark" ? "text-dark-secondary" : "text-[#8f949b]"
-                      }`}
-                    >
-                      {section.sectionTitle}
-                    </Text>
+                    {section.sectionTitle}
+                  </Text>
+                  <View
+                    style={{
+                      height: 1,
+                      flex: 1,
+                      marginLeft: 8,
+                      backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+                    }}
+                  />
+                </View>
+
+                <FlatList
+                  data={section.data}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={renderTransactionItem}
+                  ItemSeparatorComponent={() => (
                     <View
-                      className="h-[1px]"
                       style={{
-                        width: "90%",
+                        height: 1,
+                        width: "75%",
+                        alignSelf: "flex-end",
                         backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
                       }}
                     />
-                  </View>
-                  <FlatList
-                    data={section.data}
-                    keyExtractor={(item) => item.id}
-                    renderItem={renderTransactionItem}
-                    ItemSeparatorComponent={() => (
-                      <View className="flex items-end">
-                        <View
-                          className="h-[1px]"
-                          style={{
-                            width: "75%",
-                            backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-                          }}
-                        />
-                      </View>
-                    )}
-                  />
-                </View>
-              )}
-            />
-          </View>
+                  )}
+                />
+              </View>
+            )}
+          />
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

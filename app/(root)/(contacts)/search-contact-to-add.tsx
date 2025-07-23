@@ -2,6 +2,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
+import { saveContact } from "../../../utils/contactStorage"
 import React, { useState } from "react";
 import {
   Image,
@@ -139,7 +140,10 @@ export default function SearchContactToAdd() {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setshowSavedToContactsModal(true)}
+          onPress={async () => {
+            await saveContact({ name: AccountHolderName, email });
+            setshowSavedToContactsModal(true);
+          }}
           className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
         >
           <Text

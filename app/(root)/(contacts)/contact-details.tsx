@@ -7,12 +7,30 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
+import { getContacts, deleteContact } from "../../../utils/contactStorage";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react"; 
+import type { Contact } from "../../../utils/contactStorage";
 
 export default function Contacts() {
   const { name, email, favorite } = useLocalSearchParams();
   const [showDeleteContactModal, setshowDeleteContactModal] = useState(false);
   const [contactImage, setContactImage] = useState<string | null>(null);
   const { theme } = useTheme();
+  const [contact, setContact] = useState<Contact | null>(null); 
+
+  useFocusEffect(
+  useCallback(() => {
+    const fetchContact = async () => {
+      const contacts = await getContacts();
+      const found = contacts.find((c) => c.email === email);
+      if (found) {
+        setContact(found);
+      }
+    };
+    fetchContact();
+  }, [email])
+);
 
   return (
     <View
@@ -89,7 +107,7 @@ export default function Contacts() {
             }`}
             style={{ fontSize: 22 }}
           >
-            {name}
+            {contact?.name}
           </Text>
           <Text
             className={`font-UrbanistMedium ${
@@ -97,7 +115,7 @@ export default function Contacts() {
             }`}
             style={{ fontSize: 19 }}
           >
-            {email}
+            {contact?.email}
           </Text>
           <Text
             className={`font-UrbanistMedium mt-8 ${
@@ -112,8 +130,8 @@ export default function Contacts() {
             router.push({
               pathname: "/(root)/(contacts)/chat-screen",
               params: {
-                receiverName: name,
-                receiverEmail: email,
+                name: contact?.name,
+                email: contact?.email,
               },
             });
           }}
@@ -151,8 +169,8 @@ export default function Contacts() {
             router.push({
               pathname: "/(root)/(home)/(request)/request-enter-amount",
               params: {
-                name,
-                email,
+                name: contact?.name,
+                email: contact?.email,
               },
             });
           }}
@@ -173,8 +191,8 @@ export default function Contacts() {
             router.push({
               pathname: "/(root)/(home)/(send)/send-enter-amount",
               params: {
-                name,
-                email,
+                name: contact?.name,
+                email: contact?.email,
               },
             });
           }}
@@ -267,7 +285,11 @@ export default function Contacts() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={async () => {
+                await deleteContact(email);
+                setshowDeleteContactModal(false);
+                router.replace("/(root)/(tabs)/home");
+              }}
               className="bg-[#f54f4f] flex-1 items-center justify-center py-5 border-none rounded-full"
             >
               <Text

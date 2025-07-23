@@ -1,253 +1,350 @@
 import { useTheme } from "@/lib/ThemeContext";
-import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { Rect, Svg, Text as SvgText } from 'react-native-svg';
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { BarChart } from "react-native-chart-kit";
+import { useTransactionStore } from "../../../hooks/useTransactionStore";
 
-// --- Styles ---
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f9fa' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 70,
-    paddingBottom: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: { fontSize: 20, fontWeight: 'bold' },
-  summaryContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    margin: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  summaryTitle: { fontSize: 16, color: '#666' },
-  summaryAmount: { fontSize: 36, fontWeight: 'bold', marginVertical: 10 },
-  pillsContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 10 },
-  pill: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    margin: 5,
-  },
-  activePill: { backgroundColor: '#000' },
-  pillText: { color: '#000', fontWeight: '500' },
-  activePillText: { color: '#fff' },
-  chartContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginHorizontal: 20,
-    paddingVertical: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  chart: { borderRadius: 16 },
-  transactionsContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderRadius: 12,
-  },
-  transactionsTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-  transactionItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
-  transactionIcon: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 50, marginRight: 15 },
-  transactionDetails: { flex: 1 },
-  transactionName: { fontSize: 16, fontWeight: 'bold' },
-  transactionDate: { color: '#666', marginTop: 2 },
-  transactionAmount: { fontSize: 16, fontWeight: 'bold' },
-  menu: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-    zIndex: 1000,
-  },
-  menuItem: { padding: 12 },
-});
+const screenWidth = Dimensions.get("window").width - 32;
 
-// --- Theme Colors ---
-const getPalette = (theme: "light" | "dark") => ({
-  background: theme === "dark" ? "#181A20" : "#f8f9fa",
-  card: theme === "dark" ? "#23262F" : "#fff",
-  border: theme === "dark" ? "#23262F" : "#eee",
-  text: theme === "dark" ? "#fff" : "#000",
-  subtext: theme === "dark" ? "#aaa" : "#666",
-  pill: theme === "dark" ? "#23262F" : "#f0f0f0",
-  pillActive: theme === "dark" ? "#fff" : "#000",
-  pillText: theme === "dark" ? "#fff" : "#000",
-  pillActiveText: theme === "dark" ? "#23262F" : "#fff",
-  iconBg: theme === "dark" ? "#23262F" : "#f0f0f0",
-  menu: theme === "dark" ? "#23262F" : "#fff",
-  shadow: theme === "dark" ? "#000" : "#000",
-});
-
-// --- Chart Config ---
-const chartConfig = {
-  backgroundGradientFrom: '#fff',
-  backgroundGradientTo: '#fff',
-  color: ((opacity = 1) => `rgba(0, 0, 0, ${opacity})`) as any,
-  labelColor: ((opacity = 1) => `rgba(100, 100, 100, ${opacity})`) as any,
-  strokeWidth: 2,
-  propsForDots: { r: '6', strokeWidth: '2', stroke: '#ffa726' },
+const filterByRange = (transactions, range) => {
+  const now = new Date();
+  return transactions.filter((t) => {
+    const txDate = new Date(t.createdAt);
+    if (range === "day") return txDate.toDateString() === now.toDateString();
+    if (range === "week") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      return txDate >= startOfWeek;
+    }
+    if (range === "month")
+      return (
+        txDate.getMonth() === now.getMonth() &&
+        txDate.getFullYear() === now.getFullYear()
+      );
+    return true;
+  });
 };
 
-// --- Mock Data ---
-const transactionData = [
-  { id: '1', name: 'Income', date: 'July 15, 2025', amount: '+$2,500.00', icon: 'arrow-down-left' },
-  { id: '2', name: 'Top Up', date: 'July 14, 2025', amount: '+$100.00', icon: 'plus-circle' },
-  { id: '3', name: 'Sent', date: 'July 13, 2025', amount: '-$50.00', icon: 'arrow-up-right' },
-  { id: '4', name: 'Request', date: 'July 12, 2025', amount: '+$20.00', icon: 'arrow-down-left' },
-  { id: '5', name: 'Withdrawal', date: 'July 11, 2025', amount: '-$200.00', icon: 'credit-card' },
-];
+const groupByDate = (transactions, typeFilter) => {
+  const map = new Map();
+  transactions
+    .filter(
+      (t) =>
+        t.status?.toUpperCase() === "SUCCESS" &&
+        typeFilter.includes(t.type?.toUpperCase())
+    )
+    .forEach((t) => {
+      const key = new Date(t.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      const prev = map.get(key) || 0;
+      map.set(key, prev + t.amount);
+    });
 
-const generateChartData = (days: number) => ({
-  labels: Array.from({ length: days }, (_, i) => `${i + 1}`),
-  datasets: [
-    {
-      data: Array.from({ length: days }, () => Math.random() * 200 + 50),
-      color: (opacity = 1) => `rgba(34, 197, 94, ${opacity})`, // Green for Income
-      strokeWidth: 3,
-    },
-    {
-      data: Array.from({ length: days }, () => Math.random() * 150),
-      color: (opacity = 1) => `rgba(239, 68, 68, ${opacity})`, // Red for Expenses
-      strokeWidth: 3,
-    },
-  ],
-  legend: ['Income', 'Expenses'],
-});
+  const sorted = Array.from(map.entries()).sort(
+    ([a], [b]) => new Date(a) - new Date(b)
+  );
 
-const chartDataOptions = {
-  'Last 7 days': generateChartData(7),
-  'Last 30 days': generateChartData(30),
-  'All time': generateChartData(12), // Representing 12 months
+  return {
+    labels: sorted.map(([label]) => label),
+    data: sorted.map(([, value]) => value),
+  };
 };
 
 const Analytics = () => {
-  const router = useRouter();
-  const [activePeriod, setActivePeriod] = useState<keyof typeof chartDataOptions>('Last 30 days');
-  const [showMenu, setShowMenu] = useState(false);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0, visible: false, value: 0 });
   const { theme } = useTheme();
-  const palette = getPalette(theme);
+  const { transactions, fetchTransactions } = useTransactionStore();
+  const router = useRouter();
+  const [range, setRange] = useState("week");
 
-  const handlePeriodChange = (period: keyof typeof chartDataOptions) => {
-    setActivePeriod(period);
-    setTooltipPos({ ...tooltipPos, visible: false });
+  const palette = {
+    background: theme === "dark" ? "#181A20" : "#f8f9fa",
+    card: theme === "dark" ? "#23262F" : "#fff",
+    text: theme === "dark" ? "#fff" : "#000",
+    subtext: theme === "dark" ? "#aaa" : "#666",
+    border: theme === "dark" ? "#333" : "#eee",
   };
 
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
-  const screenWidth = Dimensions.get('window').width;
-  const currentChartData = chartDataOptions[activePeriod];
+  const totals = useMemo(() => {
+    const sums = { Income: 0, TopUp: 0, Withdraw: 0, Transfer: 0 };
+    for (let tx of transactions) {
+      if (tx.status?.toUpperCase() !== "SUCCESS") continue;
+      const type = tx.type?.toUpperCase();
+      switch (type) {
+        case "TOPUP":
+          sums.TopUp += tx.amount;
+          sums.Income += tx.amount;
+          break;
+        case "INCOME":
+          sums.Income += tx.amount;
+          break;
+        case "WITHDRAWAL":
+          sums.Withdraw += tx.amount;
+          break;
+        case "TRANSFER":
+          sums.Transfer += tx.amount;
+          break;
+      }
+    }
+    return sums;
+  }, [transactions]);
+
+  const filteredTx = filterByRange(transactions, range);
+  const incomeData = groupByDate(filteredTx, ["INCOME", "TOPUP"]);
+  const expenseData = groupByDate(filteredTx, ["WITHDRAWAL", "TRANSFER"]);
+
+  const hasChartData =
+    incomeData.data.length > 0 || expenseData.data.length > 0;
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: palette.background }]}>
-      <View style={[styles.header, { backgroundColor: palette.card, borderBottomColor: palette.border, justifyContent: 'center' }]}>
-        <Text style={[styles.headerTitle, { color: palette.text, textAlign: 'center', flex: 1 }]}>Insights</Text>
-        <TouchableOpacity onPress={toggleMenu} style={{ position: 'absolute', right: 20, top: 70 }}>
-          <Feather name="more-vertical" size={24} color={palette.text} />
+    <ScrollView style={{ flex: 1, backgroundColor: palette.background }}>
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: palette.card, borderBottomColor: palette.border },
+        ]}
+      >
+        <TouchableOpacity onPress={() => router.back()}>
+          <Feather name="arrow-left" size={24} color={palette.text} />
         </TouchableOpacity>
-        {showMenu && (
-          <View style={[styles.menu, { backgroundColor: palette.menu, shadowColor: palette.shadow }]}>
-            <TouchableOpacity style={styles.menuItem} onPress={toggleMenu}>
-              <Text style={{ color: palette.text }}>Refresh</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={toggleMenu}>
-              <Text style={{ color: palette.text }}>Export Data</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <Text style={[styles.headerTitle, { color: palette.text }]}>
+          Analytics
+        </Text>
+        <View style={{ width: 24 }} />
       </View>
 
-      <View style={[styles.summaryContainer, { backgroundColor: palette.card, shadowColor: palette.shadow }]}>
-        <Text style={[styles.summaryTitle, { color: palette.subtext }]}>Total Spending</Text>
-        <Text style={[styles.summaryAmount, { color: palette.text }]}>$5,286.50</Text>
-        <View style={styles.pillsContainer}>
-          {(Object.keys(chartDataOptions) as (keyof typeof chartDataOptions)[]).map((period) => (
-            <TouchableOpacity
-              key={period}
-              style={[styles.pill, { backgroundColor: activePeriod === period ? palette.pillActive : palette.pill }]}
-              onPress={() => handlePeriodChange(period)}
-            >
-              <Text style={[styles.pillText, { color: activePeriod === period ? palette.pillActiveText : palette.pillText }]}>
-                {period}
+      <View style={[styles.summaryContainer, { backgroundColor: palette.card }]}>
+        <Text style={[styles.sectionTitle, { color: palette.subtext }]}>Summary</Text>
+        <View style={styles.totalsGrid}>
+          {Object.entries(totals).map(([label, amount]) => (
+            <View key={label} style={styles.totalBox}>
+              <Text style={[styles.totalLabel, { color: palette.subtext }]}>
+                {label}
               </Text>
-            </TouchableOpacity>
+              <Text style={[styles.totalAmount, { color: palette.text }]}>
+                ${amount.toFixed(2)}
+              </Text>
+            </View>
           ))}
         </View>
       </View>
 
-      <View style={[styles.chartContainer, { backgroundColor: palette.card, shadowColor: palette.shadow }]}>
-        <LineChart
-          data={currentChartData}
-          width={screenWidth - 16}
-          height={250}
-          chartConfig={chartConfig}
-          bezier
-          style={styles.chart}
-          onDataPointClick={(data) => {
-            const isSamePoint = tooltipPos.visible && tooltipPos.x === data.x;
-            setTooltipPos({ ...data, visible: !isSamePoint, value: data.value });
-          }}
-          decorator={() => {
-            if (!tooltipPos.visible) return null;
-            return (
-              <Svg>
-                <Rect x={tooltipPos.x - 30} y={tooltipPos.y - 40} width="65" height="30" rx={8} fill={theme === 'dark' ? '#23262F' : '#2c3e50'} />
-                <SvgText x={tooltipPos.x} y={tooltipPos.y - 20} fill={theme === 'dark' ? '#fff' : 'white'} fontSize="14" fontWeight="bold" textAnchor="middle">
-                  {`${tooltipPos.value.toFixed(2)}`}
-                </SvgText>
-              </Svg>
-            );
-          }}
-        />
+      <View style={styles.rangeContainer}>
+        {["day", "week", "month"].map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[
+              styles.rangeButton,
+              {
+                backgroundColor:
+                  range === option ? "#1E90FF" : palette.border,
+              },
+            ]}
+            onPress={() => setRange(option)}
+          >
+            <Text
+              style={{
+                color: range === option ? "#fff" : palette.text,
+                fontWeight: "600",
+                fontSize: 13,
+              }}
+            >
+              {option.toUpperCase()}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <View style={[styles.transactionsContainer, { backgroundColor: palette.card }]}>
-        <Text style={[styles.transactionsTitle, { color: palette.text }]}>Recent Transactions</Text>
-        {transactionData.map((transaction) => (
-          <View key={transaction.id} style={styles.transactionItem}>
-            <View style={[styles.transactionIcon, { backgroundColor: palette.iconBg }]}>
-              <Feather name={transaction.icon as any} size={24} color={palette.text} />
-            </View>
-            <View style={styles.transactionDetails}>
-              <Text style={[styles.transactionName, { color: palette.text }]}>{transaction.name}</Text>
-              <Text style={[styles.transactionDate, { color: palette.subtext }]}>{transaction.date}</Text>
-            </View>
-            <Text style={[styles.transactionAmount, { color: palette.text }]}>{transaction.amount}</Text>
-          </View>
-        ))}
+      <View style={[styles.chartContainer, { backgroundColor: palette.card }]}>
+        {hasChartData ? (
+          <>
+            <Text style={[styles.chartTitle, { color: palette.subtext }]}>
+              Income – ${incomeData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+            </Text>
+            <BarChart
+              data={{
+                labels: incomeData.labels,
+                datasets: [{ data: incomeData.data }],
+              }}
+              width={screenWidth + 16}
+              height={240}
+              fromZero={true}
+              chartConfig={{
+                backgroundColor: palette.card,
+                backgroundGradientFrom: palette.card,
+                backgroundGradientTo: palette.card,
+                decimalPlaces: 0,
+                barRadius: 6,
+                color: () => "#22c55e",
+                labelColor: () => palette.text,
+                propsForBackgroundLines: {
+                  stroke: palette.border,
+                },
+                propsForLabels: {
+                  fontSize: 12,
+                },
+              }}
+              withInnerLines
+              withHorizontalLabels
+              style={{
+                borderRadius: 12,
+                marginBottom: 24,
+              }}
+            />
+
+            <Text style={[styles.chartTitle, { color: palette.subtext }]}>
+              Expenses – ${expenseData.data.reduce((a, b) => a + b, 0).toFixed(2)}
+            </Text>
+            <BarChart
+              data={{
+                labels: expenseData.labels,
+                datasets: [{ data: expenseData.data }],
+              }}
+              width={screenWidth + 16}
+              height={240}
+              fromZero={true}
+              chartConfig={{
+                backgroundColor: palette.card,
+                backgroundGradientFrom: palette.card,
+                backgroundGradientTo: palette.card,
+                decimalPlaces: 0,
+                barRadius: 6,
+                color: () => "#ef4444",
+                labelColor: () => palette.text,
+                propsForBackgroundLines: {
+                  stroke: palette.border,
+                },
+                propsForLabels: {
+                  fontSize: 12,
+                },
+              }}
+              withInnerLines
+              withHorizontalLabels
+              style={{
+                borderRadius: 12,
+              }}
+            />
+          </>
+        ) : (
+          <Text
+            style={{
+              color: palette.subtext,
+              fontSize: 16,
+              textAlign: "center",
+              paddingVertical: 40,
+            }}
+          >
+            No transaction data available for {range.toUpperCase()}
+          </Text>
+        )}
       </View>
     </ScrollView>
   );
 };
 
-export default Analytics; 
+export default Analytics;
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+  summaryContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 8,
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  totalsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  totalBox: {
+    width: "48%",
+    paddingVertical: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  totalLabel: {
+    fontSize: 13,
+    fontWeight: "500",
+    opacity: 0.75,
+    marginBottom: 6,
+  },
+  totalAmount: {
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  rangeContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 8,
+    gap: 12,
+  },
+  rangeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  chartContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    marginBottom: 60,
+    paddingVertical: 24,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  chartTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    alignSelf: "flex-start",
+    marginLeft: 12,
+    marginBottom: 8,
+  },
+});
