@@ -139,7 +139,7 @@ const Home = () => {
       style={{
         flexDirection: "row",
         paddingVertical: hp(2),
-        paddingHorizontal: wp(1),
+        paddingHorizontal: wp(4),
         alignItems: "center",
       }}
     >
@@ -498,7 +498,6 @@ const Home = () => {
           style={{
             backgroundColor: theme === "dark" ? "#121212" : "#fff",
             paddingTop: hp(3),
-            paddingHorizontal: wp(4),
             paddingBottom: hp(2),
           }}
         >
@@ -508,6 +507,7 @@ const Home = () => {
               justifyContent: "space-between",
               alignItems: "center",
               marginBottom: hp(1.5),
+              paddingHorizontal: wp(4),
             }}
           >
             <Text
@@ -606,7 +606,7 @@ const Home = () => {
                     flexDirection: "row",
                     alignItems: "center",
                     marginTop: hp(2.5),
-                    paddingHorizontal: wp(2),
+                    paddingHorizontal: wp(4),
                   }}
                 >
                   <Text
