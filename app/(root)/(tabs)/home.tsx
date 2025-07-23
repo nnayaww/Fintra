@@ -341,7 +341,7 @@ const Home = () => {
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity
               onPress={() =>
-                router.push("/(root)/(home)/(request)/request-select-contact")
+                router.push("/(root)/(contacts)/chat-screen")
               }
               style={{
                 width: 65,
