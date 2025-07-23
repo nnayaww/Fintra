@@ -138,9 +138,11 @@ const Home = () => {
     <View
       style={{
         flexDirection: "row",
-        paddingVertical: hp(2),
-        paddingHorizontal: wp(4),
+        paddingVertical: 16,
+        paddingHorizontal: 20,
         alignItems: "center",
+        width: '100%',
+        marginHorizontal: 0,
       }}
     >
       <View
@@ -498,10 +500,11 @@ const Home = () => {
         <View
           style={{
             backgroundColor: theme === "dark" ? "#121212" : "#fff",
-            paddingTop: hp(3),
-            paddingBottom: hp(2),
+            paddingTop: 24,
+            paddingBottom: 16,
             width: '100%',
             alignSelf: 'stretch',
+            flex: 1,
           }}
         >
           <View
@@ -509,8 +512,9 @@ const Home = () => {
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: hp(1.5),
-              paddingHorizontal: wp(4),
+              marginBottom: 12,
+              paddingHorizontal: 20,
+              width: '100%',
             }}
           >
             <Text
@@ -610,8 +614,9 @@ const Home = () => {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: hp(2.5),
-                    paddingHorizontal: wp(4),
+                    marginTop: 20,
+                    paddingHorizontal: 20,
+                    width: '100%',
                   }}
                 >
                   <Text
