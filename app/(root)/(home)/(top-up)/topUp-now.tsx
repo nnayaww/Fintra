@@ -94,7 +94,7 @@ const TopUpNow = () => {
         body: JSON.stringify({
           email: storedEmail,
           userId: storedUserId,
-          amount: Number(Array.isArray(amount) ? amount[0] : amount),
+          amount: Number(Array.isArray(amount) ? amount[0] : amount) * 100,
           type: (Array.isArray(methodName) ? methodName[0] : methodName)?.toLowerCase() === "momo" ? "momo" : "card",
           callback_url: callbackUrl,
         }),

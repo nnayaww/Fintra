@@ -75,11 +75,11 @@ const handleSignIn = async () => {
     valid = false;
   } else if (password.length < 8) {
     setPasswordError("Password must be at least 8 characters");
-    valid = false;
-  } else if (!/(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).+/.test(password)) {
-    setPasswordError("Password must include at least 1 number and 1 special character");
-    valid = false;
-  } else {
+    valid = false; }
+  // } else if (!/(?=.*[0-9])(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).+/.test(password)) {
+  //   setPasswordError("Password must include at least 1 number and 1 special character");
+  //   valid = false;} 
+    else {
     setPasswordError("");
   }
 

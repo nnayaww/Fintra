@@ -100,6 +100,10 @@ const Home = () => {
         // Filter to only successful transactions
         const successTransactions = data
           .filter((tx) => tx.status === "SUCCESS")
+          .map((tx) => ({
+              ...tx,
+              amount: tx.amount / 100, // Convert pesewas to cedis
+            }))
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .slice(0, 10); 
         setTransactions(successTransactions);

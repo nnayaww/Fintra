@@ -109,13 +109,14 @@ const { id, amount, name, email, notes, reference, createdAt, status, avatar } =
         </View>
         <View className="flex-row gap-2 justify-center">
           <Text
-            className="font-UrbanistBold text-primary"
-            style={{ fontSize: 40 }}
-          >
-            {`₵ ${formatBalance(
-              Number(Array.isArray(amount) ? amount[0] : amount)
-            )}`}
-          </Text>
+                  className="font-UrbanistBold text-primary"
+                  style={{ fontSize: 40 }}
+                >
+                  {`₵ ${formatBalance(
+                    Number((Array.isArray(amount) ? amount[0] : amount)) / 100
+                  )}`}
+                </Text>
+
         </View>
         <View className="flex gap-3 items-center">
           <Text
@@ -139,9 +140,19 @@ const { id, amount, name, email, notes, reference, createdAt, status, avatar } =
         >
           <Row
             label="You sent"
-            value={`₵ ${formatBalance(Number(displayAmount))}`}
+            value={`₵ ${formatBalance(Number(Math.round(parseFloat(displayAmount) / 100).toString()))}`}
           />
-          <Row label="Date" value={formatDate(new Date(Array.isArray(createdAt) ? createdAt[0] : createdAt))} />
+          <Row
+  label="Date"
+  value={
+    (() => {
+      const rawDate = Array.isArray(createdAt) ? createdAt[0] : createdAt;
+      const parsed = new Date(rawDate);
+      return isNaN(parsed.getTime()) ? "N/A" : formatDate(parsed);
+    })()
+  }
+/>
+
           <Row label="Transaction ID" value={Array.isArray(id) ? id[0] : id} />
           <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} />
           <Row label="Status" value={Array.isArray(status) ? status[0] : status} />
