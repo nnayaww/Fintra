@@ -2,6 +2,7 @@ import { icons } from "@/constants";
 import { useTheme } from "@/lib/ThemeContext";
 import { Tabs } from "expo-router";
 import { Image } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const TabIcon = ({ source, focused }: { source: any; focused: boolean }) => {
   const { theme } = useTheme();
@@ -74,9 +75,25 @@ const TabsLayout = () => {
           name="analytics"
           options={{
             title: "Analytics",
-            tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} source={icons.info} />
-            ),
+            tabBarIcon: ({ focused }) => {
+              const { theme } = useTheme();
+              return (
+                <MaterialCommunityIcons
+                  name="chart-line"
+                  size={28}
+                  color={
+                    focused
+                      ? theme === "dark"
+                        ? "#fff"
+                        : "#0D0D0D"
+                      : theme === "dark"
+                      ? "#A0A0A0"
+                      : "#9CA3AF"
+                  }
+                  style={{ marginTop: 15 }}
+                />
+              );
+            },
           }}
         />
         <Tabs.Screen
