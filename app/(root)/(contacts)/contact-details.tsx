@@ -26,11 +26,11 @@ export default function Contacts() {
       >
         <TouchableOpacity
           onPress={() => {
-            if (router.canGoBack()) {
+            // if (router.canGoBack()) {
               router.back();
-            } else {
-              router.replace("/(root)/(tabs)/home");
-            }
+            // } else {
+            //   router.replace("/(root)/(tabs)/home");
+            // }
           }}
         >
           <Ionicons
@@ -112,8 +112,8 @@ export default function Contacts() {
             router.push({
               pathname: "/(root)/(contacts)/chat-screen",
               params: {
-                name,
-                email,
+                receiverName: name,
+                receiverEmail: email,
               },
             });
           }}
