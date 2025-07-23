@@ -28,6 +28,7 @@ const SendNow = () => {
 
   const displayName = Array.isArray(name) ? name[0] : name;
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
+  console.log("display amount: ",displayAmount)
   const receiverEmail = "ama@example.com"; // ✅ Hardcoded test email
 
   const parsedAvatar =
@@ -202,7 +203,7 @@ const SendNow = () => {
                   theme === "dark" ? "text-white" : "text-primary"
                 } text-[28px]`}
               >
-                ₵ {formatBalance(Number(displayAmount))}
+                ₵ {formatBalance(Number(Math.round(parseFloat(displayAmount) / 100).toString()))}
               </Text>
             </View>
           </View>

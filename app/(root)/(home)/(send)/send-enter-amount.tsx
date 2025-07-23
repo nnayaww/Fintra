@@ -50,7 +50,7 @@ const SendEnterAmount = () => {
       router.push({
         pathname: "/(root)/(home)/(send)/send-now",
         params: {
-          amount: send, // or whatever your amount state is called
+          amount: Math.round(parseFloat(send) * 100).toString(), // or whatever your amount state is called
           name, // pass other params as needed
           email,
           avatar,
