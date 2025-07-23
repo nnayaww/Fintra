@@ -138,15 +138,16 @@ const Home = () => {
     <View
       style={{
         flexDirection: "row",
-        paddingVertical: 16,
+        paddingVertical: hp(2),
+        paddingHorizontal: wp(1),
         alignItems: "center",
       }}
     >
       <View
         style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
+          width: wp(15),
+          height: wp(15),
+          borderRadius: wp(7.5),
           backgroundColor: theme === "dark" ? "#444" : "#F6F8FA",
           justifyContent: "center",
           alignItems: "center",
@@ -154,12 +155,12 @@ const Home = () => {
       >
         <FontAwesome5
           name="user-alt"
-          size={21}
+          size={iconSizes.medium}
           color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
         />
       </View>
 
-      <View style={{ flex: 1, marginLeft: 20 }}>
+      <View style={{ flex: 1, marginLeft: wp(5) }}>
         <View
           style={{
             flexDirection: "row",
@@ -171,7 +172,7 @@ const Home = () => {
             style={{
               fontWeight: "600",
               color: theme === "dark" ? "#fff" : "#000",
-              fontSize: 18,
+              fontSize: rf(18),
             }}
           >
             {item.type.charAt(0) + item.type.slice(1).toLowerCase()}
@@ -180,8 +181,8 @@ const Home = () => {
           <Text
             style={{
               fontWeight: "600",
-              color: item.type === "TOPUP" ? "green" : "red",
-              fontSize: 18,
+              color: item.type === "TOPUP" ? "#22c55e" : "#ef4444",
+              fontSize: rf(18),
             }}
           >
             {item.type === "TOPUP" ? "+" : "-"}₵ {item.amount.toFixed(2)}
@@ -192,13 +193,13 @@ const Home = () => {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            marginTop: 6,
+            marginTop: hp(0.7),
           }}
         >
           <Text
             style={{
               color: theme === "dark" ? "#AAA" : "#666",
-              fontSize: 14,
+              fontSize: rf(14),
             }}
           >
             {formatTime(item.createdAt)}
@@ -206,7 +207,7 @@ const Home = () => {
           <Text
             style={{
               color: theme === "dark" ? "#AAA" : "#666",
-              fontSize: 14,
+              fontSize: rf(14),
             }}
           >
             {item.status}
@@ -498,8 +499,7 @@ const Home = () => {
             backgroundColor: theme === "dark" ? "#121212" : "#fff",
             paddingTop: hp(3),
             paddingHorizontal: wp(4),
-            flex: 1,
-            minHeight: hp(45),
+            paddingBottom: hp(2),
           }}
         >
           <View
@@ -605,14 +605,14 @@ const Home = () => {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginTop: 20,
-                    paddingHorizontal: 8,
+                    marginTop: hp(2.5),
+                    paddingHorizontal: wp(2),
                   }}
                 >
                   <Text
                     style={{
                       fontWeight: "600",
-                      fontSize: 18,
+                      fontSize: rf(18),
                       color: theme === "dark" ? "#AAA" : "#555",
                     }}
                   >
@@ -620,9 +620,9 @@ const Home = () => {
                   </Text>
                   <View
                     style={{
-                      height: 1,
+                      height: rs(1),
                       flex: 1,
-                      marginLeft: 8,
+                      marginLeft: wp(2),
                       backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
                     }}
                   />
@@ -635,7 +635,7 @@ const Home = () => {
                   ItemSeparatorComponent={() => (
                     <View
                       style={{
-                        height: 1,
+                        height: rs(1),
                         width: "75%",
                         alignSelf: "flex-end",
                         backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
@@ -647,7 +647,6 @@ const Home = () => {
             )}
           />
         )}
-        </View>
         </View>
       </ScrollView>
     </SafeAreaView>
