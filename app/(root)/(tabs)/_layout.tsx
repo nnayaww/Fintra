@@ -74,7 +74,7 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="analytics"
           options={{
-            title: "📊 Analytics",
+            title: "Analytics",
             tabBarIcon: ({ focused }) => (
               <TabIcon
                 focused={focused}
