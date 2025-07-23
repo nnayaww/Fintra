@@ -74,26 +74,13 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="analytics"
           options={{
-            title: "Analytics",
-            tabBarIcon: ({ focused }) => {
-              const { theme } = useTheme();
-              return (
-                <MaterialCommunityIcons
-                  name="chart-line"
-                  size={28}
-                  color={
-                    focused
-                      ? theme === "dark"
-                        ? "#fff"
-                        : "#0D0D0D"
-                      : theme === "dark"
-                      ? "#A0A0A0"
-                      : "#9CA3AF"
-                  }
-                  style={{ marginTop: 15 }}
-                />
-              );
-            },
+            title: "📊 Analytics",
+            tabBarIcon: ({ focused }) => (
+              <TabIcon
+                focused={focused}
+                source={icons.info}
+              />
+            ),
           }}
         />
         <Tabs.Screen
