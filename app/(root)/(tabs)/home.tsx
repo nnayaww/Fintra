@@ -480,7 +480,6 @@ const Home = () => {
             </View>
           </View>
         </View>
-      </View>
 
         {/* Transaction History */}
         <View
