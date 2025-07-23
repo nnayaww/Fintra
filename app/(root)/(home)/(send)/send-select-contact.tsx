@@ -1,4 +1,5 @@
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -28,6 +29,8 @@ type Contact = {
 export default function SendSelectContact() {
   const { type } = useLocalSearchParams();
   const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
@@ -77,28 +80,28 @@ export default function SendSelectContact() {
           className={`rounded-full flex items-center justify-center ${
             theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
           }`}
-          style={{ width: 60, height: 60 }}
+          style={{ width: wp(15), height: wp(15) }}
         >
           {item.avatar ? (
             <Image
               source={{ uri: item.avatar }}
-              style={{ width: 60, height: 60, borderRadius: 30 }}
+              style={{ width: wp(15), height: wp(15), borderRadius: wp(7.5) }}
               resizeMode="cover"
             />
           ) : (
             <FontAwesome5
               name="user-alt"
-              size={21}
+              size={iconSizes.medium}
               color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
             />
           )}
         </View>
-        <View className="gap-2 ml-4">
+        <View className="gap-2" style={{ marginLeft: wp(4) }}>
           <Text
             className={`font-UrbanistBold ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
             }`}
-            style={{ fontSize: 18 }}
+            style={{ fontSize: rf(18) }}
           >
             {item.name}
           </Text>
@@ -106,7 +109,7 @@ export default function SendSelectContact() {
             className={`font-UrbanistMedium ${
               theme === "dark" ? "text-gray-300" : "text-secondary"
             }`}
-            style={{ fontSize: 14 }}
+            style={{ fontSize: rf(14) }}
           >
             {item.email}
           </Text>
@@ -128,22 +131,31 @@ export default function SendSelectContact() {
           }`}
         >
           <View
-            className="flex-row items-center pt-5 pl-5 pr-5"
-            style={{ marginTop: 32 }}
+            className="flex-row items-center"
+            style={{ 
+              paddingTop: safeArea.top + hp(2),
+              paddingHorizontal: wp(5),
+              marginBottom: hp(2)
+            }}
           >
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={iconSizes.large}
                 color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ padding: 6 }}
+                style={{ padding: rs(6) }}
               />
             </TouchableOpacity>
             <Text
-              className={`font-UrbanistBold text-3xl ${
+              className={`font-UrbanistBold ${
                 theme === "dark" ? "text-white" : "text-primary"
               }`}
-              style={{ marginHorizontal: 80 }}
+              style={{ 
+                fontSize: rf(28),
+                marginLeft: wp(20),
+                flex: 1,
+                textAlign: 'center'
+              }}
             >
               Send to
             </Text>
@@ -152,9 +164,14 @@ export default function SendSelectContact() {
           {!isTyping && (
             <AntDesign
               name="search1"
-              size={24}
+              size={iconSizes.medium}
               color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-              style={{ position: "absolute", left: 36, top: 138, zIndex: 1 }}
+              style={{ 
+                position: "absolute", 
+                left: wp(9), 
+                top: hp(17), 
+                zIndex: 1 
+              }}
             />
           )}
 
@@ -166,12 +183,17 @@ export default function SendSelectContact() {
             }}
             placeholder="        Search contact"
             placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg p-5 self-center ${
+            className={`font-UrbanistSemiBold border-none rounded-lg self-center ${
               theme === "dark"
                 ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
             }`}
-            style={{ width: "90%", marginTop: 28 }}
+            style={{ 
+              fontSize: rf(18),
+              width: wp(90), 
+              padding: wp(5),
+              marginTop: hp(2)
+            }}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => {
               setSearchFocused(false);
@@ -179,12 +201,11 @@ export default function SendSelectContact() {
             }}
           />
 
-          <View className="flex-row self-center">
+          <View className="flex-row self-center" style={{ marginTop: hp(2) }}>
             <View
               style={{
-                height: 5,
-                width: "45%",
-                marginTop: 14,
+                height: hp(0.7),
+                width: wp(45),
                 backgroundColor:
                   selectedTab === "All Contacts"
                     ? "#82E394"
@@ -195,9 +216,8 @@ export default function SendSelectContact() {
             />
             <View
               style={{
-                height: 5,
-                width: "45%",
-                marginTop: 14,
+                height: hp(0.7),
+                width: wp(45),
                 backgroundColor:
                   selectedTab === "Favorites"
                     ? "#82E394"
@@ -212,7 +232,10 @@ export default function SendSelectContact() {
             data={filteredContacts}
             keyExtractor={(item) => item.email}
             renderItem={renderContact}
-            contentContainerStyle={{ paddingBottom: 30, paddingTop: 10 }}
+            contentContainerStyle={{ 
+              paddingBottom: hp(4), 
+              paddingTop: hp(1.5) 
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           />
@@ -221,10 +244,10 @@ export default function SendSelectContact() {
             className="flex items-center justify-center bg-general rounded-full"
             style={{
               position: "absolute",
-              width: 70,
-              height: 70,
-              bottom: 40,
-              right: 20,
+              width: wp(18),
+              height: wp(18),
+              bottom: hp(5),
+              right: wp(5),
             }}
             onPress={() => {
               router.push("/(root)/(contacts)/add-new-contact");
@@ -232,7 +255,7 @@ export default function SendSelectContact() {
           >
             <Feather
               name="plus"
-              size={32}
+              size={iconSizes.large}
               color={theme === "dark" ? "#fff" : "#0D0D0D"}
             />
           </TouchableOpacity>

@@ -1,4 +1,5 @@
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,6 +17,8 @@ import {
 const SendEnterAmount = () => {
   const { type } = useLocalSearchParams();
   const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
 
   const { name, email, avatar } = useLocalSearchParams();
   const [amount, setAmount] = useState("");
@@ -81,8 +84,12 @@ const SendEnterAmount = () => {
         }`}
       >
         <View
-          style={{ height: "55%", paddingTop: 40 }}
-          className={`w-full p-5 ${
+          style={{ 
+            height: hp(55), 
+            paddingTop: safeArea.top + hp(2),
+            paddingHorizontal: wp(5)
+          }}
+          className={`w-full ${
             theme === "dark" ? "bg-[#23262F]" : "bg-general"
           }`}
         >
@@ -98,30 +105,30 @@ const SendEnterAmount = () => {
             >
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={iconSizes.large}
                 color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ padding: 6 }}
+                style={{ padding: rs(6) }}
               />
             </TouchableOpacity>
-            <View className="flex-1 items-center" style={{ marginLeft: -40 }}>
+            <View className="flex-1 items-center" style={{ marginLeft: wp(-10) }}>
               <Text
                 className={`font-UrbanistBold ${
                   theme === "dark" ? "text-white" : "text-primary"
                 }`}
-                style={{ fontSize: 24 }}
+                style={{ fontSize: rf(24) }}
               >
                 Amount to Send
               </Text>
             </View>
           </View>
           <View>
-            <View className="flex items-center" style={{ marginTop: 120 }}>
+            <View className="flex items-center" style={{ marginTop: hp(15) }}>
               <View className="flex-row">
                 <FontAwesome6
                   name="cedi-sign"
-                  size={30}
+                  size={rf(30)}
                   color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  style={{ marginTop: 10 }}
+                  style={{ marginTop: hp(1) }}
                 />
                 <TextInput
                   className={`font-UrbanistBold ${
@@ -135,10 +142,11 @@ const SendEnterAmount = () => {
                     if (sendError) setSendError("");
                   }}
                   style={{
-                    fontSize: 40,
+                    fontSize: rf(40),
                     backgroundColor: theme === "dark" ? "#23262F" : "#F6F8FA",
-                    borderRadius: 5,
-                    paddingHorizontal: 19,
+                    borderRadius: rs(5),
+                    paddingHorizontal: wp(5),
+                    minWidth: wp(30)
                   }}
                   placeholderTextColor={theme === 'dark' ? '#B0B0B0' : '#9CA3AF'}
                   onFocus={() => setInputFocused(true)}
@@ -146,12 +154,12 @@ const SendEnterAmount = () => {
                 />
                 
               </View>
-              <View className="flex-row gap-1">
+              <View className="flex-row" style={{ gap: wp(1), marginTop: hp(2) }}>
                 <Text
                   className={`font-UrbanistMedium ${
                     theme === "dark" ? "text-white" : "text-primary"
                   }`}
-                  style={{ fontSize: 18 }}
+                  style={{ fontSize: rf(18) }}
                 >
                   Available Balance:
                 </Text>
@@ -159,16 +167,16 @@ const SendEnterAmount = () => {
                   className={`font-UrbanistMedium ${
                     theme === "dark" ? "text-white" : "text-primary"
                   }`}
-                  style={{ fontSize: 18 }}
+                  style={{ fontSize: rf(18) }}
                 >{`₵${formatBalance(balance)}`}</Text>
               </View>
               {sendError ? (
                 <Text
                   style={{
                     color: "#E53E3E",
-                    marginLeft: 8,
-                    marginTop: 20,
-                    fontSize: 16,
+                    marginLeft: wp(2),
+                    marginTop: hp(2.5),
+                    fontSize: rf(16),
                     fontFamily: "Urbanist-Medium",
                   }}
                 >
@@ -180,19 +188,20 @@ const SendEnterAmount = () => {
         </View>
         <View className="flex-1">
           <TouchableOpacity
-            className="bg-general rounded-full items-center self-center p-5 font-urbanist-bold"
+            className="bg-general rounded-full items-center self-center font-urbanist-bold"
             onPress={handleContinue}
             style={{
               position: "absolute",
-              bottom: inputFocused ? 290 : 40,
-              width: "90%",
+              bottom: inputFocused ? hp(36) : hp(5),
+              width: wp(90),
+              paddingVertical: hp(2),
             }}
           >
             <Text
               className={`font-UrbanistSemiBold ${
                 theme === "dark" ? "text-white" : "text-primary"
               }`}
-              style={{ fontSize: 20 }}
+              style={{ fontSize: rf(20) }}
             >
               Continue
             </Text>

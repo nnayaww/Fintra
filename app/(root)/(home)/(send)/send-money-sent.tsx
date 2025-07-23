@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { formatDate, formatTransactions } from "@/constants";
+import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as MediaLibrary from "expo-media-library";
@@ -9,7 +11,10 @@ import { Share, Text, TouchableOpacity, View } from "react-native";
 import { captureScreen } from "react-native-view-shot";
 
 const SendMoneySent = () => {
-const { id, amount, name, email, notes, reference, createdAt, status, avatar } = useLocalSearchParams();
+  const { theme } = useTheme();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
+  const { id, amount, name, email, notes, reference, createdAt, status, avatar } = useLocalSearchParams();
 
   // const { id, type } = useLocalSearchParams(); // Get the id from the URL
   const transactions = formatTransactions().flatMap((section) => section.data);
@@ -75,10 +80,16 @@ const { id, amount, name, email, notes, reference, createdAt, status, avatar } =
   }
 
   return (
-    <View className="flex-1 bg-white p-2" style={{ paddingTop: 30 }}>
+    <View 
+      className={`flex-1 ${theme === 'dark' ? 'bg-dark-background' : 'bg-white'}`} 
+      style={{ 
+        paddingTop: safeArea.top + hp(2),
+        paddingHorizontal: wp(2)
+      }}
+    >
       <View
         className="flex-row justify-between items-center"
-        style={{ marginTop: 20 }}
+        style={{ marginTop: hp(2.5) }}
       >
         <TouchableOpacity
           onPress={() => {
@@ -87,56 +98,60 @@ const { id, amount, name, email, notes, reference, createdAt, status, avatar } =
         >
           <AntDesign
             name="close"
-            size={30}
-            color="#0D0D0D"
-            style={{ paddingHorizontal: 14 }}
+            size={iconSizes.large}
+            color={theme === 'dark' ? '#fff' : '#0D0D0D'}
+            style={{ paddingHorizontal: wp(3.5) }}
           />
         </TouchableOpacity>
       </View>
-      <View className="flex items-center gap-5 mt-6">
+      <View className="flex items-center" style={{ gap: hp(2.5), marginTop: hp(3) }}>
         <View
           style={{
-            width: 80,
-            height: 80,
+            width: wp(20),
+            height: wp(20),
             backgroundColor: "#82E394",
             borderStyle: "solid",
-            borderWidth: 2,
-            borderColor: "#0D0D0D",
+            borderWidth: rs(2),
+            borderColor: theme === 'dark' ? '#fff' : '#0D0D0D',
           }}
           className="rounded-full border flex items-center justify-center"
         >
-          <FontAwesome6 name="check" size={34} color="#0D0D0D" />
+          <FontAwesome6 name="check" size={iconSizes.large} color={theme === 'dark' ? '#fff' : '#0D0D0D'} />
         </View>
-        <View className="flex-row gap-2 justify-center">
+        <View className="flex-row justify-center" style={{ gap: wp(2) }}>
           <Text
-                  className="font-UrbanistBold text-primary"
-                  style={{ fontSize: 40 }}
-                >
-                  {`₵ ${formatBalance(
-                    Number((Array.isArray(amount) ? amount[0] : amount)) / 100
-                  )}`}
-                </Text>
-
+            className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`}
+            style={{ fontSize: rf(40) }}
+          >
+            {`₵ ${formatBalance(
+              Number((Array.isArray(amount) ? amount[0] : amount)) / 100
+            )}`}
+          </Text>
         </View>
-        <View className="flex gap-3 items-center">
+        <View className="flex items-center" style={{ gap: hp(1.5) }}>
           <Text
-            className="font-UrbanistMedium text-secondary"
-            style={{ fontSize: 17 }}
+            className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`}
+            style={{ fontSize: rf(17) }}
           >
             Sent to {displayName}
           </Text>
           <Text
-            className="font-UrbanistMedium text-secondary"
-            style={{ fontSize: 17 }}
+            className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`}
+            style={{ fontSize: rf(17) }}
           >
             {displayEmail}
           </Text>
         </View>
       </View>
-      <View className="p-4 mt-2">
+      <View style={{ padding: wp(4), marginTop: hp(1) }}>
         <View
-          className="flex bg-[#F6F8FA] rounded-lg"
-          style={{ borderWidth: 2, borderColor: "#ebedf0" }}
+          className={`flex rounded-lg ${
+            theme === 'dark' ? 'bg-[#23262F]' : 'bg-[#F6F8FA]'
+          }`}
+          style={{ 
+            borderWidth: rs(2), 
+            borderColor: theme === 'dark' ? '#444' : '#ebedf0'
+          }}
         >
           <Row
             label="You sent"
@@ -157,36 +172,51 @@ const { id, amount, name, email, notes, reference, createdAt, status, avatar } =
           <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} />
           <Row label="Status" value={Array.isArray(status) ? status[0] : status} />
           <View
-            className="h-[1px] self-center mt-2"
-            style={{ width: "90%", backgroundColor: "#e6e6e6" }}
+            className="self-center"
+            style={{ 
+              height: rs(1), 
+              width: "90%", 
+              backgroundColor: theme === 'dark' ? '#444' : '#e6e6e6',
+              marginTop: hp(1)
+            }}
           />
-          <View className="flex-col px-6 my-4">
-            <Text className="font-UrbanistMedium text-secondary text-xl">
+          <View className="flex-col" style={{ paddingHorizontal: wp(6), marginVertical: hp(2) }}>
+            <Text className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`} style={{ fontSize: rf(20) }}>
               Notes
             </Text>
-            <Text className="font-UrbanistBold text-xl text-primary mt-3">
+            <Text className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20), marginTop: hp(1.5) }}>
               {displayNotes}
             </Text>
           </View>
         </View>
       </View>
       <View
-        className="flex-row gap-4 items-center"
-        style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
+        className="flex-row items-center"
+        style={{ 
+          position: "absolute", 
+          right: wp(5), 
+          left: wp(5), 
+          bottom: hp(6),
+          gap: wp(4)
+        }}
       >
         <TouchableOpacity
           onPress={handleDownload}
-          className="bg-white flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full"
+          className={`flex-1 items-center justify-center border-[1.5px] border-general rounded-full ${
+            theme === 'dark' ? 'bg-dark-background' : 'bg-white'
+          }`}
+          style={{ paddingVertical: hp(2) }}
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text className={`font-UrbanistSemiBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20) }}>
             Download
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleShare}
-          className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
+          className="bg-general flex-1 items-center justify-center border-none rounded-full"
+          style={{ paddingVertical: hp(2) }}
         >
-          <Text className="font-UrbanistSemiBold text-xl text-primary">
+          <Text className={`font-UrbanistSemiBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20) }}>
             Share
           </Text>
         </TouchableOpacity>
@@ -204,23 +234,25 @@ function Row({
   label: string;
   value: string | number | undefined;
 }) {
+  const { theme } = useTheme();
+  
   return (
-    <View className="flex-row justify-between items-center px-6 my-3">
-      <Text className="font-UrbanistMedium text-secondary text-xl">
+    <View className="flex-row justify-between items-center" style={{ paddingHorizontal: wp(6), marginVertical: hp(1.5) }}>
+      <Text className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`} style={{ fontSize: rf(20) }}>
         {label}
       </Text>
       {label === "Status" && value === "Paid" ? (
-        <View className="p-3 bg-general rounded-md">
-          <Text className="font-UrbanistBold text-xl text-primary">
+        <View className="bg-general rounded-md" style={{ padding: wp(3) }}>
+          <Text className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20) }}>
             {value}
           </Text>
         </View>
       ) : label === "Status" && value === "Declined" ? (
-        <View className="p-3 bg-[#f54f4f] rounded-md">
-          <Text className="font-UrbanistBold text-xl text-white">{value}</Text>
+        <View className="bg-[#f54f4f] rounded-md" style={{ padding: wp(3) }}>
+          <Text className="font-UrbanistBold text-white" style={{ fontSize: rf(20) }}>{value}</Text>
         </View>
       ) : (
-        <Text className="font-UrbanistBold text-xl text-primary">{value}</Text>
+        <Text className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20) }}>{value}</Text>
       )}
     </View>
   );
