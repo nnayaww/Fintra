@@ -505,6 +505,9 @@ const Home = () => {
             width: '100%',
             alignSelf: 'stretch',
             flex: 1,
+            borderTopLeftRadius: wp(6),
+            borderTopRightRadius: wp(6),
+            marginTop: -wp(6),
           }}
         >
           <View
@@ -658,7 +661,6 @@ const Home = () => {
             )}
           />
         )}
-        </View>
         </View>
       </ScrollView>
     </SafeAreaView>
