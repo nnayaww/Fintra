@@ -86,7 +86,7 @@ const RequestMoneyRequested = () => {
       >
         <TouchableOpacity
           onPress={() => {
-            router.back();
+            router.push("/(root)/(tabs)/home");
           }}
         >
           <AntDesign
@@ -157,11 +157,11 @@ const RequestMoneyRequested = () => {
           }}
         >
           <Row
-            label="You sent"
+            label="You requested"
             value={`₵ ${formatBalance(Number(displayAmount))}`}
             theme={theme}
           />
-          <Row label="To" value={displayName} theme={theme} />
+          <Row label="From" value={displayName} theme={theme} />
           <Row label="Email" value={displayEmail} theme={theme} />
           {transaction?.category === "Incoming Request" && (
             <Row label="Status" value={transaction?.status} theme={theme} />

@@ -90,7 +90,7 @@ const CryptoReceipt = () => {
       >
         <TouchableOpacity
           onPress={() => {
-            router.back();
+            router.push("/(root)/(tabs)/home");
           }}
         >
           <AntDesign
