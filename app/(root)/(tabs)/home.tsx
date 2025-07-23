@@ -325,12 +325,18 @@ const Home = () => {
           {/* Quick actions */}
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
               marginTop: hp(3),
               paddingHorizontal: wp(2),
             }}
           >
+            {/* First row - 3 buttons */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginBottom: hp(2),
+              }}
+            >
             {/* Send */}
             <View style={{ alignItems: "center", flex: 1 }}>
               <TouchableOpacity
@@ -483,40 +489,6 @@ const Home = () => {
               </Text>
             </View>
 
-            {/* Analytics */}
-            <View style={{ alignItems: "center", flex: 1 }}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/(root)/(tabs)/analytics")
-                }
-                style={{
-                  width: wp(isSmallScreen() ? 14 : 16),
-                  height: wp(isSmallScreen() ? 14 : 16),
-                  borderRadius: wp(isSmallScreen() ? 7 : 8),
-                  borderWidth: rs(1),
-                  borderColor: theme === "dark" ? "#fff" : "#000",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <MaterialCommunityIcons
-                  name="chart-line"
-                  size={iconSizes.medium}
-                  color={theme === "dark" ? "#fff" : "#000"}
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  marginTop: hp(0.8),
-                  fontWeight: "600",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  fontSize: rf(14),
-                  textAlign: "center",
-                }}
-              >
-                Analytics
-              </Text>
-            </View>
           </View>
         </View>
 
