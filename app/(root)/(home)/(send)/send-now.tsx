@@ -1,4 +1,5 @@
 import { useTheme } from "@/lib/ThemeContext";
+import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -22,6 +23,8 @@ import {
 const SendNow = () => {
   const { theme } = useTheme();
   const { amount, name, avatar } = useLocalSearchParams();
+  const safeArea = getSafeAreaPadding();
+  const iconSizes = getIconSize();
   const [contactImage, setContactImage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -114,27 +117,30 @@ const SendNow = () => {
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
       >
         <View
-          className={`flex-1 p-5 ${
+          className={`flex-1 ${
             theme === "dark" ? "bg-dark-background" : "bg-white"
           }`}
-          style={{ paddingTop: 40 }}
+          style={{ 
+            paddingTop: safeArea.top + hp(2),
+            paddingHorizontal: wp(5)
+          }}
         >
           {/* Header */}
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons
                 name="arrow-back"
-                size={28}
+                size={iconSizes.large}
                 color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ padding: 6 }}
+                style={{ padding: rs(6) }}
               />
             </TouchableOpacity>
-            <View className="flex-1 items-center" style={{ marginLeft: -40 }}>
+            <View className="flex-1 items-center" style={{ marginLeft: wp(-10) }}>
               <Text
                 className={`font-UrbanistBold ${
                   theme === "dark" ? "text-dark-primary" : "text-primary"
                 }`}
-                style={{ fontSize: 24 }}
+                style={{ fontSize: rf(24) }}
               >
                 Send Now
               </Text>
@@ -143,65 +149,76 @@ const SendNow = () => {
 
           {/* Recipient */}
           <Text
-            className={`font-UrbanistSemiBold mt-10 ${
+            className={`font-UrbanistSemiBold ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
             }`}
-            style={{ fontSize: 20 }}
+            style={{ 
+              fontSize: rf(20),
+              marginTop: hp(4)
+            }}
           >
             Recipient
           </Text>
-          <View className="flex-row py-4 items-center">
+          <View className="flex-row items-center" style={{ paddingVertical: hp(2) }}>
             <View
               className={`rounded-full items-center justify-center ${
                 theme === "dark" ? "bg-dark-secondary" : "bg-[#F6F8FA]"
               }`}
-              style={{ width: 70, height: 70 }}
+              style={{ width: wp(18), height: wp(18) }}
             >
               {contactImage ? (
-                <Image source={{ uri: contactImage }} style={{ width: 70, height: 70 }} />
+                <Image source={{ uri: contactImage }} style={{ width: wp(18), height: wp(18), borderRadius: wp(9) }} />
               ) : (
                 <FontAwesome5
                   name="user-alt"
-                  size={21}
+                  size={iconSizes.medium}
                   color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
                 />
               )}
             </View>
-            <View className="gap-2 ml-4">
-              <Text className={`font-UrbanistBold text-[20px] text-primary`}>
+            <View className="gap-2" style={{ marginLeft: wp(4) }}>
+              <Text className={`font-UrbanistBold ${theme === "dark" ? "text-white" : "text-primary"}`} style={{ fontSize: rf(20) }}>
                 {displayName}
               </Text>
-              <Text className="font-UrbanistMedium text-secondary text-[16px]">
+              <Text className={`font-UrbanistMedium ${theme === "dark" ? "text-gray-300" : "text-secondary"}`} style={{ fontSize: rf(16) }}>
                 {receiverEmail}
               </Text>
             </View>
             <MaterialCommunityIcons
               name="greater-than"
-              size={26}
+              size={iconSizes.medium}
               color={theme === "dark" ? "#fff" : "black"}
               style={{ position: "absolute", right: 0 }}
             />
           </View>
 
           {/* Amount */}
-          <View className="mt-5">
+          <View style={{ marginTop: hp(2.5) }}>
             <Text
               className={`font-UrbanistSemiBold ${
                 theme === "dark" ? "text-white" : "text-primary"
-              } text-[20px]`}
+              }`}
+              style={{ fontSize: rf(20) }}
             >
               Amount to send
             </Text>
             <View
-              className={`py-2 px-4 rounded-lg mt-4 ${
+              className={`rounded-lg ${
                 theme === "dark" ? "bg-[#23262F]" : "bg-[#F6F8FA]"
               }`}
-              style={{ height: 70 }}
+              style={{ 
+                height: hp(9),
+                marginTop: hp(2),
+                paddingVertical: hp(1),
+                paddingHorizontal: wp(4),
+                justifyContent: 'center'
+              }}
             >
               <Text
                 className={`font-UrbanistBold ${
                   theme === "dark" ? "text-white" : "text-primary"
-                } text-[28px]`}
+                }`}
+                style={{ fontSize: rf(28) }}
               >
                 ₵ {formatBalance(Number(Math.round(parseFloat(displayAmount) / 100).toString()))}
               </Text>
@@ -236,26 +253,34 @@ const SendNow = () => {
 
           {/* Buttons */}
           <View
-            className="flex-row gap-4 items-center"
-            style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
+            className="flex-row items-center"
+            style={{ 
+              position: "absolute", 
+              right: wp(5), 
+              left: wp(5), 
+              bottom: hp(6),
+              gap: wp(4)
+            }}
           >
             <TouchableOpacity
               onPress={() => router.push("/(root)/(tabs)/home")}
-              className="flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full bg-white"
+              className="flex-1 items-center justify-center border-[1.5px] border-general rounded-full bg-white"
+              style={{ paddingVertical: hp(2) }}
             >
-              <Text className="font-UrbanistSemiBold text-xl text-primary">
+              <Text className="font-UrbanistSemiBold text-primary" style={{ fontSize: rf(20) }}>
                 Cancel
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleSendMoney}
-              className="bg-general flex-1 items-center justify-center p-5 rounded-full"
+              className="bg-general flex-1 items-center justify-center rounded-full"
+              style={{ paddingVertical: hp(2) }}
               disabled={loading}
             >
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="font-UrbanistSemiBold text-xl text-primary">
+                <Text className="font-UrbanistSemiBold text-primary" style={{ fontSize: rf(20) }}>
                   Send Money
                 </Text>
               )}

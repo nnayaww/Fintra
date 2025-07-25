@@ -174,44 +174,49 @@ const handleSignIn = async () => {
                 backgroundColor: theme === "dark" ? "#181A20" : "#fff",
               }}
             >
-            <TouchableOpacity
-              onPress={() => {
-                // if (router.canGoBack()) {
-                  router.back();
-                // } else {
-                //   router.replace("/(root)/(tabs)/home");
-                // }
-              }}
-            >
-              <Ionicons
-                name="arrow-back"
-                size={iconSizes.large}
-                color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                style={{ padding: rs(6), marginTop: hp(2) }}
-              />
-            </TouchableOpacity>
-            <View>
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: rf(isSmallScreen() ? 26 : 30),
-                  color: theme === "dark" ? "#fff" : "#0D0D0D",
-                  marginBottom: hp(1),
-                }}
-              >
-                Welcome back 👋
-              </Text>
-              <Text
-                style={{
-                  fontWeight: "500",
-                  fontSize: rf(16),
-                  color: theme === "dark" ? "#A0A0A0" : "#666",
-                  lineHeight: rf(22),
-                }}
-              >
-                Please enter your email & password to sign in.
-              </Text>
-            </View>
+            <View
+  style={{
+    flexDirection: "row",
+    alignItems: "center",
+    gap: wp(2), // spacing between arrow and text
+    marginTop: hp(2),
+    marginBottom: hp(2),
+  }}
+>
+  <TouchableOpacity onPress={() => router.back()}>
+    <Ionicons
+      name="arrow-back"
+      size={iconSizes.large}
+      color={theme === "dark" ? "#fff" : "#0D0D0D"}
+      style={{ padding: rs(8) }}
+    />
+  </TouchableOpacity>
+
+  <View>
+    <Text
+      style={{
+        fontWeight: "bold",
+        marginTop: hp(2),
+        
+        fontSize: rf(isSmallScreen() ? 26 : 30),
+        color: theme === "dark" ? "#fff" : "#0D0D0D",
+      }}
+    >
+      Welcome back 👋
+    </Text>
+    <Text
+      style={{
+        fontWeight: "500",
+        fontSize: rf(16),
+        color: theme === "dark" ? "#A0A0A0" : "#666",
+        lineHeight: rf(22),
+      }}
+    >
+      Please enter your details to sign in.
+    </Text>
+  </View>
+</View>
+
             {/* FORM FIELDS START */}
             <View>
               {/* Email Field */}
