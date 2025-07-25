@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, useMemo } from "react";
 import {
+  StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
