@@ -1,37 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
-import {
-  FlatList,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  Image,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/lib/ThemeContext";
 import { db } from "@/firebase";
+import { hp, rf, wp } from "@/lib/responsive";
+import { useTheme } from "@/lib/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   addDoc,
   collection,
-  query,
-  orderBy,
   onSnapshot,
+  orderBy,
+  query,
   serverTimestamp,
 } from "firebase/firestore";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { wp, hp, rf } from "@/lib/responsive";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 export default function ChatScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { senderEmail, email, name } = useLocalSearchParams();
-
-  useEffect(()=>{
-console.log({senderEmail, email, name})
-  },[])
 
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
@@ -73,7 +69,7 @@ console.log({senderEmail, email, name})
     setInput("");
   };
 
-  const renderMessage = ({ item }:{item:any}) => {
+  const renderMessage = ({ item }: { item: any }) => {
     const isMe = item.sender === senderEmail;
 
     return (
@@ -106,7 +102,9 @@ console.log({senderEmail, email, name})
             paddingHorizontal: wp(3),
           }}
         >
-          <Text style={{ color: isMe ? "#fff" : isDark ? "#fff" : "#111" }}>{item.text}</Text>
+          <Text style={{ color: isMe ? "#fff" : isDark ? "#fff" : "#111" }}>
+            {item.text}
+          </Text>
           {item.timestamp?.toDate && (
             <Text
               style={{
@@ -128,49 +126,51 @@ console.log({senderEmail, email, name})
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#181A20" : "#f9fafb" }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          padding: wp(4),
-          backgroundColor: isDark ? "#23262F" : "#fff",
-          borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
-          borderBottomWidth: 1,
-        }}
-      >
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={isDark ? "#fff" : "#111"} />
-        </TouchableOpacity>
-        <Text
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={hp(2)}
+    >
+      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#181A20" : "#f9fafb" }}>
+        {/* Header */}
+        <View
           style={{
-            flex: 1,
-            textAlign: "center",
-            fontSize: rf(18),
-            fontWeight: "bold",
-            color: isDark ? "#fff" : "#111",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: wp(4),
+            backgroundColor: isDark ? "#23262F" : "#fff",
+            borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
+            borderBottomWidth: 1,
           }}
         >
-          {name || "Chat"}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={rf(20)} color={isDark ? "#fff" : "#111"} />
+          </TouchableOpacity>
+          <Text
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontSize: rf(18),
+              fontWeight: "bold",
+              color: isDark ? "#fff" : "#111",
+            }}
+          >
+            {name || "Chat"}
+          </Text>
+          <View style={{ width: rf(20) }} />
+        </View>
 
-      {/* Messages */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMessage}
-        contentContainerStyle={{ paddingVertical: hp(1) }}
-      />
+        {/* Messages */}
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMessage}
+          contentContainerStyle={{ paddingVertical: hp(1) }}
+          keyboardShouldPersistTaps="handled"
+        />
 
-      {/* Input */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={hp(2)}
-      >
+        {/* Input */}
         <View
           style={{
             flexDirection: "row",
@@ -194,12 +194,13 @@ console.log({senderEmail, email, name})
             placeholderTextColor={isDark ? "#aaa" : "#666"}
             value={input}
             onChangeText={setInput}
+            onSubmitEditing={handleSend}
           />
           <TouchableOpacity onPress={handleSend} style={{ marginLeft: wp(2) }}>
-            <Ionicons name="send" size={24} color={isDark ? "#3B82F6" : "#2563eb"} />
+            <Ionicons name="send" size={rf(20)} color={isDark ? "#3B82F6" : "#2563eb"} />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
