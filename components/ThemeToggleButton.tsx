@@ -20,11 +20,11 @@ const ThemeToggleButton = () => {
         name={theme === "light" ? "moon" : "sun"}
         size={24}
         color={theme === "light" ? "#616161" : "#fff"}
-        style={{ marginTop: 2, marginLeft: 11 }}
+        style={{ marginTop: 2, marginLeft: -10 }}
       />
       <Text
         className={`font-UrbanistBold ${theme === "dark" ? "text-dark-primary" : "text-primary"}`}
-        style={{ fontSize: 18, marginLeft: -130 }}
+        style={{ fontSize: 18, marginLeft: -110 }}
       >
         Dark Mode
       </Text>

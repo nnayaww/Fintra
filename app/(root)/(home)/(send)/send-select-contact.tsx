@@ -152,7 +152,7 @@ export default function SendSelectContact() {
               }`}
               style={{ 
                 fontSize: rf(28),
-                marginLeft: wp(20),
+                marginLeft: wp(0),
                 flex: 1,
                 textAlign: 'center'
               }}
@@ -169,7 +169,7 @@ export default function SendSelectContact() {
               style={{ 
                 position: "absolute", 
                 left: wp(9), 
-                top: hp(17), 
+                top: hp(19), 
                 zIndex: 1 
               }}
             />

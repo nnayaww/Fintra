@@ -37,7 +37,7 @@ const Onboarding = () => {
         <Swiper
           ref={swiperRef}
           loop={false}
-          paginationStyle={{ bottom: hp(19) }}
+          paginationStyle={{ bottom: hp(10) }}
           dot={
             <View 
               style={{

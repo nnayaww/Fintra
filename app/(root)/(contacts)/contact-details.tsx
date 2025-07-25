@@ -4,13 +4,14 @@ import { useTheme } from "@/lib/ThemeContext";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { getContacts, deleteContact } from "../../../utils/contactStorage";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react"; 
 import type { Contact } from "../../../utils/contactStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Contacts() {
   const { name, email, favorite } = useLocalSearchParams();
@@ -18,6 +19,7 @@ export default function Contacts() {
   const [contactImage, setContactImage] = useState<string | null>(null);
   const { theme } = useTheme();
   const [contact, setContact] = useState<Contact | null>(null); 
+  const [senderEmail, setSenderEmail] = useState('')
 
   useFocusEffect(
   useCallback(() => {
@@ -31,6 +33,21 @@ export default function Contacts() {
     fetchContact();
   }, [email])
 );
+
+useEffect(()=>{
+  const fetchUseremail = async() => {
+    try {
+      const userEmail = await AsyncStorage.getItem("email");
+setSenderEmail(userEmail as string)
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  fetchUseremail()
+   
+},[])
 
   return (
     <View
@@ -130,6 +147,7 @@ export default function Contacts() {
             router.push({
               pathname: "/(root)/(contacts)/chat-screen",
               params: {
+                senderEmail,
                 name: contact?.name,
                 email: contact?.email,
               },
@@ -167,7 +185,7 @@ export default function Contacts() {
         <TouchableOpacity
           onPress={() => {
             router.push({
-              pathname: "/(root)/(home)/(request)/request-enter-amount",
+              pathname: "/(root)/(contacts)/chat-screen",
               params: {
                 name: contact?.name,
                 email: contact?.email,
@@ -286,7 +304,7 @@ export default function Contacts() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={async () => {
-                await deleteContact(email);
+                await deleteContact(email as string);
                 setshowDeleteContactModal(false);
                 router.replace("/(root)/(tabs)/home");
               }}

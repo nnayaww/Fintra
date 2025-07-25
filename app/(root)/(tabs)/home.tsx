@@ -384,7 +384,7 @@ const Home = () => {
             <View style={{ alignItems: "center", flex: 1 }}>
               <TouchableOpacity
                 onPress={() =>
-                  router.push("/(root)/(contacts)/chat-screen")
+                  router.push("/(root)/(tabs)/contacts")
                 }
                 style={{
                   width: wp(isSmallScreen() ? 14 : 16),
@@ -505,9 +505,6 @@ const Home = () => {
             width: '100%',
             alignSelf: 'stretch',
             flex: 1,
-            borderTopLeftRadius: wp(6),
-            borderTopRightRadius: wp(6),
-            marginTop: -wp(6),
           }}
         >
           <View
@@ -661,6 +658,7 @@ const Home = () => {
             )}
           />
         )}
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>

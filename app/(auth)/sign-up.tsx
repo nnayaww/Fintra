@@ -89,7 +89,7 @@ const signUp = () => {
             contentContainerStyle: { flexGrow: 1 }
           }}>
             <ResponsiveHeader
-              title=""
+              title="Get Started with Fintra."
               onBack={() => router.back()}
             />
             

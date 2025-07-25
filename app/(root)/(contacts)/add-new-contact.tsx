@@ -80,11 +80,11 @@ const AddNewContact = () => {
         <View className="flex-row items-center mt-3">
           <TouchableOpacity
             onPress={() => {
-              if (router.canGoBack()) {
+              // if (router.canGoBack()) {
                 router.back();
-              } else {
-                router.replace("/(root)/(tabs)/home");
-              }
+              // } else {
+              //   router.replace("/(root)/(tabs)/home");
+              // }
             }}
           >
             <Ionicons

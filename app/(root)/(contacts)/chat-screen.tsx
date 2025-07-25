@@ -1,179 +1,205 @@
-import { useTheme } from "@/lib/ThemeContext";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  FlatList,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Image,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen, getIconSize } from "@/lib/responsive";
+import { useTheme } from "@/lib/ThemeContext";
+import { db } from "@/firebase";
+import {
+  addDoc,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { wp, hp, rf } from "@/lib/responsive";
 
 export default function ChatScreen() {
   const router = useRouter();
   const { theme } = useTheme();
-  const safeArea = getSafeAreaPadding();
-  const iconSizes = getIconSize();
+  const { senderEmail, email, name } = useLocalSearchParams();
 
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme === 'dark' ? '#181A20' : '#f9fafb' }]}>
-      {/* Header */}
-      <View style={[styles.header, { 
-        backgroundColor: theme === 'dark' ? '#23262F' : '#fff', 
-        borderBottomColor: theme === 'dark' ? '#23262F' : '#e5e7eb' 
-      }]}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => router.back()}
-          accessibilityLabel="Go back"
-        >
-          <Ionicons 
-            name="arrow-back" 
-            size={iconSizes.medium} 
-            color={theme === 'dark' ? '#fff' : '#666'} 
+  useEffect(()=>{
+console.log({senderEmail, email, name})
+  },[])
+
+  const [messages, setMessages] = useState<any[]>([]);
+  const [input, setInput] = useState("");
+  const flatListRef = useRef<FlatList>(null);
+
+  const isDark = theme === "dark";
+  const chatId = [senderEmail, email].sort().join("_");
+
+  useEffect(() => {
+    const q = query(
+      collection(db, "chats", chatId, "messages"),
+      orderBy("timestamp", "asc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setMessages(msgs);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const handleSend = async () => {
+    if (input.trim() === "") return;
+
+    await addDoc(collection(db, "chats", chatId, "messages"), {
+      text: input.trim(),
+      sender: senderEmail,
+      receiver: email,
+      timestamp: serverTimestamp(),
+    });
+
+    setInput("");
+  };
+
+  const renderMessage = ({ item }:{item:any}) => {
+    const isMe = item.sender === senderEmail;
+
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: isMe ? "flex-end" : "flex-start",
+          marginVertical: hp(0.5),
+          marginHorizontal: wp(4),
+        }}
+      >
+        {!isMe && (
+          <Image
+            source={require("@/assets/images/nature.jpg")}
+            style={{
+              width: wp(8),
+              height: wp(8),
+              borderRadius: wp(4),
+              marginRight: wp(2),
+              alignSelf: "flex-end",
+            }}
           />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme === 'dark' ? '#fff' : '#111827' }]}>
-          Chat
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* Coming Soon Content */}
-      <View style={styles.content}>
-        <View style={styles.comingSoonContainer}>
-          <View style={[styles.iconContainer, { backgroundColor: theme === 'dark' ? '#2563eb' : '#3b82f6' }]}>
-            <Ionicons 
-              name="chatbubbles" 
-              size={wp(isSmallScreen() ? 12 : 14)} 
-              color="#fff" 
-            />
-          </View>
-          
-          <Text style={[styles.title, { color: theme === 'dark' ? '#fff' : '#111827' }]}>
-            Chat Feature
-          </Text>
-          
-          <Text style={[styles.subtitle, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
-            We're Coming Soon!
-          </Text>
-          
-          <Text style={[styles.description, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
-            We're working hard to bring you an amazing chat experience. 
-            Stay tuned for real-time messaging, file sharing, and more exciting features.
-          </Text>
-          
-          <View style={styles.featuresContainer}>
-            <View style={styles.feature}>
-              <Ionicons 
-                name="checkmark-circle" 
-                size={iconSizes.small} 
-                color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
-              />
-              <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
-                Real-time messaging
-              </Text>
-            </View>
-            
-            <View style={styles.feature}>
-              <Ionicons 
-                name="checkmark-circle" 
-                size={iconSizes.small} 
-                color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
-              />
-              <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
-                File & image sharing
-              </Text>
-            </View>
-            
-            <View style={styles.feature}>
-              <Ionicons 
-                name="checkmark-circle" 
-                size={iconSizes.small} 
-                color={theme === 'dark' ? '#22c55e' : '#16a34a'} 
-              />
-              <Text style={[styles.featureText, { color: theme === 'dark' ? '#a3a3a3' : '#64748b' }]}>
-                Push notifications
-              </Text>
-            </View>
-          </View>
+        )}
+        <View
+          style={{
+            maxWidth: "75%",
+            backgroundColor: isMe ? "#3B82F6" : isDark ? "#333" : "#E5E7EB",
+            borderRadius: 12,
+            paddingVertical: hp(1),
+            paddingHorizontal: wp(3),
+          }}
+        >
+          <Text style={{ color: isMe ? "#fff" : isDark ? "#fff" : "#111" }}>{item.text}</Text>
+          {item.timestamp?.toDate && (
+            <Text
+              style={{
+                fontSize: rf(10),
+                color: isMe ? "#d1d5db" : "#6b7280",
+                textAlign: "right",
+                marginTop: 2,
+              }}
+            >
+              {item.timestamp.toDate().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+          )}
         </View>
       </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#181A20" : "#f9fafb" }}>
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          padding: wp(4),
+          backgroundColor: isDark ? "#23262F" : "#fff",
+          borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
+          borderBottomWidth: 1,
+        }}
+      >
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color={isDark ? "#fff" : "#111"} />
+        </TouchableOpacity>
+        <Text
+          style={{
+            flex: 1,
+            textAlign: "center",
+            fontSize: rf(18),
+            fontWeight: "bold",
+            color: isDark ? "#fff" : "#111",
+          }}
+        >
+          {name || "Chat"}
+        </Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      {/* Messages */}
+      <FlatList
+        ref={flatListRef}
+        data={messages}
+        keyExtractor={(item) => item.id}
+        renderItem={renderMessage}
+        contentContainerStyle={{ paddingVertical: hp(1) }}
+      />
+
+      {/* Input */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={hp(2)}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            padding: wp(3),
+            borderTopWidth: 1,
+            borderTopColor: isDark ? "#2d2d2d" : "#e5e7eb",
+            backgroundColor: isDark ? "#23262F" : "#fff",
+          }}
+        >
+          <TextInput
+            style={{
+              flex: 1,
+              backgroundColor: isDark ? "#2d2d2d" : "#f0f0f0",
+              borderRadius: 20,
+              paddingHorizontal: wp(4),
+              paddingVertical: Platform.OS === "ios" ? hp(1.5) : hp(1),
+              color: isDark ? "#fff" : "#000",
+            }}
+            placeholder="Type a message"
+            placeholderTextColor={isDark ? "#aaa" : "#666"}
+            value={input}
+            onChangeText={setInput}
+          />
+          <TouchableOpacity onPress={handleSend} style={{ marginLeft: wp(2) }}>
+            <Ionicons name="send" size={24} color={isDark ? "#3B82F6" : "#2563eb"} />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: wp(4),
-    paddingVertical: hp(1.5),
-    borderBottomWidth: 1,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  backButton: {
-    padding: rs(4),
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: rf(20),
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginRight: wp(8), // Compensate for back button
-  },
-  placeholder: {
-    width: wp(8), // Same as back button width
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: wp(8),
-  },
-  comingSoonContainer: {
-    alignItems: 'center',
-    maxWidth: wp(85),
-  },
-  iconContainer: {
-    width: wp(isSmallScreen() ? 20 : 24),
-    height: wp(isSmallScreen() ? 20 : 24),
-    borderRadius: wp(isSmallScreen() ? 10 : 12),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: hp(3),
-  },
-  title: {
-    fontSize: rf(isSmallScreen() ? 24 : 28),
-    fontWeight: 'bold',
-    marginBottom: hp(1),
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: rf(isSmallScreen() ? 18 : 20),
-    fontWeight: '600',
-    marginBottom: hp(2),
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: rf(15),
-    textAlign: 'center',
-    lineHeight: rf(22),
-    marginBottom: hp(4),
-  },
-  featuresContainer: {
-    alignSelf: 'stretch',
-  },
-  feature: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: hp(1.5),
-  },
-  featureText: {
-    fontSize: rf(15),
-    marginLeft: wp(3),
-  },
-});

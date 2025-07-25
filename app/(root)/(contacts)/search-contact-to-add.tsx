@@ -47,9 +47,9 @@ export default function SearchContactToAdd() {
           className={`font-UrbanistBold mt-5 ${
             theme === "dark" ? "text-dark-primary" : "text-primary"
           }`}
-          style={{ marginHorizontal: 55, fontSize: 24 }}
+          style={{ marginHorizontal: 55, fontSize: 24, marginLeft: 80 }}
         >
-          Search Contact
+          Add Contact
         </Text>
       </View>
       <View
@@ -120,7 +120,7 @@ export default function SearchContactToAdd() {
         <TouchableOpacity
           onPress={() => {
             router.push({
-              pathname: "/(root)/(contacts)/add-new-contact",
+              pathname: "/(root)/(tabs)/contacts",
               params: {
                 AccountHolderName,
                 email,
@@ -143,6 +143,13 @@ export default function SearchContactToAdd() {
           onPress={async () => {
             await saveContact({ name: AccountHolderName, email });
             setshowSavedToContactsModal(true);
+            router.push({
+              pathname: "/(root)/(tabs)/contacts",
+              params: {
+                AccountHolderName,
+                email,
+              },
+            });
           }}
           className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
         >
