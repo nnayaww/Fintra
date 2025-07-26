@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { formatDate, formatTransactions } from "@/constants";
+import { formatTransactions } from "@/constants";
 import { useTheme } from "@/lib/ThemeContext";
-import { wp, hp, rf, rs, getSafeAreaPadding, getIconSize } from "@/lib/responsive";
+import { getIconSize, getSafeAreaPadding, hp, rf, rs, wp } from "@/lib/responsive";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import * as MediaLibrary from "expo-media-library";
@@ -14,7 +14,7 @@ const SendMoneySent = () => {
   const { theme } = useTheme();
   const safeArea = getSafeAreaPadding();
   const iconSizes = getIconSize();
-  const { id, amount, name, email, notes, reference, createdAt, status, avatar } = useLocalSearchParams();
+  const { id, amount, name, email, avatar } = useLocalSearchParams();
 
   // const { id, type } = useLocalSearchParams(); // Get the id from the URL
   const transactions = formatTransactions().flatMap((section) => section.data);
@@ -24,7 +24,7 @@ const SendMoneySent = () => {
   const displayName = Array.isArray(name) ? name[0] : name;
   const displayEmail = Array.isArray(email) ? email[0] : email;
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
-  const displayNotes = Array.isArray(notes) ? notes[0] : notes;
+  
   const parsedAvatar =
     typeof avatar === "string" && avatar.startsWith("http")
       ? { uri: avatar } // Remote image URL
@@ -157,20 +157,7 @@ const SendMoneySent = () => {
             label="You sent"
             value={`₵ ${formatBalance(Number(Math.round(parseFloat(displayAmount) / 100).toString()))}`}
           />
-          {/* <Row
-  label="Date"
-  value={
-    (() => {
-      const rawDate = Array.isArray(createdAt) ? createdAt[0] : createdAt;
-      const parsed = new Date(rawDate);
-      return isNaN(parsed.getTime()) ? "N/A" : formatDate(parsed);
-    })()
-  }
-/>
-
-          <Row label="Transaction ID" value={Array.isArray(id) ? id[0] : id} />
-          <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} /> */}
-          {/* <Row label="Status" value={Array.isArray(status) ? status[0] : status} /> */}
+     
           <Row label="Status" value="Successful" />
 
           <View
@@ -182,14 +169,7 @@ const SendMoneySent = () => {
               marginTop: hp(1)
             }}
           />
-          {/* <View className="flex-col" style={{ paddingHorizontal: wp(6), marginVertical: hp(2) }}>
-            <Text className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`} style={{ fontSize: rf(20) }}>
-              Notes
-            </Text>
-            <Text className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20), marginTop: hp(1.5) }}>
-              {displayNotes}
-            </Text>
-          </View> */}
+          
         </View>
       </View>
       <View

@@ -1,4 +1,3 @@
-// app/(root)/(account)/(payment-methods)/index.tsx
 import PaymentMethodCard from "@/components/paymentMethodCard";
 import { useTheme } from "@/lib/ThemeContext";
 import { PaymentMethods } from "@/constants";
@@ -26,10 +25,16 @@ const PaymentMethodsScreen = () => {
       const fetchMethods = async () => {
         try {
           const stored = await AsyncStorage.getItem("paymentMethods");
-          const addedMethods = stored ? JSON.parse(stored) : [];
+          const deleted = await AsyncStorage.getItem("deletedPaymentMethods");
 
-          // Combine default + added
-          const combined = [...PaymentMethods, ...addedMethods];
+          const addedMethods = stored ? JSON.parse(stored) : [];
+          const deletedIds = deleted ? JSON.parse(deleted) : [];
+
+          const filteredDefaults = PaymentMethods.filter(
+            (m) => !deletedIds.includes(m.id)
+          );
+
+          const combined = [...filteredDefaults, ...addedMethods];
           setMethods(combined);
         } catch (e) {
           console.error("Failed to load payment methods", e);
@@ -42,12 +47,27 @@ const PaymentMethodsScreen = () => {
   const handleDelete = async (idToDelete: string) => {
     try {
       const stored = await AsyncStorage.getItem("paymentMethods");
+      const deleted = await AsyncStorage.getItem("deletedPaymentMethods");
+
       const addedMethods = stored ? JSON.parse(stored) : [];
+      const deletedIds = deleted ? JSON.parse(deleted) : [];
 
-      const updated = addedMethods.filter((m: any) => m.id !== idToDelete);
-      await AsyncStorage.setItem("paymentMethods", JSON.stringify(updated));
+      const updatedAdded = addedMethods.filter((m: any) => m.id !== idToDelete);
+      const isDefault = PaymentMethods.some((m) => m.id === idToDelete);
 
-      setMethods([...PaymentMethods, ...updated]);
+      if (isDefault && !deletedIds.includes(idToDelete)) {
+        deletedIds.push(idToDelete);
+      }
+
+      await AsyncStorage.setItem("paymentMethods", JSON.stringify(updatedAdded));
+      await AsyncStorage.setItem("deletedPaymentMethods", JSON.stringify(deletedIds));
+
+      const filteredDefaults = PaymentMethods.filter(
+        (m) => !deletedIds.includes(m.id)
+      );
+
+      const combined = [...filteredDefaults, ...updatedAdded];
+      setMethods(combined);
     } catch (e) {
       console.error("Failed to delete payment method", e);
     }
