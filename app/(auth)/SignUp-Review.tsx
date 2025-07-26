@@ -91,7 +91,7 @@ const SignUpReview = () => {
         theme === "dark" ? "bg-dark-background" : "bg-white"
       }`}
     >
-      <View style={{flexDirection: 'row', gap: 10, marginBottom: 5}}>
+      <View style={{flexDirection: 'row', gap: 10, marginBottom: 20, marginTop: 30}}>
       {/* Back Arrow */}
       <TouchableOpacity
         onPress={() => {
@@ -110,7 +110,7 @@ const SignUpReview = () => {
         />
       </TouchableOpacity>
       <Text
-        className={`text-3xl font-UrbanistBold mt-1.5 ${
+        className={`text-3xl font-UrbanistBold mt-2 ${
           theme === "dark" ? "text-white" : "text-black"
         }`}
       >

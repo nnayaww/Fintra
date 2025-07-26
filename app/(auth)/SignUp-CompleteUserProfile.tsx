@@ -1,5 +1,6 @@
 import { useSignUp } from "@/context/SignUpContext";
 import { useTheme } from "@/lib/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
@@ -8,6 +9,7 @@ import {
   Animated,
   Keyboard,
   Modal,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -60,21 +62,31 @@ const SignUpCompleteUserProfile = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View
+      <ScrollView
         className={`flex-1 px-6 pt-16 gap-6 ${
           theme === "dark" ? "bg-dark-background" : "bg-white"
         }`}
       >
+       <View style={{ flexDirection: 'row', gap: 10 }}>
+         <TouchableOpacity onPress={router.back}>
+            <Ionicons
+              name="arrow-back"
+              size={28}
+              color={theme === "dark" ? "#fff" : "#0D0D0D"}
+              style={{ padding: 6, }}
+            />
+          </TouchableOpacity>
         <Text
-          className={`text-3xl font-UrbanistBold ${
+          className={`text-3xl p-6 mt-1 font-UrbanistBold ${
             theme === "dark" ? "text-dark-primary" : "text-primary"
           }`}
         >
           Complete your profile 📝
         </Text>
+       </View>
 
         {/* Country Picker */}
-        <View>
+        <View style={{marginTop: 20, marginBottom: 30}} >
           <Text
             className={`text-2xl font-UrbanistSemiBold mb-2 ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
@@ -102,7 +114,7 @@ const SignUpCompleteUserProfile = () => {
         </View>
 
         {/* Phone Number */}
-        <View>
+        <View style={{ marginBottom: 30}}>
           <Text
             className={`text-2xl font-UrbanistSemiBold mb-2 ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
@@ -194,13 +206,14 @@ const SignUpCompleteUserProfile = () => {
         <TouchableOpacity
           onPress={handleSubmit}
           // className="mt-auto bg-primary py-4 rounded-xl mb-6"
-          className="mt-20 bg-primary py-4 rounded-xl"
+          // className="mt-20 bg-primary py-4 rounded-xl"
+          style={{backgroundColor: 'black', paddingTop: 10, paddingBottom: 10, borderWidth:1, borderColor: "transparent", borderRadius: 6, marginTop: 100}}
         >
           <Text className="text-center text-white text-xl font-UrbanistBold">
             Continue
           </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };

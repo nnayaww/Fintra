@@ -109,7 +109,7 @@ const SignUpSelectCountry = () => {
               name="search"
               size={24}
               color={theme === "dark" ? "#A0A0A0" : "#9CA3AF"}
-              style={{ position: "absolute", left: 16, top: 18, zIndex: 1 }}
+              style={{ position: "absolute", left: 16, top: 29, zIndex: 1 }}
             />
           )}
           <TextInput
@@ -162,10 +162,7 @@ const SignUpSelectCountry = () => {
         {/* Continue Button */}
         <View
           style={{
-            position: "absolute",
-            left: 1,
-            right: 1,
-            bottom: 0,
+            marginTop: 40
           }}
         >
           <TouchableOpacity
