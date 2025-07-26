@@ -151,7 +151,7 @@ const AddNewContact = () => {
                 style={{
                   position: "absolute",
                   left: 20,
-                  top: 64,
+                  top: 57,
                   zIndex: 1,
                 }}
               />
@@ -233,146 +233,94 @@ const AddNewContact = () => {
         </View>
 
         <Modal visible={showModal} transparent animationType="fade">
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <View
+      style={{
+        width: "85%",
+        backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+        borderRadius: 24,
+        paddingVertical: 36,
+        paddingHorizontal: 24,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        elevation: 10,
+      }}
+    >
+      {/* Decorative avatar with floating dots */}
+      <View style={{ position: "relative", marginBottom: 28 }}>
+        <View
+          style={{
+            width: 160,
+            height: 160,
+            borderRadius: 80,
+            backgroundColor: "#82E394",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FontAwesome5
+            name="user-alt"
+            size={48}
+            color={theme === "dark" ? "#fff" : "#0D0D0D"}
+          />
+        </View>
+
+        {/* Floating decorative dots */}
+        {[{ w: 10, h: 10, top: -10, left: -20 },
+          { w: 14, h: 14, top: 10, right: -22 },
+          { w: 6, h: 6, top: -6, right: 70 },
+          { w: 8, h: 8, bottom: 10, right: -18 },
+          { w: 6, h: 6, bottom: -8, left: 18 },
+          { w: 12, h: 12, bottom: 40, left: -16 }].map((dot, idx) => (
           <View
+            key={idx}
             style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.4)",
-              justifyContent: "center",
-              alignItems: "center",
+              position: "absolute",
+              width: dot.w,
+              height: dot.h,
+              backgroundColor: "#82E394",
+              borderRadius: 999,
+              ...dot,
             }}
-          >
-            <View
-              style={{
-                height: "60%",
-                width: "80%",
-                backgroundColor: theme === "dark" ? "#333" : "white",
-                borderRadius: 20,
-                padding: 20,
-              }}
-              className="flex items-center gap-10"
-            >
-              <View>
-                <View
-                  style={{
-                    width: 170,
-                    height: 170,
-                    backgroundColor: "#82E394",
-                    marginTop: 14,
-                  }}
-                  className="rounded-full flex items-center justify-center"
-                >
-                  <FontAwesome5
-                    name="user-alt"
-                    size={50}
-                    color={theme === "dark" ? "#fff" : "#0D0D0D"}
-                  />
-                </View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 10,
-                    height: 10,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    bottom: 40,
-                    left: -24,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 8,
-                    height: 8,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    bottom: -8,
-                    left: 20,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 20,
-                    height: 20,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    top: 10,
-                    left: -20,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 14,
-                    height: 14,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    top: 28,
-                    right: -20,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 5,
-                    height: 5,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    top: -1,
-                    right: 80,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 5,
-                    height: 5,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    bottom: -1,
-                    right: 2,
-                  }}
-                ></View>
-                <View
-                  className="rounded-full"
-                  style={{
-                    width: 5,
-                    height: 5,
-                    backgroundColor: "#82E394",
-                    position: "absolute",
-                    bottom: 50,
-                    right: -18,
-                  }}
-                ></View>
-              </View>
-              <View style={{ marginTop: -10 }}>
-                <Text
-                  className={`font-UrbanistBold ${
-                    theme === "dark" ? "text-dark-primary" : "text-primary"
-                  }`}
-                  style={{ fontSize: 34 }}
-                >
-                  Searching Contact...
-                </Text>
-              </View>
-              <View style={{ marginTop: -10 }}>
-                <Text
-                  className={`text-center font-UrbanistMedium text-lg ${
-                    theme === "dark" ? "text-dark-secondary" : "text-secondary"
-                  }`}
-                  style={{ lineHeight: 28 }}
-                >
-                  Please wait while we search for the contact.
-                </Text>
-                <ActivityIndicator
-                  size={65}
-                  color="#82E394"
-                  style={{ marginTop: 24 }}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal>
+          />
+        ))}
+      </View>
+
+      {/* Main text */}
+      <Text
+        className={`font-UrbanistBold ${
+          theme === "dark" ? "text-dark-primary" : "text-primary"
+        }`}
+        style={{ fontSize: 26, marginBottom: 10 }}
+      >
+        Searching Contact...
+      </Text>
+
+      {/* Subtext + Activity Indicator */}
+      <Text
+        className={`text-center font-UrbanistMedium ${
+          theme === "dark" ? "text-dark-secondary" : "text-secondary"
+        }`}
+        style={{ fontSize: 16, lineHeight: 26, marginBottom: 24 }}
+      >
+        Please wait while we search for the contact.
+      </Text>
+
+      <ActivityIndicator size={60} color="#82E394" />
+    </View>
+  </View>
+</Modal>
+
       </View>
     </TouchableWithoutFeedback>
   );

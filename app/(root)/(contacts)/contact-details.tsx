@@ -227,98 +227,79 @@ setSenderEmail(userEmail as string)
       </View>
 
       <Modal
-        isVisible={showDeleteContactModal}
-        onBackdropPress={() => setshowDeleteContactModal(false)}
-        onSwipeComplete={() => setshowDeleteContactModal(false)}
-        swipeDirection="down"
-        style={{ justifyContent: "flex-end", margin: 0 }}
-        propagateSwipe
+  isVisible={showDeleteContactModal}
+  onBackdropPress={() => setshowDeleteContactModal(false)}
+  animationIn="zoomIn"
+  animationOut="zoomOut"
+  backdropTransitionOutTiming={0}
+  style={{ justifyContent: "center", alignItems: "center", margin: 0 }}
+>
+  <View
+    style={{
+      width: "85%",
+      backgroundColor: theme === "dark" ? "#333" : "white",
+      borderRadius: 20,
+      paddingVertical: 25,
+      paddingHorizontal: 20,
+      alignItems: "center",
+    }}
+  >
+    <Text
+      style={{ fontSize: 24 }}
+      className={`font-UrbanistBold text-[#f54f4f]`}
+    >
+      Delete Contact
+    </Text>
+
+    <View
+      className="h-[1px] mt-4"
+      style={{
+        width: "100%",
+        backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
+      }}
+    />
+
+    <Text
+      className={`font-UrbanistSemiBold text-center mt-6 ${
+        theme === "dark" ? "text-dark-primary" : "text-primary"
+      }`}
+      style={{ fontSize: 18 }}
+    >
+      Are you sure you want to delete this contact?
+    </Text>
+
+    <View className="flex-row gap-4 mt-6 w-full">
+      <TouchableOpacity
+        onPress={() => setshowDeleteContactModal(false)}
+        className={`flex-1 items-center justify-center py-4 border-[1.5px] border-general rounded-full ${
+          theme === "dark" ? "bg-dark-background" : "bg-white"
+        }`}
       >
-        <View
-          style={{
-            height: "35%",
-            width: "100%",
-            backgroundColor: theme === "dark" ? "#333" : "white",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            alignItems: "center",
-            gap: 10,
-          }}
+        <Text
+          className={`font-UrbanistSemiBold text-buttontext ${
+            theme === "dark" ? "text-dark-primary" : "text-primary"
+          }`}
         >
-          {/* Optional: Add a swipe indicator */}
-          <View
-            style={{
-              width: 40,
-              height: 3,
-              backgroundColor: theme === "dark" ? "#666" : "#ccc",
-              borderRadius: 3,
-              alignSelf: "center",
-            }}
-          />
-          {/* Your modal content */}
-          <View style={{ marginTop: 10 }}>
-            <Text
-              style={{ fontSize: 24 }}
-              className={`font-UrbanistBold text-[#f54f4f]`}
-            >
-              Delete Contact
-            </Text>
-          </View>
-          <View
-            className="h-[1px]"
-            style={{
-              width: "100%",
-              backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-              marginTop: 14,
-            }}
-          />
-          <View style={{ marginTop: 20 }}>
-            <Text
-              className={`font-UrbanistSemiBold text-center ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 20 }}
-            >
-              Are you sure you want to delete this contact?
-            </Text>
-          </View>
-          <View
-            className="flex-row w-full gap-4 mt-4"
-            style={{ position: "absolute", bottom: 25 }}
-          >
-            <TouchableOpacity
-              onPress={() => setshowDeleteContactModal(false)}
-              className={`flex-1 items-center justify-center py-5 border-[1.5px] border-general rounded-full ${
-                theme === "dark" ? "bg-dark-background" : "bg-white"
-              }`}
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext ${
-                  theme === "dark" ? "text-dark-primary" : "text-primary"
-                }`}
-              >
-                Cancel
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={async () => {
-                await deleteContact(email as string);
-                setshowDeleteContactModal(false);
-                router.replace("/(root)/(tabs)/home");
-              }}
-              className="bg-[#f54f4f] flex-1 items-center justify-center py-5 border-none rounded-full"
-            >
-              <Text
-                className={`font-UrbanistSemiBold text-buttontext text-white`}
-              >
-                Yes, Delete
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+          Cancel
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={async () => {
+          await deleteContact(email as string);
+          setshowDeleteContactModal(false);
+          router.replace("/(root)/(tabs)/home");
+        }}
+        className="bg-[#f54f4f] flex-1 items-center justify-center py-4 border-none rounded-full"
+      >
+        <Text className="font-UrbanistSemiBold text-buttontext text-white">
+          Yes, Delete
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
     </View>
   );
 }

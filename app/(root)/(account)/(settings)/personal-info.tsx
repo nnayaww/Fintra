@@ -11,6 +11,7 @@ import { router } from "expo-router";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Dimensions,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -30,6 +31,7 @@ import CountryPicker, {
 import PhoneInput from "react-native-phone-number-input";
 
 const PhoneInputAny = PhoneInput as any;
+const { width } = Dimensions.get("window");
 
 const PersonalInfo = () => {
   const [FullName, setFullName] = useState("");
@@ -69,9 +71,8 @@ const PersonalInfo = () => {
     fetchUserData();
   }, []);
 
-  // Helper to format date as mm/dd/yyyy
   const formatDate = (date: Date) => {
-    if (isNaN(date.getTime())) return ""; // Return empty string if invalid date
+    if (isNaN(date.getTime())) return "";
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const dd = String(date.getDate()).padStart(2, "0");
     const yyyy = date.getFullYear();
@@ -79,14 +80,12 @@ const PersonalInfo = () => {
   };
 
   const pickImage = async () => {
-    // Ask for permission
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       alert("Permission to access gallery is required!");
       return;
     }
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -120,7 +119,6 @@ const PersonalInfo = () => {
   const handleSave = async () => {
     let valid = true;
 
-    // FullName validation
     if (!FullName.trim()) {
       setFullNameError("This field is required");
       valid = false;
@@ -131,7 +129,6 @@ const PersonalInfo = () => {
       setFullNameError("");
     }
 
-    // Phone number validation
     if (!phoneNumber.trim()) {
       setPhoneError("Phone number is required");
       valid = false;
@@ -139,7 +136,6 @@ const PersonalInfo = () => {
       setPhoneError("Phone number must contain only digits");
       valid = false;
     } else {
-      // Prepend country code and format to E.164
       const e164Number = `+${country.callingCode[0]}${phoneNumber}`;
       const phoneNumberObj = parsePhoneNumberFromString(
         e164Number,
@@ -159,10 +155,8 @@ const PersonalInfo = () => {
       const userId = await AsyncStorage.getItem("userId");
       const token = await AsyncStorage.getItem("token");
 
-      if (!userId || !token) {
-        // Handle case where user is not logged in
-        return;
-      }
+      if (!userId || !token) return;
+
       const [firstName, ...lastName] = FullName.split(" ");
       const response = await fetch(
         `https://fintra-1.onrender.com/users/${userId}`,
@@ -186,14 +180,12 @@ const PersonalInfo = () => {
         throw new Error(data.message || "Failed to update user information");
       }
 
-      // Update AsyncStorage with new data
       await AsyncStorage.setItem("fullName", FullName);
       await AsyncStorage.setItem("phone", phoneNumber);
 
       router.push("/(root)/(tabs)/account");
     } catch (error) {
       console.error("Failed to save user data:", error);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -211,17 +203,17 @@ const PersonalInfo = () => {
         >
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={{ padding: 20, paddingBottom: 170 }}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingTop: 20,
+              paddingBottom: 170,
+            }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             onScrollBeginDrag={Keyboard.dismiss}
           >
             <View className="flex-row items-center mt-3">
-              <TouchableOpacity
-                onPress={() => {
-                  router.back();
-                }}
-              >
+              <TouchableOpacity onPress={() => router.back()}>
                 <Ionicons
                   name="arrow-back"
                   size={28}
@@ -233,17 +225,18 @@ const PersonalInfo = () => {
                 className={`font-UrbanistBold text-3xl mt-5 ${
                   theme === "dark" ? "text-dark-primary" : "text-primary"
                 }`}
-                style={{ marginHorizontal: 55 }}
+                style={{ marginLeft: width > 360 ? 55 : 30 }}
               >
                 Personal Info
               </Text>
             </View>
+
             <View className="flex" style={{ gap: 30 }}>
               <View className="flex items-center" style={{ marginTop: 40 }}>
                 <View
                   style={{
-                    width: 120,
-                    height: 120,
+                    width: 100,
+                    height: 100,
                     backgroundColor: "#F6F8FA",
                     marginTop: -14,
                   }}
@@ -253,10 +246,9 @@ const PersonalInfo = () => {
                     <>
                       <Image
                         source={{ uri: profileImage }}
-                        style={{ width: 120, height: 120, borderRadius: 60 }}
+                        style={{ width: 100, height: 100, borderRadius: 50 }}
                         resizeMode="cover"
                       />
-                      {/* Remove button (shows only when image is set) */}
                       <TouchableOpacity
                         style={{
                           position: "absolute",
@@ -282,7 +274,7 @@ const PersonalInfo = () => {
                 </View>
                 <TouchableOpacity
                   className="absolute"
-                  style={{ right: 114, bottom: -2 }}
+                  style={{ right: width > 360 ? 104 : 90, bottom: -2 }}
                   onPress={pickImage}
                   activeOpacity={0.7}
                 >
@@ -293,6 +285,7 @@ const PersonalInfo = () => {
                   />
                 </TouchableOpacity>
               </View>
+
               <View className="mt-5">
                 <Text
                   className={`text-2xl font-UrbanistSemiBold ${
@@ -323,7 +316,7 @@ const PersonalInfo = () => {
                       color: "#E53E3E",
                       marginLeft: 8,
                       marginTop: 4,
-                      fontSize: 16,
+                      fontSize: width > 360 ? 16 : 14,
                       fontFamily: "Urbanist-Medium",
                     }}
                   >
@@ -331,6 +324,7 @@ const PersonalInfo = () => {
                   </Text>
                 ) : null}
               </View>
+
               <View className="relative">
                 {email.length === 0 && (
                   <MaterialIcons
@@ -353,7 +347,6 @@ const PersonalInfo = () => {
                   Email
                 </Text>
                 <TextInput
-                  /* value={user.email} user's email from signup */
                   value={email}
                   placeholder="         user@example.com"
                   placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
@@ -366,6 +359,7 @@ const PersonalInfo = () => {
                   editable={false}
                 />
               </View>
+
               <View>
                 <Text
                   className={`text-2xl font-UrbanistSemiBold ${
@@ -422,7 +416,6 @@ const PersonalInfo = () => {
                     placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
                     value={phoneNumber}
                     onChangeText={(text) => {
-                      // Remove all non-digit characters
                       const digitsOnly = text.replace(/\D/g, "");
                       setPhoneNumber(digitsOnly);
                       if (phoneError) setPhoneError("");
@@ -436,7 +429,7 @@ const PersonalInfo = () => {
                       color: "#E53E3E",
                       marginLeft: 8,
                       marginTop: 4,
-                      fontSize: 16,
+                      fontSize: width > 360 ? 16 : 14,
                       fontFamily: "Urbanist-Medium",
                     }}
                   >
@@ -445,16 +438,8 @@ const PersonalInfo = () => {
                 ) : null}
               </View>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-        <View
-          style={{
-            position: "absolute",
-            left: 20,
-            right: 20,
-            bottom: 40,
-          }}
-        >
+
+            <View style={{ marginTop: 80  }}>
           <TouchableOpacity
             className="bg-general flex items-center justify-center p-5 border-none rounded-full"
             onPress={handleSave}
@@ -464,10 +449,13 @@ const PersonalInfo = () => {
             </Text>
           </TouchableOpacity>
         </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+
+        
       </View>
     </TouchableWithoutFeedback>
   );
 };
 
 export default PersonalInfo;
-

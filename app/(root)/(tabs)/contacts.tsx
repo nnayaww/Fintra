@@ -159,8 +159,8 @@ export default function Contacts() {
             style={[
               globalStyles.screenPadding,
               {
-                paddingTop: hp(6),
-                paddingBottom: hp(3),
+                paddingTop: hp(1),
+                paddingBottom: hp(0.5),
                 backgroundColor: theme === "dark" ? "#23262F" : "#ffffff",
               }
             ]}
