@@ -170,7 +170,9 @@ const SendMoneySent = () => {
 
           <Row label="Transaction ID" value={Array.isArray(id) ? id[0] : id} />
           <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} /> */}
-          <Row label="Status" value={Array.isArray(status) ? status[0] : status} />
+          {/* <Row label="Status" value={Array.isArray(status) ? status[0] : status} /> */}
+          <Row label="Status" value="Successful" />
+
           <View
             className="self-center"
             style={{ 
@@ -180,14 +182,14 @@ const SendMoneySent = () => {
               marginTop: hp(1)
             }}
           />
-          <View className="flex-col" style={{ paddingHorizontal: wp(6), marginVertical: hp(2) }}>
+          {/* <View className="flex-col" style={{ paddingHorizontal: wp(6), marginVertical: hp(2) }}>
             <Text className={`font-UrbanistMedium ${theme === 'dark' ? 'text-gray-300' : 'text-secondary'}`} style={{ fontSize: rf(20) }}>
               Notes
             </Text>
             <Text className={`font-UrbanistBold ${theme === 'dark' ? 'text-white' : 'text-primary'}`} style={{ fontSize: rf(20), marginTop: hp(1.5) }}>
               {displayNotes}
             </Text>
-          </View>
+          </View> */}
         </View>
       </View>
       <View
