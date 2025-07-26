@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/lib/ThemeContext';
 import { MaskedTextInput } from 'react-native-mask-text';
-
+import Ionicons from "@expo/vector-icons/Ionicons";
 const generateUUID = () => {
   const bytes = new Uint8Array(16);
   for (let i = 0; i < 16; i++) {
@@ -74,6 +74,12 @@ const AddNewPayment = () => {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: isDark ? '#000' : '#fff' }]}>
       <View style={styles.container}>
+            <Ionicons
+      name="arrow-back"
+      size={24}
+      color={isDark ? '#fff' : '#000'}
+      onPress={() => router.back()}
+    />
         <Text style={[styles.label, { color: isDark ? '#fff' : '#000' }]}>Card Name</Text>
         <TextInput
           style={inputStyle}
