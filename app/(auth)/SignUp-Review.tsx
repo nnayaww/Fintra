@@ -11,6 +11,7 @@ import {
     View,
 } from "react-native";
 import { useSignUp } from "@/context/SignUpContext";
+import { Directions } from "react-native-gesture-handler";
 
 const SignUpReview = () => {
   const { theme } = useTheme();
@@ -90,6 +91,7 @@ const SignUpReview = () => {
         theme === "dark" ? "bg-dark-background" : "bg-white"
       }`}
     >
+      <View style={{flexDirection: 'row', gap: 10, marginBottom: 5}}>
       {/* Back Arrow */}
       <TouchableOpacity
         onPress={() => {
@@ -99,7 +101,7 @@ const SignUpReview = () => {
         //     router.replace("/(auth)/sign-up"); // fallback route
         //   }
         }}
-        style={{ marginBottom: 16, marginTop: 8, alignSelf: "flex-start" }}
+        style={{ marginBottom: 4, marginTop: 8, alignSelf: "flex-start" }}
       >
         <Ionicons
           name="arrow-back"
@@ -108,12 +110,14 @@ const SignUpReview = () => {
         />
       </TouchableOpacity>
       <Text
-        className={`text-3xl font-UrbanistBold mb-6 ${
+        className={`text-3xl font-UrbanistBold mt-1.5 ${
           theme === "dark" ? "text-white" : "text-black"
         }`}
       >
         Review your details
       </Text>
+
+      </View>
 
       {renderField("Account Type", account_type)}
       {renderField("First Name", first_name)}

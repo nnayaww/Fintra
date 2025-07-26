@@ -212,7 +212,7 @@ const SignUpCompleteUserProfile = () => {
         {/* Continue Button */}
           <TouchableOpacity
           onPress={handleSubmit}
-          className="mt-auto bg-primary py-4 rounded-xl"
+          className="mt-20 bg-primary py-4 rounded-xl"
         >
           <Text className="text-center text-white text-xl font-UrbanistBold">Continue</Text>
           </TouchableOpacity>

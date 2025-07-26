@@ -9,7 +9,6 @@ import {
   ScreenContainer,
   ResponsiveButton,
   Heading1,
-  Heading2,
   BodyText,
 } from "@/components/ResponsiveComponents";
 import { useTheme } from "@/lib/ThemeContext";
@@ -37,85 +36,105 @@ const Onboarding = () => {
         <Swiper
           ref={swiperRef}
           loop={false}
-          paginationStyle={{ bottom: hp(10) }}
-          dot={
-            <View 
-              style={{
-                width: wp(2),
-                height: wp(2),
-                marginHorizontal: wp(1.5),
-                backgroundColor: theme === 'dark' ? '#374151' : '#e5e7eb',
-                borderRadius: wp(1),
-              }} 
-            />
-          }
-          activeDot={
-            <View 
-              style={{
-                width: wp(10),
-                height: wp(2),
-                marginHorizontal: wp(1.5),
-                backgroundColor: '#196126',
-                borderRadius: wp(1),
-              }} 
-            />
-          }
-          onIndexChanged={(index) => setActiveIndex(index)}>
+          showsPagination={false}
+          onIndexChanged={(index) => setActiveIndex(index)}
+        >
           {onboarding.map((item) => (
-            <View key={item.id} style={[globalStyles.centerContainer, { overflow: 'hidden' }]}>
+            <View
+              key={item.id}
+              style={[globalStyles.centerContainer, { overflow: "hidden" }]}
+            >
               <View
                 style={{
                   width: width,
                   height: height * 0.4,
-                  backgroundColor: '#82E394',
+                  backgroundColor: "#82E394",
                   borderBottomLeftRadius: width,
                   borderBottomRightRadius: width,
                   zIndex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <Image
                   source={item.image}
-                  style={{ 
-                    width: wp(80), 
-                    height: hp(35), 
-                    resizeMode: 'contain' 
+                  style={{
+                    width: wp(80),
+                    height: hp(35),
+                    resizeMode: "contain",
                   }}
                 />
               </View>
+
               <View
                 style={[
                   globalStyles.centerContainer,
                   globalStyles.screenPadding,
-                  { gap: hp(6), paddingTop: hp(8) }
-                ]}>
-                <View style={{ alignItems: 'center' }}>
-                  <Heading1 style={{ textAlign: 'center', lineHeight: hp(5.5) }}>
+                  { gap: hp(6), paddingTop: hp(8) },
+                ]}
+              >
+                <View style={{ alignItems: "center" }}>
+                  <Heading1
+                    style={{ textAlign: "center", lineHeight: hp(5.5) }}
+                  >
                     {item.title}
                   </Heading1>
                 </View>
-                <BodyText style={{ 
-                  textAlign: 'center', 
-                  lineHeight: hp(3.2), 
-                  marginTop: -hp(4) 
-                }}>
+                <BodyText
+                  style={{
+                    textAlign: "center",
+                    lineHeight: hp(3.2),
+                    marginTop: -hp(4),
+                  }}
+                >
                   {item.description}
                 </BodyText>
               </View>
             </View>
           ))}
         </Swiper>
-        
+
+        {/* 👇 Custom Pagination Dots BELOW the Swiper content */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: hp(4),
+            marginBottom: hp(6),
+          }}
+        >
+          {onboarding.map((_, index) => (
+            <View
+              key={index}
+              style={{
+                width: index === activeIndex ? wp(10) : wp(2),
+                height: wp(2),
+                marginHorizontal: wp(1.5),
+                backgroundColor:
+                  index === activeIndex
+                    ? "#196126"
+                    : theme === "dark"
+                    ? "#374151"
+                    : "#e5e7eb",
+                borderRadius: wp(1),
+              }}
+            />
+          ))}
+        </View>
+
+        {/* 👇 Buttons */}
         <View
           style={[
             globalStyles.screenPadding,
             {
-              flexDirection: 'row',
+              flexDirection: "row",
               gap: wp(4),
-              alignItems: 'center',
-              marginBottom: hp(10),
-            }
-          ]}>
+              alignItems: "center",
+              marginBottom: hp(4),
+            },
+          ]}
+        >
           {isLastSlide ? (
             <ResponsiveButton
               title="Get Started"
@@ -132,11 +151,7 @@ const Onboarding = () => {
               />
               <ResponsiveButton
                 title="Continue"
-                onPress={() => {
-                  isLastSlide
-                    ? router.replace("/(auth)/welcome-GetStarted")
-                    : goToNext();
-                }}
+                onPress={goToNext}
                 style={{ flex: 1 }}
               />
             </>

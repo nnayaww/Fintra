@@ -3,23 +3,27 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+  useWindowDimensions,
 } from "react-native";
 
 const SignUpSetPINCode = () => {
   const [pin, setPin] = useState(["", "", "", ""]);
   const inputs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const [anyFocused, setAnyFocused] = useState(false);
-  const [pinError, setPinError] = useState(""); // Add error state
+  const [pinError, setPinError] = useState("");
   const { theme } = useTheme();
+  const { width } = useWindowDimensions();
 
   const handleChange = (text: string, idx: number) => {
-    setPinError(""); // Clear error on input
+    setPinError("");
     if (/^\d$/.test(text)) {
       const newPin = [...pin];
       newPin[idx] = text;
@@ -44,48 +48,50 @@ const SignUpSetPINCode = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View
-        className={`flex-1 p-5 gap-10 ${
-          theme === "dark" ? "bg-dark-background" : "bg-white"
-        }`}
-      >
-        <View className="flex-row items-center gap-10">
-          <TouchableOpacity
-            onPress={() => {
-              // if (router.canGoBack()) {
-                router.back();
-              // } else {
-              //   router.replace("/(root)/(tabs)/home");
-              // }
-            }}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={28}
-              color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              style={{ padding: 6, marginTop: 22 }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View className="flex gap-10">
-          <Text
-            style={{ lineHeight: 40 }}
-            className={`font-UrbanistBold text-3xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Set your PIN code 🔐
-          </Text>
-          <Text
-            className={`font-UrbanistMedium text-lg -mt-2 ${
-              theme === "dark" ? "text-dark-secondary" : "text-secondary"
-            }`}
-          >
-            Add a PIN to make your account more secure.You may be asked for a
-            PIN when making a transaction.
-          </Text>
-          <View className="flex-row justify-between" style={{ marginTop: 50 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View
+          className={`flex-1 px-5 pt-10 ${
+            theme === "dark" ? "bg-dark-background" : "bg-white"
+          }`}
+        >
+          {/* Header */}
+          <View className="flex-row items-center mb-8">
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons
+                name="arrow-back"
+                size={28}
+                color={theme === "dark" ? "#fff" : "#0D0D0D"}
+                style={{ padding: 6 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Title & Description */}
+          <View>
+            <Text
+              style={{ lineHeight: 38 }}
+              className={`font-UrbanistBold text-3xl ${
+                theme === "dark" ? "text-dark-primary" : "text-primary"
+              }`}
+            >
+              Set your PIN code 🔐
+            </Text>
+            <Text
+              className={`font-UrbanistMedium text-base mt-3 ${
+                theme === "dark" ? "text-dark-secondary" : "text-secondary"
+              }`}
+            >
+              Add a PIN to make your account more secure. You may be asked for
+              a PIN when making a transaction.
+            </Text>
+          </View>
+
+          {/* PIN Inputs */}
+          <View className="mt-12 mb-6 flex-row justify-between">
             {pin.map((digit, idx) => (
               <TextInput
                 key={idx}
@@ -97,17 +103,17 @@ const SignUpSetPINCode = () => {
                 onFocus={() => setAnyFocused(true)}
                 onBlur={() => setAnyFocused(false)}
                 maxLength={1}
-                className={`text-center font-UrbanistSemiBold rounded-lg ${
+                returnKeyType="next"
+                className={`text-center font-UrbanistSemiBold rounded-xl ${
                   theme === "dark"
                     ? "bg-[#23262F] text-white"
                     : "bg-[#F6F8FA] text-primary"
                 }`}
                 style={{
-                  fontSize: 35,
-                  width: 80,
-                  height: 80,
+                  fontSize: 30,
+                  width: width * 0.18,
+                  height: width * 0.18,
                 }}
-                returnKeyType="next"
                 onKeyPress={({ nativeEvent }) => {
                   if (
                     nativeEvent.key === "Backspace" &&
@@ -123,44 +129,47 @@ const SignUpSetPINCode = () => {
               />
             ))}
           </View>
+
+          {/* Error Message */}
           {pinError ? (
             <Text
               style={{
                 color: "#E53E3E",
-                marginLeft: 8,
-                marginTop: 8,
-                fontSize: 17,
-                fontFamily: "Urbanist-Medium",
+                fontSize: 16,
                 textAlign: "center",
+                fontFamily: "Urbanist-Medium",
+                marginTop: -8,
               }}
             >
               {pinError}
             </Text>
           ) : null}
-        </View>
-        <View
-          style={{
-            position: "absolute",
-            left: 20,
-            right: 20,
-            bottom: 48,
-          }}
-        >
-          <TouchableOpacity
-            className="bg-general flex items-center justify-center p-5 border-none rounded-full"
-            onPress={handleFinish}
+
+          {/* Finish Button */}
+          <View
+            style={{
+              position: "absolute",
+              left: 20,
+              right: 20,
+              bottom: 40,
+            }}
           >
-            <Text
-              className={`font-UrbanistSemiBold text-buttontext ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
+            <TouchableOpacity
+              className="bg-general flex items-center justify-center p-5 rounded-full"
+              onPress={handleFinish}
             >
-              Finish
-            </Text>
-          </TouchableOpacity>
+              <Text
+                className={`font-UrbanistSemiBold text-buttontext ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
+                Finish
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

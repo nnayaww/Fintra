@@ -9,6 +9,7 @@ import {
     TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    ScrollView,
     View,
 } from "react-native";
 
@@ -72,7 +73,7 @@ const SignUpFullName = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View
+      <ScrollView
         className={`flex-1 p-5 gap-10 ${
           theme === "dark" ? "bg-dark-background" : "bg-white"
         }`}
@@ -177,7 +178,7 @@ const SignUpFullName = () => {
         </View>
 
         {/* Continue Button */}
-        <View style={{ position: "absolute", left: 20, right: 20, bottom: 48 }}>
+        <View style={{ marginTop: 50 }}>
           <TouchableOpacity
             className="bg-general flex items-center justify-center p-5 border-none rounded-full"
             onPress={handleContinue}
@@ -191,7 +192,7 @@ const SignUpFullName = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };

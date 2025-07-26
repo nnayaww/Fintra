@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  ScrollView
 } from "react-native";
 import { useSignUp } from "@/context/SignUpContext";
 
@@ -44,7 +45,7 @@ const SignUpSelectCountry = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View
+      <ScrollView
         className={`flex-1 p-5 gap-10 ${
           theme === "dark" ? "bg-dark-background" : "bg-white"
         }`}
@@ -82,7 +83,7 @@ const SignUpSelectCountry = () => {
         </View>
 
         {/* Heading */}
-        <View className="flex gap-10">
+        <View className="flex gap-5">
           <Text
             style={{ lineHeight: 40 }}
             className={`font-UrbanistBold text-3xl ${
@@ -162,9 +163,9 @@ const SignUpSelectCountry = () => {
         <View
           style={{
             position: "absolute",
-            left: 20,
-            right: 20,
-            bottom: 48,
+            left: 1,
+            right: 1,
+            bottom: 0,
           }}
         >
           <TouchableOpacity
@@ -180,7 +181,7 @@ const SignUpSelectCountry = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };
