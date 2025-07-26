@@ -5,27 +5,23 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Animated,
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Animated,
+  Keyboard,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import CountryPicker from "react-native-country-picker-modal";
 
 const SignUpCompleteUserProfile = () => {
   const { theme } = useTheme();
-  const {
-    phone,
-    dob,
-    country,
-    updateForm,
-  } = useSignUp();
+  const { phone, dob, country, updateForm } = useSignUp();
 
-  const [dateOfBirthError, setDateOfBirthError] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateOfBirthError, setDateOfBirthError] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const shakeAnim = new Animated.Value(0);
 
@@ -154,25 +150,10 @@ const SignUpCompleteUserProfile = () => {
           </Text>
           <TextInput
             value={dob ? formatDate(new Date(dob)) : ""}
-            onChangeText={(text) => {
-              const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-              if (regex.test(text)) {
-                const [month, day, year] = text.split("/").map(Number);
-                const parsedDate = new Date(year, month - 1, day);
-                if (!isNaN(parsedDate.getTime())) {
-                  updateForm({ dob: parsedDate.toISOString() });
-                  setDateOfBirthError("");
-                } else {
-                  setDateOfBirthError("Invalid date");
-                }
-              } else {
-                setDateOfBirthError("Invalid date format");
-              }
-            }}
-            keyboardType="numeric"
+            editable={false}
             placeholder="mm/dd/yyyy"
             placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 ${
               theme === "dark"
                 ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
@@ -210,12 +191,15 @@ const SignUpCompleteUserProfile = () => {
         </View>
 
         {/* Continue Button */}
-          <TouchableOpacity
+        <TouchableOpacity
           onPress={handleSubmit}
+          className="mt-auto bg-primary py-4 rounded-xl mb-6"
           className="mt-20 bg-primary py-4 rounded-xl"
         >
-          <Text className="text-center text-white text-xl font-UrbanistBold">Continue</Text>
-          </TouchableOpacity>
+          <Text className="text-center text-white text-xl font-UrbanistBold">
+            Continue
+          </Text>
+        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
