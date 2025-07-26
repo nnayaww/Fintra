@@ -427,7 +427,7 @@ const PersonalInfo = () => {
                       setPhoneNumber(digitsOnly);
                       if (phoneError) setPhoneError("");
                     }}
-                    editable={false}
+                    editable={true}
                   />
                 </View>
                 {phoneError ? (

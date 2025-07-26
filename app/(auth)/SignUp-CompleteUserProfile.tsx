@@ -5,27 +5,23 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Animated,
-    Keyboard,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Animated,
+  Keyboard,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
 import CountryPicker from "react-native-country-picker-modal";
 
 const SignUpCompleteUserProfile = () => {
   const { theme } = useTheme();
-  const {
-    phone,
-    dob,
-    country,
-    updateForm,
-  } = useSignUp();
+  const { phone, dob, country, updateForm } = useSignUp();
 
-  const [dateOfBirthError, setDateOfBirthError] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateOfBirthError, setDateOfBirthError] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const shakeAnim = new Animated.Value(0);
 
@@ -154,25 +150,10 @@ const SignUpCompleteUserProfile = () => {
           </Text>
           <TextInput
             value={dob ? formatDate(new Date(dob)) : ""}
-            onChangeText={(text) => {
-              const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-              if (regex.test(text)) {
-                const [month, day, year] = text.split("/").map(Number);
-                const parsedDate = new Date(year, month - 1, day);
-                if (!isNaN(parsedDate.getTime())) {
-                  updateForm({ dob: parsedDate.toISOString() });
-                  setDateOfBirthError("");
-                } else {
-                  setDateOfBirthError("Invalid date");
-                }
-              } else {
-                setDateOfBirthError("Invalid date format");
-              }
-            }}
-            keyboardType="numeric"
+            editable={false}
             placeholder="mm/dd/yyyy"
             placeholderTextColor={theme === "dark" ? "#B0B0B0" : "#9CA3AF"}
-            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 focus:outline-none focus:border-blue-400 ${
+            className={`text-xl font-UrbanistSemiBold border-none rounded-lg w-full p-5 mt-3 ${
               theme === "dark"
                 ? "bg-[#23262F] text-white"
                 : "bg-[#F6F8FA] text-primary"
@@ -192,30 +173,45 @@ const SignUpCompleteUserProfile = () => {
               {dateOfBirthError}
             </Animated.Text>
           )}
-          {showDatePicker && (
-            <DateTimePicker
-              value={dob ? new Date(dob) : new Date()}
-              mode="date"
-              display="default"
-              onChange={(_, selectedDate) => {
-                setShowDatePicker(false);
-                if (selectedDate && !isNaN(selectedDate.getTime())) {
-                  updateForm({ dob: selectedDate.toISOString() });
-                  setDateOfBirthError("");
-                }
-              }}
-              maximumDate={new Date()}
-            />
-          )}
         </View>
 
-        {/* Continue Button */}
-          <TouchableOpacity
-          onPress={handleSubmit}
-          className="mt-auto bg-primary py-4 rounded-xl"
+        {/* Modal Date Picker */}
+        <Modal
+          visible={showDatePicker}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowDatePicker(false)}
         >
-          <Text className="text-center text-white text-xl font-UrbanistBold">Continue</Text>
-          </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
+            <View className="flex-1 justify-end bg-black bg-opacity-50">
+              <View className="bg-white dark:bg-[#1A1A1A] rounded-t-2xl p-4">
+                <DateTimePicker
+                  value={dob ? new Date(dob) : new Date()}
+                  mode="date"
+                  display="spinner"
+                  onChange={(_, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate && !isNaN(selectedDate.getTime())) {
+                      updateForm({ dob: selectedDate.toISOString() });
+                      setDateOfBirthError("");
+                    }
+                  }}
+                  maximumDate={new Date()}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+
+        {/* Continue Button */}
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="mt-auto bg-primary py-4 rounded-xl mb-6"
+        >
+          <Text className="text-center text-white text-xl font-UrbanistBold">
+            Continue
+          </Text>
+        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
