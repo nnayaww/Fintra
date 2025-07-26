@@ -31,6 +31,7 @@ export default function SendSelectContact() {
   const { theme } = useTheme();
   const safeArea = getSafeAreaPadding();
   const iconSizes = getIconSize();
+  
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedTab, setSelectedTab] = useState<"All Contacts" | "Favorites">(
