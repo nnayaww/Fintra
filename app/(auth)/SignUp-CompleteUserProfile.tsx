@@ -77,7 +77,7 @@ const SignUpCompleteUserProfile = () => {
             />
           </TouchableOpacity>
         <Text
-          className={`text-3xl p-6 mt-1 font-UrbanistBold ${
+          className={`text-3xl  mt-1 font-UrbanistBold ${
             theme === "dark" ? "text-dark-primary" : "text-primary"
           }`}
         >
