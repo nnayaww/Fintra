@@ -22,7 +22,7 @@ import {
 
 const SendNow = () => {
   const { theme } = useTheme();
-  const { amount, name, avatar } = useLocalSearchParams();
+  const { amount, name, avatar, email } = useLocalSearchParams();
   const safeArea = getSafeAreaPadding();
   const iconSizes = getIconSize();
   const [contactImage, setContactImage] = useState<string | null>(null);
@@ -32,7 +32,8 @@ const SendNow = () => {
   const displayName = Array.isArray(name) ? name[0] : name;
   const displayAmount = Array.isArray(amount) ? amount[0] : amount;
   console.log("display amount: ",displayAmount)
-  const receiverEmail = "ama@example.com"; // ✅ Hardcoded test email
+  const receiverEmail = Array.isArray(email) ? email[0] : email;
+ // ✅ Hardcoded test email
 
   const parsedAvatar =
     typeof avatar === "string" && avatar.startsWith("http")

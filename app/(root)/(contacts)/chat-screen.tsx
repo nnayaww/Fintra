@@ -137,18 +137,20 @@ export default function ChatScreen() {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            padding: wp(4),
+            paddingHorizontal: wp(4),
+            paddingVertical: hp(2),  
             backgroundColor: isDark ? "#23262F" : "#fff",
             borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
             borderBottomWidth: 1,
           }}
         >
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: wp(12) }}>
             <Ionicons name="arrow-back" size={rf(20)} color={isDark ? "#fff" : "#111"} />
           </TouchableOpacity>
           <Text
+            numberOfLines={1}
             style={{
-              flex: 1,
+              flexShrink: 1,
               textAlign: "center",
               fontSize: rf(18),
               fontWeight: "bold",

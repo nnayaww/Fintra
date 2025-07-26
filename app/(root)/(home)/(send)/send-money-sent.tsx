@@ -157,7 +157,7 @@ const SendMoneySent = () => {
             label="You sent"
             value={`₵ ${formatBalance(Number(Math.round(parseFloat(displayAmount) / 100).toString()))}`}
           />
-          <Row
+          {/* <Row
   label="Date"
   value={
     (() => {
@@ -169,7 +169,7 @@ const SendMoneySent = () => {
 />
 
           <Row label="Transaction ID" value={Array.isArray(id) ? id[0] : id} />
-          <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} />
+          <Row label="Reference ID" value={Array.isArray(reference) ? reference[0] : reference} /> */}
           <Row label="Status" value={Array.isArray(status) ? status[0] : status} />
           <View
             className="self-center"
