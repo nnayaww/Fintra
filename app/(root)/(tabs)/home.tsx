@@ -65,19 +65,6 @@ const Home = () => {
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
 
-  // Load balance from AsyncStorage on screen focus
-  useFocusEffect(
-    useCallback(() => {
-      const getBalance = async () => {
-        const storedBalance = await AsyncStorage.getItem("balance");
-        if (storedBalance) {
-          setUserBalance(storedBalance);
-        }
-      };
-      getBalance();
-    }, [])
-  );
-
   // Fetch transactions on mount and filter to success only
   useEffect(() => {
     const fetchTransactionDetails = async () => {
@@ -94,7 +81,7 @@ const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           }
-        );
+        ); 
         const data: Transaction[] = await response.json();
 
         // Filter to only successful transactions
@@ -110,9 +97,35 @@ const Home = () => {
       } catch (error) {
         console.log("Fetch error:", error);
       }
-    };
+    }; 
+
+    const fetchUserBalance = async () => {
+        try {
+          const token = await AsyncStorage.getItem("token");
+          const userId = await AsyncStorage.getItem("userId");
+        
+        if (!token || !userId) return;
+
+        const response = await fetch(
+          `https://fintra-1.onrender.com/api/users/id/${userId}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        ); 
+         const data = await response.json();
+         const convertedBalance: any = (data.balance)/100
+         setUserBalance(convertedBalance)
+        await AsyncStorage.setItem("balance", JSON.stringify(convertedBalance))
+        } catch (error) {
+          console.log(error)
+        }
+    }
 
     fetchTransactionDetails();
+    fetchUserBalance()
   }, []);
 
   // Group transactions by date (simple example)
