@@ -37,7 +37,9 @@ const TopUpSuccessful = () => {
         const verifyData = await res.json();
         console.log("verify data balance: ", verifyData.balance);
 
-        if (!res.ok) throw new Error(verifyData.message || "Verification failed");
+        if (!res.ok) {
+          throw new Error(verifyData.message || "Verification failed")
+        };
 
         if (verifyData.balance !== undefined) {
           const convertedBalance = verifyData.balance/100
@@ -49,7 +51,7 @@ const TopUpSuccessful = () => {
         }
       } catch (err: any) {
         console.error("Error verifying payment:", err);
-        Alert.alert("Error", err.message || "Could not verify top-up.");
+        Alert.alert("Error: Could not verify top-up.");
       } finally {
         setLoading(false);
       }
