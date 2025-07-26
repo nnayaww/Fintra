@@ -1,5 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -7,27 +6,31 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-
+import { router, useLocalSearchParams } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ScrollView } from "react-native-gesture-handler";
 
 import { useTheme } from "@/lib/ThemeContext";
-import { wp, hp, rf, rs, getSafeAreaPadding, isSmallScreen, isLargeScreen, getIconSize } from "@/lib/responsive";
+import {
+  wp, hp, rf, rs,
+  getSafeAreaPadding,
+  isSmallScreen,
+  isLargeScreen,
+  getIconSize,
+} from "@/lib/responsive";
 
-// --- Minimal icons/images placeholders (replace with your actual assets) ---
+// --- Assets ---
 const icons = {
-  bell: require("../../../assets/icons/notification-bell.png"), // replace with your actual icon
+  bell: require("../../../assets/icons/notification-bell.png"),
   send: require("../../../assets/icons/send.png"),
   down: require("../../../assets/icons/down.png"),
   topUp: require("../../../assets/icons/topUp.png"),
 };
-
 const images = {
   GreenLogo: require("../../../assets/images/GreenLogo.png"),
   BlackLogo: require("../../../assets/images/BlackLogo.png"),
@@ -44,118 +47,80 @@ type Transaction = {
   createdAt: string;
 };
 
-// Format date or time as you want
-function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
+const formatDate = (dateString: string) =>
+  new Date(dateString).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
-function formatTime(dateString: string) {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-}
+const formatTime = (dateString: string) =>
+  new Date(dateString).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 
 const Home = () => {
   const { theme } = useTheme();
-  const [userBalance, setUserBalance] = useState<string>("");
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const safeArea = getSafeAreaPadding();
   const iconSizes = getIconSize();
-
   const { isNewUser } = useLocalSearchParams();
   const isNewUserBool = isNewUser === "true";
 
-  // Fetch transactions on mount and filter to success only
-  useEffect(() => {
-    const fetchTransactionDetails = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        const userId = await AsyncStorage.getItem("userId");
+  const [userBalance, setUserBalance] = useState<string>("₵ 0.00");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-        if (!token || !userId) return;
+  const fetchUserBalance = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const userId = await AsyncStorage.getItem("userId");
+      if (!token || !userId) return;
 
-        const response = await fetch(
-          `https://fintra-1.onrender.com/api/transactions/user/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        ); 
-        const data: Transaction[] = await response.json();
-
-        // Filter to only successful transactions
-        const successTransactions = data
-          .filter((tx) => tx.status === "SUCCESS")
-          .map((tx) => ({
-              ...tx,
-              amount: tx.amount / 100, // Convert pesewas to cedis
-            }))
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 10); 
-        setTransactions(successTransactions);
-      } catch (error) {
-        console.log("Fetch error:", error);
-      }
-    }; 
-
-    const fetchUserBalance = async () => {
-        try {
-          const token = await AsyncStorage.getItem("token");
-          const userId = await AsyncStorage.getItem("userId");
-        
-        if (!token || !userId) return;
-
-        const response = await fetch(
-          `https://fintra-1.onrender.com/api/users/id/${userId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        ); 
-         const data = await response.json();
-         const convertedBalance: any = (data.balance)/100
-         setUserBalance(convertedBalance)
-        await AsyncStorage.setItem("balance", JSON.stringify(convertedBalance))
-        } catch (error) {
-          console.log(error)
-        }
+      const res = await fetch(`https://fintra-1.onrender.com/api/users/id/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      const balance = (data.balance / 100).toFixed(2);
+      setUserBalance(`₵ ${balance}`);
+      await AsyncStorage.setItem("balance", balance);
+    } catch (err) {
+      console.error("Balance fetch failed", err);
     }
+  };
 
-    fetchTransactionDetails();
-    fetchUserBalance()
+  const fetchTransactions = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const userId = await AsyncStorage.getItem("userId");
+      if (!token || !userId) return;
+
+      const res = await fetch(
+        `https://fintra-1.onrender.com/api/transactions/user/${userId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data: Transaction[] = await res.json();
+      const success = data
+        .filter((tx) => tx.status === "SUCCESS")
+        .map((tx) => ({ ...tx, amount: tx.amount / 100 }))
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      setTransactions(success);
+    } catch (err) {
+      console.error("Transaction fetch failed", err);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([fetchUserBalance(), fetchTransactions()]);
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchUserBalance();
+    fetchTransactions();
   }, []);
 
-  // Group transactions by date (simple example)
-  const groupedTransactions = transactions.reduce<Record<string, Transaction[]>>(
-    (acc, tx) => {
-      const date = formatDate(tx.createdAt);
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(tx);
-      return acc;
-    },
-    {}
-  );
-
-  // Prepare sections for FlatList with section headers
-  const sections = Object.entries(groupedTransactions).map(([date, data]) => ({
-    sectionTitle: date,
-    data,
-  }));
-
-  const hasTransactions = transactions.length > 0;
-
-  const renderTransactionItem = ({ item }: { item: Transaction }) => (
+  const renderTransaction = ({ item }: { item: Transaction }) => (
     <View
       style={{
         flexDirection: "row",
-        paddingVertical: 16,
-        paddingHorizontal: 20,
+        padding: 16,
         alignItems: "center",
-        width: '100%',
-        marginHorizontal: 0,
       }}
     >
       <View
@@ -176,504 +141,182 @@ const Home = () => {
       </View>
 
       <View style={{ flex: 1, marginLeft: wp(5) }}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontWeight: "600",
-              color: theme === "dark" ? "#fff" : "#000",
-              fontSize: rf(18),
-            }}
-          >
-            {item.type.charAt(0) + item.type.slice(1).toLowerCase()}
-          </Text>
+  {/* Top Row: Type and Amount */}
+  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+    {/* Transaction Type */}
+    <Text
+      style={{
+        fontWeight: "600",
+        fontSize: rf(18),
+        color:
+          item.type === "TOPUP" || item.type === "INCOME"
+            ? "#22c55e" // Green for topups/income
+            : theme === "dark"
+            ? "#fff"
+            : "#000", // Fallback for others
+      }}
+    >
+      {(item.type.charAt(0) + item.type.slice(1).toLowerCase())}
+    </Text>
 
-          <Text
-            style={{
-              fontWeight: "600",
-              color: item.type === "TOPUP" ? "#22c55e" : "#ef4444",
-              fontSize: rf(18),
-            }}
-          >
-            {item.type === "TOPUP" ? "+" : "-"}₵ {item.amount.toFixed(2)}
+    {/* Amount */}
+    <Text
+      style={{
+        fontWeight: "600",
+        fontSize: rf(18),
+        color:
+          item.type === "TOPUP" || item.type === "INCOME"
+            ? "#22c55e" // Green
+            : "#ef4444", // Red for debits
+      }}
+    >
+      {item.type === "TOPUP" || item.type === "INCOME" ? "+" : "-"}₵{" "}
+      {item.amount.toFixed(2)}
+    </Text>
+  </View>
+
+  {/* Bottom Row: Date and Status */}
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: hp(0.5),
+    }}
+  >
+    <Text
+      style={{
+        color: theme === "dark" ? "#AAA" : "#666",
+        fontSize: rf(14),
+      }}
+    >
+      {formatTime(item.createdAt)}
+    </Text>
+    <Text
+      style={{
+        color: theme === "dark" ? "#AAA" : "#666",
+        fontSize: rf(14),
+      }}
+    >
+      {item.status}
+    </Text>
+  </View>
+</View>
+
+    </View>
+  );
+
+  const Header = () => (
+    <View
+      style={{
+        paddingTop: safeArea.top,
+        paddingBottom: hp(4),
+        paddingHorizontal: wp(5),
+        backgroundColor: theme === "dark" ? "#82E394" : "#82E394",
+      }}
+    >
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <Image
+          source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
+          style={{ width: wp(16), height: hp(5) }}
+          resizeMode="contain"
+        />
+        <Text style={{ fontWeight: "700", fontSize: rf(28), flex: 1, textAlign: "center", color: theme === "dark" ? "#fff" : "#000" }}>
+          FinTra
+        </Text>
+        <TouchableOpacity onPress={() => router.push("/(root)/(home)/notification")}>
+          <Image
+            source={icons.bell}
+            style={{ width: iconSizes.medium, height: iconSizes.medium, tintColor: theme === "dark" ? "#fff" : "#000" }}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ alignItems: "center", marginTop: hp(2) }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: rs(6) }}>
+          <FontAwesome6 name="cedi-sign" size={rf(22)} color={theme === "dark" ? "#fff" : "#000"} />
+          <Text style={{ fontWeight: "700", fontSize: rf(40), color: theme === "dark" ? "#fff" : "#000" }}>
+            {userBalance}
           </Text>
         </View>
+        <Text style={{ color: theme === "dark" ? "#ccc" : "#333", fontWeight: "500", fontSize: rf(16) }}>
+          Available balance
+        </Text>
+      </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: hp(0.7),
-          }}
+      {/* Quick actions */}
+      <View style={{ flexDirection: "row", justifyContent: "space-around", marginTop: hp(3) }}>
+        {[
+          { label: "Send", icon: icons.send, route: "/(root)/(home)/(send)/send-select-contact" },
+          { label: "Request", icon: icons.down, route: "/(root)/(tabs)/contacts" },
+          { label: "Top Up", icon: icons.topUp, route: "/(root)/(home)/(top-up)/topUp-enter-amount" },
+          { label: "Withdraw", icon: null, route: "/(root)/(home)/(withdraw)/withdraw-enter-amount" },
+        ].map((action, index) => (
+          <View key={index} style={{ alignItems: "center", flex: 1 }}>
+            <TouchableOpacity
+              onPress={() => router.push(action.route)}
+              style={{
+                width: wp(14),
+                height: wp(14),
+                borderRadius: wp(7),
+                borderWidth: rs(1),
+                borderColor: theme === "dark" ? "#fff" : "#000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {action.icon ? (
+                <Image source={action.icon} style={{ width: iconSizes.medium, height: iconSizes.medium, tintColor: theme === "dark" ? "#fff" : "#000" }} />
+              ) : (
+                <Ionicons name="log-out-outline" size={iconSizes.large} color={theme === "dark" ? "#fff" : "#000"} />
+              )}
+            </TouchableOpacity>
+            <Text style={{ marginTop: hp(0.8), fontWeight: "600", fontSize: rf(14), color: theme === "dark" ? "#fff" : "#000" }}>
+              {action.label}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Transaction Title */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: hp(4), alignItems: "center" }}>
+        <Text style={{ fontWeight: "700", fontSize: rf(22), color: theme === "dark" ? "#fff" : "#000" }}>
+          Transaction History
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push({ pathname: "/(root)/(home)/(transaction-history)/transaction-history", params: { isNewUser: isNewUserBool ? "true" : "false" } })}
+          style={{ flexDirection: "row", alignItems: "center" }}
         >
-          <Text
-            style={{
-              color: theme === "dark" ? "#AAA" : "#666",
-              fontSize: rf(14),
-            }}
-          >
-            {formatTime(item.createdAt)}
-          </Text>
-          <Text
-            style={{
-              color: theme === "dark" ? "#AAA" : "#666",
-              fontSize: rf(14),
-            }}
-          >
-            {item.status}
-          </Text>
-        </View>
+          <Text style={{ fontSize: rf(16), color: theme === "dark" ? "#AAA" : "#888" }}>View All</Text>
+          <MaterialCommunityIcons name="greater-than" size={iconSizes.small} color={theme === "dark" ? "#AAA" : "#888"} />
+        </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme === "dark" ? "#23262F" : "#82E394" }}>
-      <ScrollView
-        style={{
-          flex: 1,
-          width: '100%',
-          backgroundColor: theme === "dark" ? "#121212" : "#fff",
-        }}
-        contentContainerStyle={{ flexGrow: 1, width: '100%' }}
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme === "dark" ? "#121212" : "#fff" }}>
+      <FlatList
+        data={transactions}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderTransaction}
+        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: theme === "dark" ? "#333" : "#ccc", marginLeft: wp(20) }} />}
+        ListHeaderComponent={<Header />}
+        ListEmptyComponent={
+          <View style={{ alignItems: "center", marginTop: hp(10) }}>
+            <Image source={images.clipboard} style={{ width: wp(35), height: wp(35), marginBottom: hp(2), transform: [{ rotate: "-20deg" }] }} />
+            <Text style={{ fontWeight: "700", fontSize: rf(22), color: theme === "dark" ? "#fff" : "#000" }}>
+              No Transactions
+            </Text>
+            <Text style={{ fontSize: rf(16), color: theme === "dark" ? "#AAA" : "#666", textAlign: "center" }}>
+              You haven't made any transactions.
+            </Text>
+          </View>
+        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        contentContainerStyle={{ paddingBottom: hp(10) }}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Top Section with balance and actions */}
-        <View
-          style={{
-            paddingTop: safeArea.top,
-            backgroundColor: theme === "dark" ? "#23262F" : "#82E394",
-            paddingHorizontal: wp(5),
-            paddingBottom: hp(4),
-            minHeight: hp(55),
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: hp(3),
-            }}
-          >
-            <Image
-              source={theme === "dark" ? images.GreenLogo : images.BlackLogo}
-              style={{ width: wp(16), height: hp(5) }}
-              resizeMode="contain"
-            />
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: rf(28),
-                color: theme === "dark" ? "#fff" : "#000",
-                flex: 1,
-                textAlign: "center",
-              }}
-            >
-              FinTra
-            </Text>
-            <TouchableOpacity
-              onPress={() => router.push("/(root)/(home)/notification")}
-              style={{
-                padding: rs(8),
-                borderRadius: rs(20),
-              }}
-            >
-              <Image
-                source={icons.bell}
-                style={{
-                  width: iconSizes.medium,
-                  height: iconSizes.medium,
-                  tintColor: theme === "dark" ? "#fff" : "#000",
-                }}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              marginVertical: hp(2),
-            }}
-          >
-            <View style={{ 
-              flexDirection: "row", 
-              alignItems: "center", 
-              gap: rs(6),
-              marginBottom: hp(1),
-            }}>
-              <FontAwesome6
-                name="cedi-sign"
-                size={rf(isSmallScreen() ? 18 : 22)}
-                color={theme === "dark" ? "#fff" : "#000"}
-              />
-              <Text
-                style={{
-                  fontWeight: "700",
-                  fontSize: rf(isSmallScreen() ? 36 : isLargeScreen() ? 54 : 48),
-                  color: theme === "dark" ? "#fff" : "#000",
-                }}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-              >
-                {userBalance || "₵ 0.00"}
-              </Text>
-            </View>
-
-            <Text
-              style={{
-                fontWeight: "500",
-                fontSize: rf(16),
-                color: theme === "dark" ? "#ccc" : "#222",
-                textAlign: "center",
-              }}
-            >
-              Available balance
-            </Text>
-          </View>
-
-          {/* Quick actions */}
-          <View
-            style={{
-              marginTop: hp(3),
-              paddingHorizontal: wp(2),
-            }}
-          >
-            {/* First row - 3 buttons */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                marginBottom: hp(2),
-              }}
-            >
-            {/* Send */}
-            <View style={{ alignItems: "center", flex: 1 }}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/(root)/(home)/(send)/send-select-contact")
-                }
-                style={{
-                  width: wp(isSmallScreen() ? 14 : 16),
-                  height: wp(isSmallScreen() ? 14 : 16),
-                  borderRadius: wp(isSmallScreen() ? 7 : 8),
-                  borderWidth: rs(1),
-                  borderColor: theme === "dark" ? "#fff" : "#000",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={icons.send}
-                  style={{ 
-                    width: iconSizes.medium, 
-                    height: iconSizes.medium, 
-                    tintColor: theme === "dark" ? "#fff" : "#000" 
-                  }}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  marginTop: hp(0.8),
-                  fontWeight: "600",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  fontSize: rf(14),
-                  textAlign: "center",
-                }}
-              >
-                Send
-              </Text>
-            </View>
-
-            {/* Request */}
-            <View style={{ alignItems: "center", flex: 1 }}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/(root)/(tabs)/contacts")
-                }
-                style={{
-                  width: wp(isSmallScreen() ? 14 : 16),
-                  height: wp(isSmallScreen() ? 14 : 16),
-                  borderRadius: wp(isSmallScreen() ? 7 : 8),
-                  borderWidth: rs(1),
-                  borderColor: theme === "dark" ? "#fff" : "#000",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={icons.down}
-                  style={{ 
-                    width: iconSizes.medium, 
-                    height: iconSizes.medium, 
-                    tintColor: theme === "dark" ? "#fff" : "#000" 
-                  }}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  marginTop: hp(0.8),
-                  fontWeight: "600",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  fontSize: rf(14),
-                  textAlign: "center",
-                }}
-              >
-                Request
-              </Text>
-            </View>
-
-            {/* Top Up */}
-            <View style={{ alignItems: "center", flex: 1 }}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/(root)/(home)/(top-up)/topUp-enter-amount")
-                }
-                style={{
-                  width: wp(isSmallScreen() ? 14 : 16),
-                  height: wp(isSmallScreen() ? 14 : 16),
-                  borderRadius: wp(isSmallScreen() ? 7 : 8),
-                  borderWidth: rs(1),
-                  borderColor: theme === "dark" ? "#fff" : "#000",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  source={icons.topUp}
-                  style={{ 
-                    width: iconSizes.medium, 
-                    height: iconSizes.medium, 
-                    tintColor: theme === "dark" ? "#fff" : "#000" 
-                  }}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  marginTop: hp(0.8),
-                  fontWeight: "600",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  fontSize: rf(14),
-                  textAlign: "center",
-                }}
-              >
-                Top Up
-              </Text>
-            </View>
-
-            {/* Withdraw */}
-            <View style={{ alignItems: "center", flex: 1 }}>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push("/(root)/(home)/(withdraw)/withdraw-enter-amount")
-                }
-                style={{
-                  width: wp(isSmallScreen() ? 14 : 16),
-                  height: wp(isSmallScreen() ? 14 : 16),
-                  borderRadius: wp(isSmallScreen() ? 7 : 8),
-                  borderWidth: rs(1),
-                  borderColor: theme === "dark" ? "#fff" : "#000",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="log-out-outline"
-                  size={iconSizes.large}
-                  color={theme === "dark" ? "#fff" : "#000"}
-                />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  marginTop: hp(0.8),
-                  fontWeight: "600",
-                  color: theme === "dark" ? "#fff" : "#000",
-                  fontSize: rf(14),
-                  textAlign: "center",
-                }}
-              >
-                Withdraw
-              </Text>
-            </View>
-
-          </View>
-        </View>
-
-        {/* Transaction History */}
-        <View
-          style={{
-            backgroundColor: theme === "dark" ? "#121212" : "#fff",
-            paddingTop: 24,
-            paddingBottom: 16,
-            width: '100%',
-            alignSelf: 'stretch',
-            flex: 1,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 12,
-              paddingHorizontal: 20,
-              width: '100%',
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "700",
-                fontSize: rf(22),
-                color: theme === "dark" ? "#fff" : "#000",
-              }}
-            >
-              Transaction History
-            </Text>
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/(root)/(home)/(transaction-history)/transaction-history",
-                  params: { isNewUser: isNewUserBool ? "true" : "false" },
-                })
-              }
-              style={{ 
-                flexDirection: "row", 
-                alignItems: "center", 
-                gap: rs(6),
-                padding: rs(8),
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: rf(16),
-                  color: theme === "dark" ? "#AAA" : "#888",
-                }}
-              >
-                View All
-              </Text>
-              <MaterialCommunityIcons
-                name="greater-than"
-                size={iconSizes.small}
-                color={theme === "dark" ? "#AAA" : "#888"}
-              />
-            </TouchableOpacity>
-          </View>
-
-        {!hasTransactions || isNewUserBool ? (
-            <View
-              style={{
-                marginTop: hp(5),
-                justifyContent: "center",
-                alignItems: "center",
-                paddingHorizontal: wp(5),
-              }}
-            >
-              <Image
-                source={images.clipboard}
-                style={{
-                  width: wp(isSmallScreen() ? 35 : 40),
-                  height: wp(isSmallScreen() ? 35 : 40),
-                  marginBottom: hp(2),
-                  transform: [{ rotate: "-20deg" }],
-                }}
-                resizeMode="contain"
-              />
-              <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: rf(22),
-                    color: theme === "dark" ? "#fff" : "#000",
-                    textAlign: "center",
-                    marginBottom: hp(1),
-                  }}
-                >
-                  No Transactions
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "500",
-                    fontSize: rf(16),
-                    color: theme === "dark" ? "#AAA" : "#666",
-                    textAlign: "center",
-                    lineHeight: rf(22),
-                  }}
-                >
-                  You haven't made any transactions.
-                </Text>
-              </View>
-            </View>
-        ) : (
-          <FlatList
-            data={sections}
-            keyExtractor={(item) => item.sectionTitle}
-            showsVerticalScrollIndicator={false}
-            style={{ width: '100%' }}
-            contentContainerStyle={{ width: '100%' }}
-            renderItem={({ item: section }) => (
-              <View key={section.sectionTitle}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginTop: 20,
-                    paddingHorizontal: 20,
-                    width: '100%',
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontWeight: "600",
-                      fontSize: rf(18),
-                      color: theme === "dark" ? "#AAA" : "#555",
-                    }}
-                  >
-                    {section.sectionTitle}
-                  </Text>
-                  <View
-                    style={{
-                      height: rs(1),
-                      flex: 1,
-                      marginLeft: wp(2),
-                      backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-                    }}
-                  />
-                </View>
-
-                <FlatList
-                  data={section.data}
-                  keyExtractor={(item) => item.id.toString()}
-                  renderItem={renderTransactionItem}
-                  style={{ width: '100%' }}
-                  ItemSeparatorComponent={() => (
-                    <View
-                      style={{
-                        height: rs(1),
-                        width: "75%",
-                        alignSelf: "flex-end",
-                        backgroundColor: theme === "dark" ? "#444" : "#e6e6e6",
-                      }}
-                    />
-                  )}
-                />
-              </View>
-            )}
-          />
-        )}
-        </View>
-        </View>
-      </ScrollView>
+      />
     </SafeAreaView>
   );
 };
