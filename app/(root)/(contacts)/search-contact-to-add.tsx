@@ -16,8 +16,7 @@ import { useTheme } from "@/lib/ThemeContext";
 export default function SearchContactToAdd() {
   const { AccountHolderName, email } = useLocalSearchParams();
   const [contactImage, setContactImage] = useState<string | null>(null);
-  const [showSavedToContactsModal, setshowSavedToContactsModal] =
-    useState(false);
+  const [showSavedToContactsModal, setshowSavedToContactsModal] = useState(false);
   const { theme } = useTheme();
 
   return (
@@ -158,72 +157,87 @@ export default function SearchContactToAdd() {
               theme === "dark" ? "text-dark-primary" : "text-primary"
             }`}
           >
-            Add to Contacts
+            Add Contact
           </Text>
         </TouchableOpacity>
       </View>
 
       <Modal
-        isVisible={showSavedToContactsModal}
-        onBackdropPress={() => setshowSavedToContactsModal(false)}
-        onSwipeComplete={() => setshowSavedToContactsModal(false)}
-        swipeDirection="down"
-        style={{ justifyContent: "flex-end", margin: 0 }}
-        propagateSwipe
+  isVisible={showSavedToContactsModal}
+  onBackdropPress={() => setshowSavedToContactsModal(false)}
+  backdropTransitionOutTiming={0}
+  animationIn="zoomIn"
+  animationOut="zoomOut"
+  style={{ justifyContent: "center", alignItems: "center", margin: 0 }}
+>
+  <View
+    style={{
+      width: "80%",
+      backgroundColor: theme === "dark" ? "#333" : "white",
+      borderRadius: 20,
+      paddingVertical: 20,
+      paddingHorizontal: 25,
+      alignItems: "center",
+    }}
+  >
+    <View
+      style={{
+        width: 80,
+        height: 80,
+        backgroundColor: "#82E394",
+        borderWidth: 2,
+        borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
+        borderRadius: 999,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <FontAwesome6
+        name="check"
+        size={34}
+        color={theme === "dark" ? "#fff" : "#0D0D0D"}
+      />
+    </View>
+    <Text
+      className={`font-UrbanistSemiBold mt-5 ${
+        theme === "dark" ? "text-dark-primary" : "text-primary"
+      }`}
+      style={{ fontSize: 20, textAlign: "center" }}
+    >
+      Saved to contacts!
+    </Text>
+
+    {/* Add button here */}
+    <TouchableOpacity
+      onPress={() => {
+        setshowSavedToContactsModal(false);
+        router.push({
+          pathname: "/(root)/(tabs)/contacts",
+          params: { AccountHolderName, email },
+        });
+      }}
+      style={{
+        marginTop: 20,
+        backgroundColor: "#0D0D0D",
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 999,
+      }}
+    >
+      <Text
+        className="font-UrbanistSemiBold"
+        style={{
+          fontSize: 16,
+          color: "#fff",
+        }}
       >
-        <View
-          style={{
-            height: "25%",
-            width: "100%",
-            backgroundColor: theme === "dark" ? "#333" : "white",
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          {/* Optional: Add a swipe indicator */}
-          <View
-            style={{
-              width: 40,
-              height: 3,
-              backgroundColor: theme === "dark" ? "#666" : "#ccc",
-              borderRadius: 3,
-              alignSelf: "center",
-            }}
-          />
-          {/* Your modal content */}
-          <View className="mt-6 flex items-center">
-            <View
-              style={{
-                width: 80,
-                height: 80,
-                backgroundColor: "#82E394",
-                borderStyle: "solid",
-                borderWidth: 2,
-                borderColor: theme === "dark" ? "#fff" : "#0D0D0D",
-              }}
-              className="rounded-full border flex items-center justify-center"
-            >
-              <FontAwesome6
-                name="check"
-                size={34}
-                color={theme === "dark" ? "#fff" : "#0D0D0D"}
-              />
-            </View>
-            <Text
-              className={`font-UrbanistSemiBold self-center mt-4 ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
-              }`}
-              style={{ fontSize: 20 }}
-            >
-              Saved to contacts!
-            </Text>
-          </View>
-        </View>
-      </Modal>
+        Continue
+      </Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
+
+
     </View>
   );
 }

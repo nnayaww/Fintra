@@ -234,7 +234,7 @@ const Home = () => {
 
       <View style={{ alignItems: "center", marginTop: hp(2) }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: rs(6) }}>
-          <FontAwesome6 name="cedi-sign" size={rf(22)} color={theme === "dark" ? "#fff" : "#000"} />
+          {/* <FontAwesome6 name="cedi-sign" size={rf(22)} color={theme === "dark" ? "#fff" : "#000"} /> */}
           <Text style={{ fontWeight: "700", fontSize: rf(40), color: theme === "dark" ? "#fff" : "#000" }}>
             {userBalance}
           </Text>
