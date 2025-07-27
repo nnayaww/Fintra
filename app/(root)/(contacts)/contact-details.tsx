@@ -183,27 +183,30 @@ setSenderEmail(userEmail as string)
         style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
       >
         <TouchableOpacity
-          onPress={() => {
-            router.push({
-              pathname: "/(root)/(contacts)/chat-screen",
-              params: {
-                name: contact?.name,
-                email: contact?.email,
-              },
-            });
-          }}
-          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
-            theme === "dark" ? "bg-dark-background" : "bg-white"
-          }`}
-        >
-          <Text
-            className={`font-UrbanistSemiBold text-xl ${
-              theme === "dark" ? "text-dark-primary" : "text-primary"
-            }`}
-          >
-            Request Money
-          </Text>
-        </TouchableOpacity>
+  onPress={() => {
+    router.push({
+      pathname: "/(root)/(contacts)/chat-screen",
+      params: {
+        name: contact?.name,
+        email: contact?.email,
+      },
+    });
+  }}
+  className={`flex-1 items-center justify-center px-2 py-4 border-[1.5px] border-general rounded-full ${
+    theme === "dark" ? "bg-dark-background" : "bg-white"
+  }`}
+>
+  <Text
+    numberOfLines={1}
+    style={{ flexShrink: 1, textAlign: "center" }}
+    className={`font-UrbanistSemiBold text-lg ${
+      theme === "dark" ? "text-dark-primary" : "text-primary"
+    }`}
+  >
+    Request Money
+  </Text>
+</TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => {
             router.push({
@@ -214,16 +217,19 @@ setSenderEmail(userEmail as string)
               },
             });
           }}
-          className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
+          className="bg-general flex-1 items-center justify-center px-2 py-4 border-none rounded-full"
         >
           <Text
-            className={`font-UrbanistSemiBold text-xl ${
+            numberOfLines={1}
+            style={{ flexShrink: 1, textAlign: "center" }}
+            className={`font-UrbanistSemiBold text-lg ${
               theme === "dark" ? "text-dark-primary" : "text-primary"
             }`}
           >
             Send Money
           </Text>
         </TouchableOpacity>
+
       </View>
 
       <Modal

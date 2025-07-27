@@ -199,37 +199,43 @@ const AddNewContact = () => {
           style={{ position: "absolute", right: 20, left: 20, bottom: 46 }}
         >
           <TouchableOpacity
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace("/(root)/(tabs)/home");
-              }
-            }}
-            className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
-              theme === "dark" ? "bg-dark-background" : "bg-white"
-            }`}
-          >
-            <Text
-              className={`font-UrbanistSemiBold text-xl ${
-                theme === "dark" ? "text-dark-primary" : "text-primary"
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/(root)/(tabs)/home");
+                }
+              }}
+              className={`flex-1 items-center justify-center px-2 py-4 border-[1.5px] border-general rounded-full ${
+                theme === "dark" ? "bg-dark-background" : "bg-white"
               }`}
             >
-              Cancel
-            </Text>
-          </TouchableOpacity>
+              <Text
+                numberOfLines={1}
+                style={{ flexShrink: 1, textAlign: "center" }}
+                className={`font-UrbanistSemiBold text-lg ${
+                  theme === "dark" ? "text-dark-primary" : "text-primary"
+                }`}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+
           <TouchableOpacity
             onPress={handleSearchContact}
-            className="bg-general flex-1 items-center justify-center p-5 border-none rounded-full"
+            className="bg-general flex-1 items-center justify-center px-2 py-4 border-none rounded-full"
           >
             <Text
-              className={`font-UrbanistSemiBold text-xl ${
+              numberOfLines={1}
+              style={{ flexShrink: 1, textAlign: "center" }}
+              className={`font-UrbanistSemiBold text-lg ${
                 theme === "dark" ? "text-dark-primary" : "text-primary"
               }`}
             >
               Search Contact
             </Text>
           </TouchableOpacity>
+
         </View>
 
         <Modal visible={showModal} transparent animationType="fade">

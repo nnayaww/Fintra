@@ -21,7 +21,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 export default function ChatScreen() {
@@ -126,83 +126,85 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      keyboardVerticalOffset={hp(2)}
-    >
-      <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#181A20" : "#f9fafb" }}>
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: wp(4),
-            paddingVertical: hp(2),  
-            backgroundColor: isDark ? "#23262F" : "#fff",
-            borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
-            borderBottomWidth: 1,
-          }}
-        >
-          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: wp(12) }}>
-            <Ionicons name="arrow-back" size={rf(20)} color={isDark ? "#fff" : "#111"} />
-          </TouchableOpacity>
-          <Text
-            numberOfLines={1}
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#181A20" : "#f9fafb" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={hp(3)}
+      >
+        <View style={{ flex: 1, paddingBottom: Platform.OS === "android" ? hp(3) : 0 }}>
+          {/* Header */}
+          <View
             style={{
-              flexShrink: 1,
-              textAlign: "center",
-              fontSize: rf(18),
-              fontWeight: "bold",
-              color: isDark ? "#fff" : "#111",
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: wp(4),
+              paddingVertical: hp(2),
+              backgroundColor: isDark ? "#23262F" : "#fff",
+              borderBottomColor: isDark ? "#23262F" : "#e5e7eb",
+              borderBottomWidth: 1,
             }}
           >
-            {name || "Chat"}
-          </Text>
-          <View style={{ width: rf(20) }} />
-        </View>
+            <TouchableOpacity onPress={() => router.back()} style={{ marginRight: wp(12) }}>
+              <Ionicons name="arrow-back" size={rf(20)} color={isDark ? "#fff" : "#111"} />
+            </TouchableOpacity>
+            <Text
+              numberOfLines={1}
+              style={{
+                flexShrink: 1,
+                textAlign: "center",
+                fontSize: rf(18),
+                fontWeight: "bold",
+                color: isDark ? "#fff" : "#111",
+              }}
+            >
+              {name || "Chat"}
+            </Text>
+            <View style={{ width: rf(20) }} />
+          </View>
 
-        {/* Messages */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={renderMessage}
-          contentContainerStyle={{ paddingVertical: hp(1) }}
-          keyboardShouldPersistTaps="handled"
-        />
-
-        {/* Input */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            padding: wp(3),
-            borderTopWidth: 1,
-            borderTopColor: isDark ? "#2d2d2d" : "#e5e7eb",
-            backgroundColor: isDark ? "#23262F" : "#fff",
-          }}
-        >
-          <TextInput
-            style={{
-              flex: 1,
-              backgroundColor: isDark ? "#2d2d2d" : "#f0f0f0",
-              borderRadius: 20,
-              paddingHorizontal: wp(4),
-              paddingVertical: Platform.OS === "ios" ? hp(1.5) : hp(1),
-              color: isDark ? "#fff" : "#000",
-            }}
-            placeholder="Type a message"
-            placeholderTextColor={isDark ? "#aaa" : "#666"}
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={handleSend}
+          {/* Messages */}
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            renderItem={renderMessage}
+            contentContainerStyle={{ paddingVertical: hp(1) }}
+            keyboardShouldPersistTaps="handled"
           />
-          <TouchableOpacity onPress={handleSend} style={{ marginLeft: wp(2) }}>
-            <Ionicons name="send" size={rf(20)} color={isDark ? "#3B82F6" : "#2563eb"} />
-          </TouchableOpacity>
+
+          {/* Input */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              padding: wp(3),
+              borderTopWidth: 1,
+              borderTopColor: isDark ? "#2d2d2d" : "#e5e7eb",
+              backgroundColor: isDark ? "#23262F" : "#fff",
+            }}
+          >
+            <TextInput
+              style={{
+                flex: 1,
+                backgroundColor: isDark ? "#2d2d2d" : "#f0f0f0",
+                borderRadius: 20,
+                paddingHorizontal: wp(4),
+                paddingVertical: Platform.OS === "ios" ? hp(1.5) : hp(1),
+                color: isDark ? "#fff" : "#000",
+              }}
+              placeholder="Type a message"
+              placeholderTextColor={isDark ? "#aaa" : "#666"}
+              value={input}
+              onChangeText={setInput}
+              onSubmitEditing={handleSend}
+            />
+            <TouchableOpacity onPress={handleSend} style={{ marginLeft: wp(2) }}>
+              <Ionicons name="send" size={rf(20)} color={isDark ? "#3B82F6" : "#2563eb"} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

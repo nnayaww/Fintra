@@ -331,6 +331,7 @@ export const createThemedStyles = (theme: 'light' | 'dark') => {
       ...globalStyles.header,
       backgroundColor: colors.primary,
       borderBottomColor: colors.border,
+      marginTop: 32
     },
     headerTitle: {
       ...globalStyles.headerTitle,

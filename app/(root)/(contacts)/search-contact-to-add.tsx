@@ -126,7 +126,7 @@ export default function SearchContactToAdd() {
               },
             });
           }}
-          className={`flex-1 items-center justify-center p-5 border-[1.5px] border-general rounded-full ${
+          className={`flex-1 items-center justify-center p-5 border-[1px] border-general rounded-full ${
             theme === "dark" ? "bg-dark-background" : "bg-white"
           }`}
         >
