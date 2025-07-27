@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSignUp } from "@/context/SignUpContext";
 import { Directions } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUpReview = () => {
   const { theme } = useTheme();
@@ -31,7 +32,7 @@ const SignUpReview = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    try {
+    try { 
       const response = await fetch("https://fintra-1.onrender.com/register", {
         method: "POST",
         headers: {
@@ -53,10 +54,16 @@ const SignUpReview = () => {
       const data = await response.json();
       console.log(data)
       console.log(data.user)
+      
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
-
+      await AsyncStorage.setItem("userId", String(data.user.id));
+      await AsyncStorage.setItem("email", data.user.email);
+      await AsyncStorage.setItem("token", data.token);
+      await AsyncStorage.setItem("fullName", `${data.user.first_name} ${data.user.last_name}`);
+      await AsyncStorage.setItem("phone", data.user.phone);
+      console.log('userId, email', data.user.id, data.user.email) 
       // Navigate to SetPinCode screen on success
       router.push("/(auth)/SignUp-SetPINCode");
     } catch (error: any) {
