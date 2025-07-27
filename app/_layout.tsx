@@ -6,7 +6,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet } from "react-native";
 import "./global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -15,20 +16,26 @@ const RootLayoutNav = () => {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaProvider
-      className={`flex-1 ${
-        theme === "dark" ? "bg-dark-background" : "bg-white"
-      }`}
-    >
-      <StatusBar
-        style={theme === "dark" ? "light" : "dark"}
-        backgroundColor={theme === "dark" ? "#23262F" : "#ffffff"}
-      />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(root)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <SafeAreaProvider>
+      <SafeAreaView
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme === "dark" ? "#23262F" : "#ffffff",
+          },
+        ]}
+        edges={["top", "left", "right"]}
+      >
+        <StatusBar
+          style={theme === "dark" ? "light" : "dark"}
+          backgroundColor={theme === "dark" ? "#23262F" : "#ffffff"}
+        />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(root)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 };
@@ -56,9 +63,15 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <ThemeProvider>
-      <RootLayoutNav />
-    </ThemeProvider>
+      <ThemeProvider>
+        <RootLayoutNav />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
